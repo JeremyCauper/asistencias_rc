@@ -1,0 +1,16 @@
+body {
+    /* background-color: #f9fbfd; */
+}
+
+.card-resumen i {
+    font-size: 2rem;
+}
+
+.card-resumen {
+    cursor: pointer;
+    transition: all .3s;
+}
+
+.card-resumen:hover {
+    transform: scale(1.03);
+}

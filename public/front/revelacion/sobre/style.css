@@ -1,0 +1,164 @@
+:root {
+    --border-caramelo: #b49160;
+    --color-caramelo: #b99a69;
+}
+
+html,
+body {
+    overflow-x: hidden;
+}
+
+body {
+    background-image: url('../img/fondo.jpg');
+    background-position: -200px -200px;
+    background-size: 500px 500px;
+    background-repeat: repeat;
+    font-family: 'Playwrite AU QLD', cursive;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.sobre {
+    position: relative;
+    background-color: #fff;
+    border-radius: 300px 300px 2vw 2vw;
+    max-width: 28rem;
+    margin: auto;
+    box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.15);
+    padding: 3.25rem 2rem;
+}
+
+.lazo {
+    position: absolute;
+    top: -2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8rem;
+    height: auto;
+    z-index: 10;
+    filter: saturate(100%) invert(15%) sepia(10%) saturate(256%) hue-rotate(347deg) brightness(97%) contrast(88%);
+}
+
+.sobre-title {
+    margin: 4rem 3.5rem 2rem 3.5rem;
+}
+
+.sobre-title h1 {
+    font-family: 'Great Vibes', cursive;
+    margin: 0;
+    color: #f0b988;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.sobre-title h1:nth-child(1) {
+    text-align: left;
+    font-size: 60px;
+    line-height: .8;
+}
+
+.sobre-title h1:nth-child(2) {
+    text-align: center;
+    font-size: 45px;
+    line-height: .4;
+    margin-bottom: 1rem;
+}
+
+.sobre-title h1:nth-child(3) {
+    text-align: right;
+    font-size: 60px;
+    line-height: 1;
+}
+
+.envelope-3d {
+    position: relative;
+    overflow: hidden;
+    width: 25rem;
+    height: 16rem;
+    margin: 2rem auto 1rem auto;
+    background-color: #f4b57c;
+    box-shadow: 0px 4px 11px 0px rgb(0, 0, 0, 0.25);
+    cursor: pointer;
+}
+
+/* Solapa superior (top) */
+.envelope-flap-top {
+    position: absolute;
+    top: -7px;
+    left: 50%;
+    width: 18.25rem;
+    height: 17.75rem;
+    background-color: #f0b988;
+    border-radius: 4rem 0 4rem 0;
+    transform: translate(-50%, -50%) rotate(-38deg) skew(14deg);
+    box-shadow: 5px -5px 20px 14px rgb(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+/* Solapa inferior (bottom) */
+.envelope-flap-bottom {
+position: absolute;
+    bottom: -6px;
+    left: 50%;
+    width: 16.5rem;
+    height: 16rem;
+    background-color: #f0b988;
+    transform: translate(-50%, 50%) rotate(-38deg) skew(14deg);
+    box-shadow: 0 0 10px 0px rgb(0, 0, 0, .25);
+}
+
+.envelope-sello {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+}
+
+.sobre-body h3 {
+    font-family: 'Playwrite AU QLD', cursive;
+    text-align: center;
+    font-size: .7rem;
+    margin: 0;
+    color: var(--color-caramelo);
+}
+
+@media (max-width: 560px) {
+    .sobre {
+        padding: 2rem 1.5rem;
+    }
+
+    .sobre-title {
+        margin: 4rem 2rem 2rem 2rem;
+    }
+
+    .sobre-title h1:nth-child(1),
+    .sobre-title h1:nth-child(3) {
+        font-size: 60px;
+    }
+
+    .sobre-title h1:nth-child(2) {
+        font-size: 35px;
+    }
+
+    .envelope-3d {
+        width: 20rem;
+        height: 13rem;
+    }
+
+    .envelope-flap-top {
+        width: 15rem;
+        height: 14.5rem;
+    }
+
+    .envelope-flap-bottom {
+        width: 13.5rem;
+        height: 13rem;
+    }
+    
+}

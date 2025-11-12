@@ -1,0 +1,57 @@
+[
+    {
+        "id": 1,
+        "descripcion": "Presencial",
+        "icono": "fas fa-city",
+        "color": "#007bff",
+        "estatus": 1,
+        "selected": 0,
+        "eliminado": 0,
+        "updated_at": "2025-11-09 14:03:38",
+        "created_at": "2025-10-29 13:54:04"
+    },
+    {
+        "id": 2,
+        "descripcion": "Remoto",
+        "icono": "fas fa-house-laptop",
+        "color": "#28a745",
+        "estatus": 1,
+        "selected": 0,
+        "eliminado": 0,
+        "updated_at": "2025-10-30 11:36:54",
+        "created_at": "2025-10-29 13:55:43"
+    },
+    {
+        "id": 3,
+        "descripcion": "Nocturno",
+        "icono": "fas fa-moon",
+        "color": "#6f42c1",
+        "estatus": 1,
+        "selected": 0,
+        "eliminado": 0,
+        "updated_at": "2025-10-30 11:40:20",
+        "created_at": "2025-10-29 14:08:05"
+    },
+    {
+        "id": 4,
+        "descripcion": "Estudia",
+        "icono": "fas fa-user-graduate",
+        "color": "#17a2b8",
+        "estatus": 1,
+        "selected": 0,
+        "eliminado": 0,
+        "updated_at": "2025-10-30 11:41:02",
+        "created_at": "2025-10-29 14:08:25"
+    },
+    {
+        "id": 5,
+        "descripcion": "Descanso",
+        "icono": "fas fa-bed",
+        "color": "#8c8c8c",
+        "estatus": 1,
+        "selected": 0,
+        "eliminado": 0,
+        "updated_at": "2025-11-10 09:55:28",
+        "created_at": "2025-10-30 14:34:04"
+    }
+]

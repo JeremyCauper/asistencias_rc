@@ -1,0 +1,84 @@
+:root,
+[data-mdb-theme=light] {
+    --bg-trail: #bed9ff;
+    --bg-handler: #ddebff;
+    --color-before: #e4a11b;
+    --transition: all .2s ease;
+}
+
+[data-mdb-theme=dark] {
+    --bg-trail: #303030;
+    --bg-handler: #424242;
+    --color-before: #ffffff;
+}
+
+/* Hide the input */
+#check[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
+}
+
+.check-trail {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 3rem;
+    height: 1.76rem;
+    padding: .13rem .18rem;
+    background: var(--bg-trail);
+    border-radius: 2rem;
+    transition: var(--transition);
+    cursor: pointer;
+    border: var(--mdb-border-width) solid var(--mdb-border-color);
+}
+
+.check-trail .toltip-theme {
+    position: absolute;
+    display: none;
+    top: 190%;
+    left: 50%;
+    font-size: 1rem !important;
+    transform: translate(-50%, -50%);
+    box-shadow: 0px 0px 2px rgba(var(--mdb-surface-color-rgb), 1), 0px 0px 2px rgba(var(--mdb-surface-color-rgb), 1);
+}
+
+.check-trail:hover .toltip-theme {
+    display: flex;
+    align-items: center;
+}
+
+.check-handler {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1.3rem;
+    height: 1.3rem;
+    position: relative;
+    background: var(--bg-handler);
+    border-radius: 50%;
+    margin-left: 4%;
+    transition: var(--transition);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+    /* border: var(--mdb-border-width) solid var(--mdb-border-color); */
+
+    &::before {
+        content: "\f186";
+        position: absolute;
+        font-family: "Font Awesome 6 Free";
+        transition: var(--transition);
+        font-size: .72rem;
+        color: var(--color-before);
+    }
+}
+
+#check[type="checkbox"]:checked+.check-trail {
+
+    .check-handler {
+        margin-left: 45%;
+
+        &::before {
+            content: "\f185";
+        }
+    }
+}

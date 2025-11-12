@@ -1,0 +1,74 @@
+[
+    {
+        "id": 1,
+        "id_menu": 3,
+        "descripcion": "Menu",
+        "categoria": "Config. Menu",
+        "ruta": "\/mantenimiento-dev\/menu\/menu",
+        "estatus": 1,
+        "selected": 0,
+        "eliminado": 0,
+        "updated_at": "",
+        "created_at": "2025-10-28 23:45:35"
+    },
+    {
+        "id": 2,
+        "id_menu": 3,
+        "descripcion": "Sub Menu",
+        "categoria": "Config. Menu",
+        "ruta": "\/mantenimiento-dev\/menu\/sub-menu",
+        "estatus": 1,
+        "selected": 0,
+        "eliminado": 0,
+        "updated_at": "2025-11-10 15:38:08",
+        "created_at": "2025-10-28 23:48:53"
+    },
+    {
+        "id": 3,
+        "id_menu": 3,
+        "descripcion": "Tipo Modalidad",
+        "categoria": "",
+        "ruta": "\/mantenimiento-dev\/tipo-modalidad",
+        "estatus": 1,
+        "selected": 0,
+        "eliminado": 0,
+        "updated_at": "2025-10-29 13:40:55",
+        "created_at": "2025-10-29 13:33:34"
+    },
+    {
+        "id": 4,
+        "id_menu": 3,
+        "descripcion": "Tipo Asistencia",
+        "categoria": "",
+        "ruta": "\/mantenimiento-dev\/tipo-asistencia",
+        "estatus": 1,
+        "selected": 0,
+        "eliminado": 0,
+        "updated_at": "",
+        "created_at": "2025-10-29 20:03:41"
+    },
+    {
+        "id": 5,
+        "id_menu": 3,
+        "descripcion": "Tipo Personal",
+        "categoria": "",
+        "ruta": "\/mantenimiento-dev\/tipo-personal",
+        "estatus": 1,
+        "selected": 0,
+        "eliminado": 0,
+        "updated_at": "",
+        "created_at": "2025-11-02 14:07:22"
+    },
+    {
+        "id": 6,
+        "id_menu": 4,
+        "descripcion": "Areas",
+        "categoria": "",
+        "ruta": "\/mantenimiento\/area-personal",
+        "estatus": 1,
+        "selected": 0,
+        "eliminado": 0,
+        "updated_at": "2025-11-10 15:38:12",
+        "created_at": "2025-11-06 01:40:08"
+    }
+]

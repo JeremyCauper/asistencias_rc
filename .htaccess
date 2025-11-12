@@ -1,0 +1,21 @@
+# Evita listar archivos del directorio
+Options -Indexes
+
+# Activa reescritura de URLs
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Detecta si estás accediendo directamente al proyecto (sin /public)
+    RewriteCond %{REQUEST_URI} ^/analyst_tools/?$ [NC]
+    RewriteRule ^(.*)$ /analyst_tools/public/ [L,R=302]
+
+    # Si el archivo o directorio no existe en la raíz, redirige todo a /public
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Bloquea archivos sensibles
+<FilesMatch "^(\.env|composer\.json|composer\.lock|artisan|package\.json|webpack\.mix\.js|phpunit\.xml)$">
+    Require all denied
+</FilesMatch>
