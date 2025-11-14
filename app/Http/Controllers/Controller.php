@@ -202,6 +202,7 @@ class Controller extends BaseController
         if (!array_key_exists('button', $arr_acciones)) {
             throw new Exception("La clave 'button' no existe en el array.");
         }
+        $sinAcciones = empty($arr_acciones['button']);
 
         // Título del dropdown
         $str_title = '<h6 class="dropdown-header text-secondary d-flex justify-content-between align-items-center">:titulo <i class="fas fa-gear"></i></h6>';
@@ -233,7 +234,7 @@ class Controller extends BaseController
                         </span>' : '') . '
                 <button
                     type="button"
-                    class="dropdown-toggle btn btn-tertiary hover-btn btn-sm p-1 shadow-0"
+                    class="' . ($sinAcciones ? 'disabled' : 'dropdown-toggle') . ' btn btn-tertiary hover-btn btn-sm p-1 shadow-0"
                     data-mdb-ripple-init
                     aria-expanded="false"
                     data-mdb-dropdown-init
@@ -241,7 +242,7 @@ class Controller extends BaseController
                     data-mdb-parent=".dataTables_scrollBody"
                     data-mdb-dropdown-animation="off"
                     data-mdb-dropdown-initialized="true">
-                    <i class="fas fa-bars" style="font-size: 1.125em;"></i>
+                    <i class="fas fa-' . ($sinAcciones ? 'ban' : 'bars') . '" style="font-size: 1.125em;"></i>
                 </button>
                 <div class="dropdown-menu">
                     ' . $tittle . $button . '

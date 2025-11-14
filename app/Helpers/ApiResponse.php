@@ -14,7 +14,7 @@ class ApiResponse
         return response()->json([
             'success' => true,
             'message' => $message,
-            'data'    => $data ?: null,
+            'data' => $data ?: null,
         ], $status);
     }
 
@@ -34,6 +34,14 @@ class ApiResponse
 
         return response()->json($response, $status);
     }
+    
+    /**
+     * Respuesta para errores de solicitud incorrecta.
+     */
+    public static function badRequest(string $message = 'Solicitud incorrecta.'): JsonResponse
+    {
+        return self::error($message, '', 400);
+    }
 
     /**
      * Respuesta cuando no se encuentra un recurso.
@@ -43,6 +51,7 @@ class ApiResponse
         return self::error($message, '', 404);
     }
 
+
     /**
      * Respuesta para errores de validación.
      */
@@ -51,7 +60,7 @@ class ApiResponse
         return response()->json([
             'success' => false,
             'message' => $message,
-            'errors'  => $errors,
+            'errors' => $errors,
         ], 422);
     }
 }

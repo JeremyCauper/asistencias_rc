@@ -53,19 +53,19 @@
     <link rel="stylesheet" href="{{ secure_asset('front/vendor/sweetalert/animate.min.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('front/vendor/sweetalert/default.css') }}">
     <!-- Google Fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="{{ secure_asset('front/vendor/fontGoogle/fonts.css') }}" />
     <!-- Home -->
     <link rel="stylesheet" href="{{ secure_asset('front/css/app.css') }}">
     <script>
-        const tipoSistema = <?= session('tipo_sistema') ?>;
-        const nomUsuario = '<?= session('config_layout')->nombre_perfil ?>';
-        const txtAcceso = '<?= session('config_layout')->acceso ?>';
-        const acronimo = '<?= session('config_layout')->identificador ?>';
-        const acronimo_bg = '<?= session('config_layout')->identificador_bg ?>';
-        const tipoUsuario = <?= session('tipo_usuario') ?>;
+        const tipoSistema = {{ session('tipo_sistema') }};
+        const nomUsuario = '{{ session()->get('config')->nombre_perfil }}';
+        const txtAcceso = '{{ session()->get('config')->acceso }}';
+        const acronimo = '{{ session()->get('config')->sigla }}';
+        const acronimo_bg = '{{ session()->get('config')->siglaBg }}';
+        const tipoUsuario = {{ session('tipo_usuario') }};
         const __url = "{{secure_url('') }}";
         const __asset = "{{ secure_asset('front/') }}";
-        const __token = "{{ csrf_token() }}";
+        const __token = "{{ csrf_token() }}";;
     </script>
     <!-- JQuery -->
     <script src="{{ secure_asset('front/vendor/jquery/jquery.min.js') }}"></script>
@@ -122,8 +122,8 @@
                             $('#check').prop('checked', localStorage.data_mdb_theme == 'light' ? true : false);
                             if (!esCelularTema()) {
                                 $('.check-trail').append(`<span class="badge badge-secondary toltip-theme">
-                      <b class="fw-bold">Shift</b><i class="fas fa-plus fa-2xs text-white"></i> <b class="fw-bold">D</b>
-                  </span>`);
+                                    <b class="fw-bold">Shift</b><i class="fas fa-plus fa-2xs text-white"></i> <b class="fw-bold">D</b>
+                                </span>`);
                             }
                         </script>
                     </div>
@@ -133,16 +133,19 @@
                         <a data-mdb-dropdown-init
                             class="dropdown-toggle d-flex align-items-center hidden-arrow rounded-circle" href="#"
                             id="navbarDropdownMenuAvatar" role="button" aria-expanded="false" data-mdb-ripple-init>
-                            <span class="img-xs rounded-circle text-white acronimo" style="background-color: <?= session('config_layout')->identificador_bg ?>">{{ session('config_layout')->identificador }}</span>
+                            <span class="img-xs rounded-circle text-white acronimo"
+                                style="background-color: {{ session()->get('config')->siglaBg }};">{{ session()->get('config')->sigla }}</span>
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuAvatar" style="width: 22rem; min-width: 10rem;">
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuAvatar"
+                            style="width: 22rem; min-width: 10rem;">
                             <li class="p-3">
                                 <span class="border dropdown-header px-4 py-2 rounded text-center">
-                                    <span class="img-md m-auto rounded-circle text-white acronimo fs-3" style="width: 65px;height: 65px;background-color: <?= session('config_layout')->identificador_bg ?>">{{ session('config_layout')->identificador }}</span>
+                                    <span class="img-md m-auto rounded-circle text-white acronimo fs-3"
+                                        style="width: 65px;height: 65px;background-color: {{ session()->get('config')->siglaBg }}">{{ session()->get('config')->sigla }}</span>
                                     <p class="mb-1 mt-1 fw-semibold">
-                                        {{ session('config_layout')->nombre_perfil }}
+                                        {{ session()->get('config')->nombre_perfil }}
                                     </p>
-                                    <p class="mb-0">{{ session('config_layout')->acceso }}</p>
+                                    <p class="mb-0">{{ session()->get('config')->acceso }}</p>
                                 </span>
                             </li>
                             <li>
@@ -165,8 +168,8 @@
                     body.addClass('sidebar-icon-only');
                 }
 
-                $(document).ready(function() {
-                    $('#expandir-menu i').on("click", function() {
+                $(document).ready(function () {
+                    $('#expandir-menu i').on("click", function () {
                         localStorage.sidebarIconOnly = false;
                         if (window.innerWidth > 992) {
                             body.toggleClass('sidebar-icon-only');
@@ -190,42 +193,44 @@
                     </li>
                     <li class="nav-item menu-item text-center" tittle-menu>
                         <div class="nav-link menu-perfil pt-0">
-                            <span class="acronimo rounded-circle text-white" style="background-color: <?= session('config_layout')->identificador_bg ?>;">{{ session('config_layout')->identificador }}</span>
+                            <span class="acronimo rounded-circle text-white"
+                                style="background-color: <?= session()->get('config')->siglaBg ?>;">{{ session()->get('config')->sigla }}</span>
                             <span class="ms-2 menu-title">
-                                <p class="fw-bold mb-1 nombre-personal">{{ session('config_layout')->nombre_perfil }}
+                                <p class="fw-bold mb-1 nombre-personal">
+                                    {{ session()->get('config')->nombre_perfil }}
                                 </p>
-                                <p class="text-muted mb-0 tipo-personal">{{ session('config_layout')->acceso }}
+                                <p class="text-muted mb-0 tipo-personal">{{ session()->get('config')->acceso }}
                                 </p>
                             </span>
                         </div>
                     </li>
                     @foreach (session('customModulos') as $menu)
-                    <li class="nav-item menu-item">
-                        <a class="nav-link menu-link" {{!empty($menu->submenu) ? (string) 'data-mdb-collapse-init role=button aria-expanded=false aria-controls=' . $menu->ruta : ''}} data-mdb-ripple-init
-                            href={{!empty($menu->submenu) ? "#$menu->ruta" : url($menu->ruta)}}>
-                            <i class="{{ $menu->icon }} menu-icon"></i>
-                            <span class="menu-title">{{ $menu->descripcion }}</span>
-                            @if (!empty($menu->submenu)) <i class="menu-arrow"></i> @endif
-                        </a>
-                        @if (!empty($menu->submenu))
-                        <div class="collapse" id="{{$menu->ruta}}">
-                            <ul class="nav flex-column sub-menu">
-                                @foreach ($menu->submenu as $categoria => $submenus)
-                                @if ($categoria !== 'sin_categoria' || count($menu->submenu) > 1)
-                                <li class="nav-category-item">
-                                    {{ $categoria === 'sin_categoria' ? 'Otros' : $categoria }}
-                                </li>
-                                @endif
-                                @foreach ($submenus as $submenu)
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{url($submenu->ruta)}}">{{ $submenu->descripcion }}</a>
-                                </li>
-                                @endforeach
-                                @endforeach
-                            </ul>
-                        </div>
-                        @endif
-                    </li>
+                        <li class="nav-item menu-item">
+                            <a class="nav-link menu-link" {{!empty($menu->submenu) ? (string) 'data-mdb-collapse-init role=button aria-expanded=false aria-controls=' . $menu->ruta : ''}} data-mdb-ripple-init
+                                href={{!empty($menu->submenu) ? "#$menu->ruta" : url($menu->ruta)}}>
+                                <i class="{{ $menu->icon }} menu-icon"></i>
+                                <span class="menu-title">{{ $menu->descripcion }}</span>
+                                @if (!empty($menu->submenu)) <i class="menu-arrow"></i> @endif
+                            </a>
+                            @if (!empty($menu->submenu))
+                                <div class="collapse" id="{{$menu->ruta}}">
+                                    <ul class="nav flex-column sub-menu">
+                                        @foreach ($menu->submenu as $categoria => $submenus)
+                                            @if ($categoria !== 'sin_categoria' || count($menu->submenu) > 1)
+                                                <li class="nav-category-item">
+                                                    {{ $categoria === 'sin_categoria' ? 'Otros' : $categoria }}
+                                                </li>
+                                            @endif
+                                            @foreach ($submenus as $submenu)
+                                                <li class="nav-item">
+                                                    <a class="nav-link" href="{{url($submenu->ruta)}}">{{ $submenu->descripcion }}</a>
+                                                </li>
+                                            @endforeach
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        </li>
                     @endforeach
                 </ul>
             </nav>

@@ -47,18 +47,23 @@ Route::middleware('auth')->group(function () {
     Route::put('/personal/{id}', [SyncPersonalController::class, 'update']);
     Route::post('/personal/cambiarEstatus', [SyncPersonalController::class, 'cambiarEstatus']);
     Route::delete('/personal/{id}', [SyncPersonalController::class, 'marcarEliminar']);
-    // Route::get('/setearCredenciales', [SyncPersonalController::class, 'setearCredenciales']);
 
-    Route::get('/asistencias/asistencias', [AsistenciaController::class, 'view']);
-    Route::get('/asistencias/listarAsistencias', [AsistenciaController::class, 'listarAsistencias']);
-    Route::post('/asistencias/descuento', [AsistenciaController::class, 'actualizarDescuento']);
-    Route::get('/asistencias/asistencias/{id}', [AsistenciaController::class, 'showAsistencia']);
-    Route::put('/asistencias/justificaciones/{id}/estatus', [AsistenciaController::class, 'actualizarEstatus']);
-    Route::put('/asistencias/{id}/derivar', [AsistenciaController::class, 'marcarDerivado']);
+
+    Route::controller(AsistenciaController::class)
+        ->prefix('asistencias-diarias')
+        ->as('asistenciasDiarias.')
+        ->group(function () {
+            Route::get('/', 'view')->name('view');
+            Route::get('/listar', 'listar')->name('listar');
+            Route::get('/mostrar/{id}', 'show')->name('show');
+            Route::post('/ingresar-descuento', 'ingresarDescuento')->name('ingresarDescuento');
+            Route::put('/actualizar-justificacion-estado', 'updateJustificacionEstatus')->name('updateJustificacionEstatus');
+            Route::put('/marcar-derivado/{id}', 'marcarDerivado')->name('marcarDerivado');
+        });
 
 
     Route::get('/asistencias/misasistencias', [MisAsistenciaController::class, 'view']);
-    Route::get('/asistencias/listarMisAsistencias', [MisAsistenciaController::class, 'listarMisAsistencias']);
+    Route::get('/asistencias/listar', [MisAsistenciaController::class, 'listar']);
     Route::post('/asistencias/uploadMedia', [MisAsistenciaController::class, 'uploadMedia']);
     Route::post('/asistencias/justificaciones', [MisAsistenciaController::class, 'storeJustificaciones']);
     Route::get('/asistencias/justificaciones/{fecha}', [MisAsistenciaController::class, 'showJustificacion']);

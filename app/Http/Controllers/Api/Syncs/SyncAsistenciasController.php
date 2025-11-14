@@ -37,12 +37,14 @@ class SyncAsistenciasController extends Controller
             ])->exists();
 
             $asistencias = DB::table('asistencias')->where('fecha', $fecha)->get()->keyBy('user_id');
-            if ($campoDia) $modalidad_trabajo = DB::table('config_trabajo_personal')->select('user_id', "{$campoDia} as modo")->get()->keyBy('user_id');
-            $personal = DB::table('personal')->where('estatus', 1)->get();
+            if ($campoDia)
+                $modalidad_trabajo = DB::table('config_trabajo_personal')->select('user_id', "{$campoDia} as modo")->get()->keyBy('user_id');
+            $personal = DB::table('personal')->where('estatus', 1)->get()->toArray();
 
             foreach ($personal as $per) {
                 $existe = $asistencias->get($per->user_id);
-                if ($existe) continue;
+                if ($existe)
+                    continue;
                 $tipoAsistencia = 1;
                 $tipoModalidad = $modalidad_trabajo ? ($modalidad_trabajo->get($per->user_id))->modo : 5;
 
@@ -81,7 +83,7 @@ class SyncAsistenciasController extends Controller
             $sincronizadas = [];
             $limitePuntual = strtotime("08:30:59");
 
-            if (! empty($asistencias)) {
+            if (!empty($asistencias)) {
                 DB::beginTransaction();
                 foreach ($asistencias as $a) {
                     $userId = $a['deviceUserId'];
@@ -92,10 +94,12 @@ class SyncAsistenciasController extends Controller
                     $horaMarcada = strtotime($hora);
                     $tipo_asistencia = 4;
                     $derivado = false;
-                    if ($horaMarcada <= $limitePuntual) $tipo_asistencia = 2;
+                    if ($horaMarcada <= $limitePuntual)
+                        $tipo_asistencia = 2;
 
                     $asistencia = DB::table('asistencias')->where(['user_id' => $userId, 'fecha' => $fecha])->first();
-                    if ($asistencia) $derivado = $asistencia->tipo_asistencia == 7;
+                    if ($asistencia)
+                        $derivado = $asistencia->tipo_asistencia == 7;
 
                     if (!$derivado) {
                         DB::table('asistencias')->updateOrInsert(
