@@ -49,11 +49,11 @@ class LoginController extends Controller
             'tipo_sistema' => Auth::user()->sistema,
             'cambio' => Auth::user()->password_view == '123456',
             'personal' => Auth::user(),
-            'config_layout' => (object) [
+            'config' => (object) [
                 'acceso' => $acceso ?? null,
                 'nombre_perfil' => $nombres ?? null,
-                'identificador' => Auth::user()->nombre[0] . Auth::user()->apellido[0],
-                'identificador_bg' => $this->colores(Auth::user()->nombre[0]),
+                'sigla' => Auth::user()->nombre[0] . Auth::user()->apellido[0],
+                'siglaBg' => $this->colores(Auth::user()->nombre[0]),
             ],
         ]);
 
@@ -68,7 +68,7 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        session()->forget(['customModulos', 'rutaRedirect', 'personal', 'config_layout']);
+        session()->forget(['customModulos', 'rutaRedirect', 'personal', 'config']);
         return redirect('/');
     }
 

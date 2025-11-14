@@ -2196,7 +2196,8 @@ label.custom-control {
 .swal2-container .form-label,
 .modal-dialog .form-label,
 .accordion-collapse .form-label,
-.chart-container-body .form-label {
+.chart-container-body .form-label,
+.form-label-filter {
     font-size: .75rem;
     font-weight: bold;
     font-family: 'Arial';

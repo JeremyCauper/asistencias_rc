@@ -62,6 +62,14 @@ $(document).ready(function () {
         $inputFecha.val(nuevaFecha);
         debounceFiltro();
     });
+
+    // Agregar botón de recargar
+    $('#tablaMisAsistencias_length').css('display', 'flex').prepend(
+        $('<button>', {
+            class: 'btn btn-primary px-3 me-2',
+            "data-mdb-ripple-init": ''
+        }).html('<i class="fas fa-rotate"></i>').on('click', updateTable)
+    );
 });
 
 const quill = new Quill('#editor-container', {

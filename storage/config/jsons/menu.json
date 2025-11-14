@@ -3,7 +3,7 @@
         "id": 1,
         "descripcion": "Asistencias",
         "icon": "fas fa-calendar-days",
-        "ruta": "\/asistencias\/asistencias",
+        "ruta": "\/asistencias-diarias",
         "submenu": 0,
         "sistema": 0,
         "orden": 1,

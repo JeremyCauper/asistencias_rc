@@ -23,28 +23,31 @@ class AsistenciaController extends Controller
 {
     public function view()
     {
-        $empresas = DB::table('empresa')->get();
-        $areas = DB::table('areas_personal')->get();
-        $tipoModalidad = JsonDB::table('tipo_modalidad')->get()->keyBy('id');
-        $tipoAsistencia = JsonDB::table('tipo_asistencia')->get();
-        $tipoPersonal = JsonDB::table('tipo_personal')->get()->keyBy('id');
+        try {
+            $empresas = DB::table('empresa')->get();
+            $areas = DB::table('areas_personal')->get();
+            $tipoModalidad = JsonDB::table('tipo_modalidad')->get();
+            $tipoAsistencia = JsonDB::table('tipo_asistencia')->get();
+            $tipoPersonal = JsonDB::table('tipo_personal')->get();
 
-        $path = public_path('front/images/excel/leyenda_asistencia.png');
-        $imgData = base64_encode(file_get_contents($path));
-        $mimeType = mime_content_type($path);
-        $logoExcelLeyenda = "data:$mimeType;base64,$imgData";
+            if (in_array(Auth::user()->rol_system, [5, 6])) {
+                $areas = $areas->where('id', Auth::user()->area_id)->values();
+            }
 
-        return view('asistencias.asistencias', [
-            'tipoModalidad' => $tipoModalidad,
-            'tipoAsistencia' => $tipoAsistencia,
-            'tipoPersonal' => $tipoPersonal,
-            'empresas' => $empresas,
-            'areas' => $areas,
-            'logoExcelLeyenda' => $logoExcelLeyenda
-        ]); // la vista Blade (más abajo)
+            return view('asistencias.asistencias', [
+                'tipoModalidad' => $tipoModalidad,
+                'tipoAsistencia' => $tipoAsistencia,
+                'tipoPersonal' => $tipoPersonal,
+                'empresas' => $empresas,
+                'areas' => $areas
+            ]); // la vista Blade (más abajo)
+        } catch (Exception $e) {
+            Log::error('[AsistenciaController@view] ' . $e->getMessage());
+            return ApiResponse::error('Error al cargar la vista del módulo.', $e->getMessage());
+        }
     }
 
-    public function listarAsistencias(Request $request)
+    public function listar(Request $request)
     {
         try {
             $fecha = $request->query('fecha', date('Y-m-d'));
@@ -55,6 +58,7 @@ class AsistenciaController extends Controller
             $tipoPersonal = $request->query('tipoPersonal', null)
                 ? explode(',', $request->query('tipoPersonal'))
                 : null;
+            $listado = [];
 
             $wherePersonal = ['estatus' => 1];
             if ($empresas) {
@@ -79,149 +83,137 @@ class AsistenciaController extends Controller
             ];
 
             $campoDia = $mapDias[$diaSemana] ?? null;
-            $limitePuntual = strtotime("$fecha 08:30:59");
 
             // Cargar datos en memoria (una sola vez)
-            $asistencias = DB::table('asistencias')
-                ->where('fecha', $fecha)
-                ->get()
-                ->keyBy('user_id');
+            $feriado = DB::table('feriados_privado_peru')
+                ->select('nombre', 'tipo')
+                ->where(['mes' => date('m', $strtoTime), 'dia' => date('d', $strtoTime)])
+                ->first();
 
-            $descuentos = DB::table('descuentos_asistencia')
-                ->where('fecha', $fecha)
-                ->get()
-                ->keyBy('user_id');
+            if (!empty($tipoModalidad) && !empty($tipoPersonal)) {
+                $asistencias = DB::table('asistencias')
+                    ->where('fecha', $fecha)
+                    ->get()
+                    ->keyBy('user_id');
 
-            $justificaciones = DB::table('justificaciones')
-                ->where('fecha', $fecha)
-                ->get()
-                ->keyBy('user_id');
+                $descuentos = DB::table('descuentos_asistencia')
+                    ->where('fecha', $fecha)
+                    ->get()
+                    ->keyBy('user_id');
 
-            $modalidades = $campoDia
-                ? DB::table('config_trabajo_personal')
-                ->select('user_id', "$campoDia as modo")
-                ->get()
-                ->keyBy('user_id')
-                : collect();
+                $justificaciones = DB::table('justificaciones')
+                    ->where('fecha', $fecha)
+                    ->get()
+                    ->keyBy('user_id');
 
-            $personal = DB::table('personal')
-                ->select('id', 'user_id', 'nombre', 'apellido', 'area_id', 'rol_system')
-                ->where($wherePersonal)
-                ->whereIn('estado_sync', [1, 2, 3])
-                ->get();
+                $modalidades = $campoDia
+                    ? DB::table('config_trabajo_personal')
+                        ->select('user_id', "$campoDia as modo")
+                        ->get()
+                        ->keyBy('user_id')
+                    : collect();
 
-            $horaActual = time();
+                $personal = DB::table('personal')
+                    ->select('id', 'user_id', 'nombre', 'apellido', 'area_id', 'rol_system')
+                    ->where($wherePersonal)
+                    ->whereIn('estado_sync', [1, 2, 3])
+                    ->whereIn('rol_system', $tipoPersonal)
+                    ->get()->toArray();
 
-            $resultado = $personal->map(function ($p) use (
-                $fecha,
-                $asistencias,
-                $descuentos,
-                $justificaciones,
-                $modalidades,
-                $limitePuntual,
-                $horaActual
-            ) {
-                $asistencia = $asistencias->get($p->user_id);
-                $modalidad = $modalidades->get($p->user_id);
-                $descuentoData = $descuentos->get($p->user_id);
-                $justificacionData = $justificaciones->get($p->user_id) ?? null;
+                $limitePuntual = strtotime(date("Y-m-d 08:30:59"));
+                $limiteDerivado = strtotime(date("Y-m-d 10:00:00"));
+                $horaActual = time();
+                $fechaActual = date('Y-m-d') == $fecha;
+                $mesActual = date('Y-m') == date('Y-m', $strtoTime);
 
-                $tipo_modalidad = 1;
-                $tipo_asistencia = 0;
-                $hora = null;
-                $asistencia_id = null;
-                $descuento = null;
-                $justificado = null;
+                foreach ($personal as $p) {
+                    $asistencia = $asistencias->get($p->user_id);
+                    $modalidad = $modalidades->get($p->user_id);
+                    $tipo_modalidad = $asistencia?->tipo_modalidad
+                        ?? $modalidad?->modo
+                        ?? 5;
 
-                if ($asistencia) {
-                    $asistencia_id = $asistencia->id;
-                    $hora = $asistencia->hora;
-                    $tipo_modalidad = $asistencia->tipo_modalidad;
-                    $tipo_asistencia = $asistencia->tipo_asistencia;
-                } elseif ($modalidad) {
-                    $tipo_modalidad = $modalidad->modo ?? 5;
-                }
+                    if ($tipoModalidad && !in_array($tipo_modalidad, $tipoModalidad)) {
+                        continue;
+                    }
 
-                // Si aún no tiene registro pero debería asistir
-                if (!$hora && $tipo_modalidad == 1 && $tipo_asistencia == 1 && $horaActual < $limitePuntual) {
-                    $tipo_asistencia = 0;
-                }
+                    $descuento = $descuentos->get($p->user_id) ?? null;
+                    $justificacion = $justificaciones->get($p->user_id) ?? null;
 
-                if ($justificacionData) {
-                    $justificado = $justificacionData->estatus;
-                }
+                    $notificacion = false;
+                    $hora = $asistencia?->hora ?? null;
+                    $tipo_asistencia = $asistencia?->tipo_asistencia ?? 0;
+                    $asistencia_id = $asistencia?->id ?? null;
 
-                if ($descuentoData) {
-                    $descuento = $descuentoData->monto_descuento;
-                }
+                    // Si aún no tiene registro pero debería asistir
+                    if (!$hora && $tipo_modalidad == 1 && $tipo_asistencia == 1 && $horaActual < $limitePuntual && $fechaActual) {
+                        $tipo_asistencia = 0;
+                    }
 
-                // Acciones dinámicas
-                $acciones = [];
-                if ($asistencia_id && in_array(Auth::user()->rol_system, [2, 7]) || Auth::user()->sistema == 1) {
-                    $acciones[] = [
-                        'funcion' => "modificarDescuento($asistencia_id)",
-                        'texto' => '<i class="fas fa-file-invoice-dollar me-2 text-secondary"></i> ' .
-                            ($descuento ? 'Modificar' : 'Aplicar') . ' Descuento'
+                    // Acciones dinámicas
+                    $acciones = [];
+                    // Solo si tine id de asistencia y permisos adecuados por tipo de usuario o sistema y mes actual
+                    if ($asistencia_id && in_array(Auth::user()->rol_system, [2, 4, 5, 7]) || Auth::user()->sistema == 1 && $mesActual) {
+                        $acciones[] = [
+                            'funcion' => "modificarDescuento($asistencia_id)",
+                            'texto' => '<i class="fas fa-file-invoice-dollar me-2 text-secondary"></i> ' .
+                                ($descuento ? 'Modificar' : 'Aplicar') . ' Descuento'
+                        ];
+                    }
+
+                    // Derivar asistencia solo si es tipo asistencia 0: pendiente o 1: falta, antes de las 10:00 y es para la fecha actual
+                    if (in_array($tipo_asistencia, [0, 1]) && $horaActual < $limiteDerivado && $fechaActual) {
+                        $acciones[] = [
+                            'funcion' => "marcarDerivado($asistencia_id)",
+                            'texto' => '<i class="fas fa-random me-2 text-info"></i> Derivar'
+                        ];
+                    }
+                    // Permite ver justificación si existe y está pendiente, si se cumple la condición envia notificación
+                    if ($justificacion && $justificacion->estatus == 0) {
+                        $acciones[] = [
+                            'funcion' => "verJustificacion($asistencia_id)",
+                            'texto' => '<i class="fas fa-clock text-warning me-2 text-secondary"></i> Ver Justificación'
+                        ];
+                        $notificacion = true;
+                    }
+
+                    $listado[] = [
+                        'tipo_personal' => $p->rol_system,
+                        'area' => $p->area_id,
+                        'personal' => "{$p->apellido}, {$p->nombre}",
+                        'fecha' => $fecha,
+                        'hora' => $hora,
+                        'tipo_modalidad' => $tipo_modalidad,
+                        'tipo_asistencia' => $tipo_asistencia,
+                        'notificacion' => $notificacion,
+                        'descuento' => $descuento?->monto_descuento ?? null,
+                        'acciones' => $this->DropdownAcciones(['button' => $acciones], $notificacion)
                     ];
                 }
+            }
 
-                if ($justificado !== null) {
-                    $acciones[] = [
-                        'funcion' => "verJustificacion($asistencia_id)",
-                        'texto' => '<i class="fas fa-clock text-warning me-2 text-secondary"></i> Ver Justificación'
-                    ];
-                }
-
-                // if ($tipo_asistencia == 1 && $fecha == date('Y-m-d')) {
-                if ($tipo_asistencia == 1) {
-                    $acciones[] = [
-                        'funcion' => "marcarDerivado($asistencia_id)",
-                        'texto' => '<i class="fas fa-random me-2 text-info"></i> Derivar'
-                    ];
-                }
-
-                return [
-                    'tipo_personal' => $p->rol_system,
-                    'area' => $p->area_id,
-                    'personal' => "{$p->apellido}, {$p->nombre}",
-                    'fecha' => $fecha,
-                    'hora' => $hora,
-                    'tipo_modalidad' => $tipo_modalidad,
-                    'tipo_asistencia' => $tipo_asistencia,
-                    'justificado' => $justificado,
-                    'descuento' => $descuento,
-                    'acciones' => $this->DropdownAcciones(['button' => $acciones], $justificado === 0 ? true : false)
-                ];
-            })
-                ->whereIn('tipo_personal', $tipoPersonal)
-                ->whereIn('tipo_modalidad', $tipoModalidad)->values();
-
-            return response()->json($resultado, 200);
+            return ApiResponse::success('Listado obtenido correctamente.', ['listado' => $listado, 'feriado' => $feriado]);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getLine() . $e->getMessage()], 500);
+            Log::error('[AsistenciaController@listarAsistencias] ' . $e->getMessage());
+            return ApiResponse::error('No se pudo obtener el listado.');
         }
     }
 
     /**
      * Obtiene la información detallada de una asistencia.
      */
-    public function showAsistencia($id)
+    public function show($id)
     {
         try {
             // Validar que el ID sea numérico
             if (!is_numeric($id)) {
-                return response()->json([
-                    'message' => 'El ID proporcionado no es válido.'
-                ], 400);
+                return ApiResponse::badRequest('El ID proporcionado no es válido.');
             }
 
             // Buscar la asistencia
             $asistencia = DB::table('asistencias')->where('id', $id)->first();
-
             if (!$asistencia) {
-                return response()->json([
-                    'message' => 'Asistencia no encontrada.'
-                ], 404);
+                return ApiResponse::notFound('No se encontró la asistencia solicitada.');
             }
 
             // Obtener datos relacionados
@@ -257,29 +249,16 @@ class AsistenciaController extends Controller
                 'justificacion' => $justificacion
             ];
 
-            return response()->json([
-                'message' => 'Consulta exitosa.',
-                'data' => $detalle
-            ], 200);
+            return ApiResponse::success('Consulta exitosa.', $detalle);
         } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'message' => 'No se encontró el registro solicitado.'
-            ], 404);
+            return ApiResponse::notFound('No se encontró el registro solicitado.');
         } catch (Exception $e) {
-            // Registrar el error para debug
-            Log::error('Error al obtener asistencia: ' . $e->getMessage(), [
-                'line' => $e->getLine(),
-                'file' => $e->getFile()
-            ]);
-
-            return response()->json([
-                'message' => 'Ocurrió un error al procesar la solicitud.',
-                'error' => $e->getMessage() // opcional: puedes quitarlo en producción
-            ], 500);
+            Log::error('[AsistenciaController@showAsistencia] ' . $e->getMessage());
+            return ApiResponse::error('Error al obtener el registro.');
         }
     }
 
-    public function actualizarDescuento(Request $request)
+    public function ingresarDescuento(Request $request)
     {
         try {
             DB::beginTransaction();
@@ -287,17 +266,13 @@ class AsistenciaController extends Controller
             // Validación de los datos de entrada
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required|integer',
-                'fecha'      => 'required|string',
-                'monto_descuento'      => 'required|numeric',
-                'comentario'      => 'nullable|string'
+                'fecha' => 'required|string',
+                'monto_descuento' => 'required|numeric',
+                'comentario' => 'nullable|string'
             ]);
 
             if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Por favor, revisa los campos e intenta nuevamente.',
-                    'errors'  => $validator->errors()
-                ], 400);
+                return ApiResponse::validation($validator->errors()->toArray());
             }
 
             // Insertar o actualizar si ya existe un descuento para ese usuario y fecha
@@ -311,35 +286,29 @@ class AsistenciaController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Descuento actualizado correctamente.'
-            ]);
+            return ApiResponse::success('Descuento actualizado correctamente.');
         } catch (Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al actualizar el descuento.',
-                'error' => $e->getMessage()
-            ], 500);
+            Log::error('[AsistenciaController@ingresarDescuento] ' . $e->getMessage());
+            return ApiResponse::error('Error al actualizar el descuento.');
         }
     }
 
-    public function actualizarEstatus(Request $request, int $id)
+    public function updateJustificacionEstatus(Request $request, int $id)
     {
         try {
             $validated = $request->validate([
-                'estatus'       => 'required|in:1,2', // 1=aprobado, 2=rechazado
+                'estatus' => 'required|in:1,2', // 1=aprobado, 2=rechazado
                 'contenidoHTML' => 'required|string',
             ]);
 
             $justificacion = DB::table('justificaciones')->where('id', $id)->first();
             if (!$justificacion) {
-                return response()->json(['message' => 'Justificación no encontrada'], 404);
+                return ApiResponse::notFound('Justificación no encontrada.');
             }
 
             if ($justificacion->estatus != 0) {
-                return response()->json(['message' => 'Esta justificación ya fue procesada.'], 400);
+                return ApiResponse::badRequest('Esta justificación ya fue procesada.');
             }
 
             DB::beginTransaction();
@@ -353,7 +322,7 @@ class AsistenciaController extends Controller
                 DB::table('descuentos_asistencia')
                     ->where([
                         'user_id' => $justificacion->user_id,
-                        'fecha'   => $justificacion->fecha,
+                        'fecha' => $justificacion->fecha,
                     ])
                     ->delete();
             }
@@ -361,16 +330,16 @@ class AsistenciaController extends Controller
             DB::table('asistencias')
                 ->where([
                     'user_id' => $justificacion->user_id,
-                    'fecha'   => $justificacion->fecha,
+                    'fecha' => $justificacion->fecha,
                 ])
                 ->update([
-                    'hora'            => $tipoAsistencia == 7 ? date('H:i:s', strtotime($justificacion->created_at)) : null,
+                    'hora' => $tipoAsistencia == 7 ? date('H:i:s', strtotime($justificacion->created_at)) : null,
                     'tipo_asistencia' => $tipoAsistencia,
                 ]);
 
             DB::table('justificaciones')->where('id', $id)
                 ->update([
-                    'estatus'        => $validated['estatus'],
+                    'estatus' => $validated['estatus'],
                     'contenido_html' => $validated['contenidoHTML'],
                 ]);
 
@@ -380,23 +349,17 @@ class AsistenciaController extends Controller
                 ? 'Justificación aprobada correctamente.'
                 : 'Justificación rechazada correctamente.';
 
-            return response()->json([
-                'message' => $mensaje,
-                'data'    => [
-                    'estatus'         => $validated['estatus'],
-                    'tipo_asistencia' => $tipoAsistencia,
-                ],
+            return ApiResponse::success($mensaje, [
+                'estatus' => $validated['estatus'],
+                'tipo_asistencia' => $tipoAsistencia,
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
-            return response()->json([
-                'message' => 'Datos inválidos',
-                'errors'  => $e->errors(),
-            ], 422);
+            return ApiResponse::validation($e->errors());
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar estatus de justificación: ' . $e->getMessage());
-            return response()->json(['message' => 'Error interno del servidor.'], 500);
+            Log::error('[AsistenciaController@updateJustificacionEstatus] ' . $e->getMessage());
+            return ApiResponse::error('Error al actualizar el estatus de la justificación.');
         }
     }
 

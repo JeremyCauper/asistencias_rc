@@ -12,7 +12,7 @@ $(document).ready(function () {
     /** ============================
      *  🔹 INICIALIZAR QUILL
      *  ============================ */
-    const quill = new Quill('#editor-container', {
+    const quillRespJustificacion = new Quill('#respuesta-justificacion', {
         theme: 'snow',
         modules: {
             toolbar: {
@@ -25,7 +25,7 @@ $(document).ready(function () {
                 handlers: {
                     image: () => handleFileUpload('image', 'image/*', 3),
                     video: () => handleFileUpload('video', 'video/*', 10),
-                    pdf:   () => handleFileUpload('pdf', 'application/pdf', 5),
+                    pdf: () => handleFileUpload('pdf', 'application/pdf', 5),
                 }
             }
         }
@@ -86,7 +86,7 @@ $(document).ready(function () {
             const data = await res.json();
             if (!data.url) throw new Error('Error subiendo archivo');
 
-            const range = quill.getSelection(true);
+            const range = quillRespJustificacion.getSelection(true);
             const fullUrl = location.origin + data.url;
 
             insertFileInEditor(tipo, fullUrl, file.name, range.index);
@@ -101,9 +101,9 @@ $(document).ready(function () {
     // ✅ Inserta contenido en el editor según tipo
     function insertFileInEditor(tipo, url, fileName, index) {
         const inserciones = {
-            image: () => quill.insertEmbed(index, 'image', url),
-            video: () => quill.insertEmbed(index, 'video', url),
-            pdf:   () => quill.clipboard.dangerouslyPasteHTML(index, `<a href="${url}" target="_blank">📄${fileName}</a>`)
+            image: () => quillRespJustificacion.insertEmbed(index, 'image', url),
+            video: () => quillRespJustificacion.insertEmbed(index, 'video', url),
+            pdf: () => quillRespJustificacion.clipboard.dangerouslyPasteHTML(index, `<a href="${url}" target="_blank">📄${fileName}</a>`)
         };
         inserciones[tipo]?.();
     }
@@ -212,8 +212,8 @@ $(document).ready(function () {
             }
 
             const estado = ESTADOS_JUSTIFICACION[estatus || 0];
-            const textoEditor = quill.getText().trim();
-            const contenidoHTMLResp = quill.root.innerHTML;
+            const textoEditor = quillRespJustificacion.getText().trim();
+            const contenidoHTMLResp = quillRespJustificacion.root.innerHTML;
 
             if (!textoEditor && estatus === 2) {
                 return boxAlert.box({ i: 'warning', h: 'Escribe una respuesta antes de enviar.' });
@@ -261,7 +261,10 @@ $(document).ready(function () {
     function generarPlantillaCorreo(estado, contenidoHTMLResp) {
         const fecha = new Date().toLocaleDateString('es-PE', { year: 'numeric', month: 'long', day: 'numeric' });
         const hora = new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        const tpersonal = tipoPersonal[tipoUsuario] || { descripcion: 'Técnico', color: '#9fa6b2' };
+        const tpersonal = tipoPersonal.find(tp => tp.id == data) || {
+            descripcion: 'Sin Tipo',
+            color: '#9fa6b2'
+        };
 
         return `
             <div class="p-3">
@@ -272,7 +275,7 @@ $(document).ready(function () {
                 </div>
                 <p>📅 <small class="fw-bold">Fecha de creación:</small> ${fecha} a las ${hora}</p>
                 <p class="mt-1">✉️ Justificación <span class="fw-bold text-${estado.color}">${estado.descripcion}</span></p>
-                ${quill.getText().trim().length ? '<hr>' : ''}
+                ${quillRespJustificacion.getText().trim().length ? '<hr>' : ''}
                 <div>${contenidoHTMLResp}</div>
                 <hr class="mb-0">
             </div>
