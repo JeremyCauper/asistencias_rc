@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Log;
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
+    public $horaLimitePuntual = "08:30:59";
+    public $horaLimiteDerivado = "23:30:00";
 
     public function obtenerModulos2($tipo_acceso, $sistema)
     {

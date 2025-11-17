@@ -69,8 +69,8 @@ class MisAsistenciaController extends Controller
                 ->whereBetween('fecha', [$fechaIni, $fechaFin])
                 ->get()->toArray();
 
-            $limitePuntual = strtotime(date("Y-m-d 08:30:59"));
-            $limiteDerivado = strtotime(date("Y-m-d 10:00:00"));
+            $limitePuntual = strtotime(date("Y-m-d {$this->horaLimitePuntual}"));
+            $limiteDerivado = strtotime(date("Y-m-d {$this->horaLimiteDerivado}"));
             $horaActual = time();
 
             foreach ($asistencias as $a) {
