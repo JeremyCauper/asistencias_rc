@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Syncs\SyncPersonalController;
 use App\Http\Controllers\Asistencia\AsistenciaController;
 use App\Http\Controllers\Asistencia\ExcelAsistenciaController;
 use App\Http\Controllers\Asistencia\MisAsistenciaController;
+use App\Http\Controllers\Justificacion\JustificacionController;
 use App\Http\Controllers\Mantenimientos\AreaPersonal\AreaPersonalController;
 use App\Http\Controllers\MantenimientosDeveloper\Menu\MenuController;
 use App\Http\Controllers\MantenimientosDeveloper\TipoPersonal\TipoPersonalController;
@@ -56,14 +57,21 @@ Route::middleware('auth')->group(function () {
             Route::get('/mostrar/{id}', 'show')->name('show');
             Route::post('/ingresar-descuento', 'ingresarDescuento')->name('ingresarDescuento');
             Route::put('/actualizar-justificacion-estado', 'updateJustificacionEstatus')->name('updateJustificacionEstatus');
-            Route::put('/marcar-derivado/{id}', 'marcarDerivado')->name('marcarDerivado');
         });
 
     Route::get('/asistencias/misasistencias', [MisAsistenciaController::class, 'view']);
     Route::get('/asistencias/listar', [MisAsistenciaController::class, 'listar']);
     Route::post('/asistencias/uploadMedia', [MisAsistenciaController::class, 'uploadMedia']);
-    Route::post('/asistencias/justificaciones', [MisAsistenciaController::class, 'storeJustificaciones']);
-    Route::get('/asistencias/justificaciones/{fecha}', [MisAsistenciaController::class, 'showJustificacion']);
+
+    Route::controller(JustificacionController::class)
+        ->prefix('justificacion')
+        ->as('justificacion.')
+        ->group(function () {
+            Route::get('/mostrar/{id}', 'showJustificacion')->name('showJustificacion');
+            Route::post('/justificar', 'storeJustificacion')->name('justificar');
+            Route::post('/responder-justificacion', 'responseJustificacion')->name('responseJustificacion');
+            Route::put('/marcar-derivado/{id}', 'marcarDerivado')->name('marcarDerivado');
+        });
 
     Route::controller(AreaPersonalController::class)
         ->prefix('mantenimiento/area-personal')

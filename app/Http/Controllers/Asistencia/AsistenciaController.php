@@ -150,6 +150,10 @@ class AsistenciaController extends Controller
                         $tipo_asistencia = 0;
                     }
 
+                    if ($justificacion && $justificacion->estatus == 10) {
+                        $tipo_asistencia = 7;
+                    }
+
                     // Acciones dinámicas
                     $acciones = [];
                     // Solo si tine id de asistencia y permisos adecuados por tipo de usuario o sistema y mes actual
@@ -162,7 +166,7 @@ class AsistenciaController extends Controller
                     }
 
                     // Derivar asistencia solo si es tipo asistencia 0: pendiente o 1: falta, antes de las 10:00 y es para la fecha actual
-                    if (in_array($tipo_asistencia, [0, 1]) && $horaActual < $limiteDerivado && $fechaActual) {
+                    if (in_array($tipo_asistencia, [0, 1]) && !$justificacion && $horaActual < $limiteDerivado && $fechaActual) {
                         $acciones[] = [
                             'funcion' => "marcarDerivado($asistencia_id)",
                             'texto' => '<i class="fas fa-random me-2 text-info"></i> Derivar'
@@ -171,7 +175,7 @@ class AsistenciaController extends Controller
                     // Permite ver justificación si existe y está pendiente, si se cumple la condición envia notificación
                     if ($justificacion && $justificacion->estatus == 0) {
                         $acciones[] = [
-                            'funcion' => "verJustificacion($asistencia_id)",
+                            'funcion' => "verJustificacion($justificacion->id)",
                             'texto' => '<i class="fas fa-clock text-warning me-2 text-secondary"></i> Ver Justificación'
                         ];
                         $notificacion = true;

@@ -39,7 +39,7 @@ class LoginController extends Controller
 
         $modulos = $this->obtenerModulos(Auth::user()->rol_system, Auth::user()->sistema);
         $nombres = $this->formatearNombre(Auth::user()->nombre, Auth::user()->apellido);
-        $acceso = JsonDB::table('tipo_personal')->where('id', Auth::user()->rol_system)->first()->descripcion;
+        $acceso = JsonDB::table('tipo_personal')->where('id', Auth::user()->rol_system)->first();
 
         session([
             'customModulos' => $modulos->menus,
@@ -50,7 +50,8 @@ class LoginController extends Controller
             'cambio' => Auth::user()->password_view == '123456',
             'personal' => Auth::user(),
             'config' => (object) [
-                'acceso' => $acceso ?? null,
+                'acceso' => $acceso?->descripcion ?? null,
+                'accesoCl' => $acceso?->color ?? null,
                 'nombre_perfil' => $nombres ?? null,
                 'sigla' => Auth::user()->nombre[0] . Auth::user()->apellido[0],
                 'siglaBg' => $this->colores(Auth::user()->nombre[0]),

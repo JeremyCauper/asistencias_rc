@@ -320,13 +320,12 @@
                     </div>
 
                     <!-- Datos ocultos -->
-                    <input type="hidden" id="fecha_justi" name="fecha_justi">
-                    <input type="hidden" id="tipo_asistencia_justi" name="tipo_asistencia_justi">
+                    <input type="hidden" id="id_justificacion" name="id_justificacion">
 
                     <!-- Asunto -->
                     <div class="mb-3">
-                        <label for="asunto_justi" class="form-label requested">Asunto</label>
-                        <input type="text" class="form-control" id="asunto_justi" name="asunto_justi"
+                        <label for="asunto" class="form-label requested">Asunto</label>
+                        <input type="text" class="form-control" id="asunto" name="asunto"
                             placeholder="Motivo de la justificación" requested="Asunto">
                     </div>
 
@@ -341,7 +340,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-link" data-mdb-ripple-init
                         data-mdb-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Enviar justificación</button>
+                    <button type="submit" class="btn btn-primary">Enviar <i class="far fa-paper-plane"></i></button>
                 </div>
             </form>
         </div>
@@ -372,7 +371,7 @@
 
                     <!-- Contenido HTML -->
                     <div class="border rounded ql-editor-html">
-                        <h4 class="p-3" aria-item="ver_asunto">Retraso por tráfico</h4>
+                        <h4 class="p-3" aria-item="ver_asunto">...</h4>
                         <div aria-item="ver_contenido_html"></div>
                     </div>
 
@@ -389,5 +388,6 @@
 
 @section('scripts')
     <script src="{{secure_asset('front/vendor/quill/quill.min.js')}}"></script>
+    <script src="{{secure_asset('front/js/editorQuill.js')}}"></script>
     <script src="{{secure_asset('front/js/misasistencias/misasistencias.js')}}"></script>
 @endsection

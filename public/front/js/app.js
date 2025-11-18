@@ -310,10 +310,16 @@ async function consultarDniInput($this) {
     }
 }
 
-function llenarInfoModal(id_modal, data) {
-    Object.entries(data).forEach(([key, e]) => {
-        $(`#${id_modal} [aria-item="${key}"]`).html(e);
-    });
+function llenarInfoModal(id_modal, data = {}) {
+    if (Object.entries(data).length) {
+        Object.entries(data).forEach(([key, e]) => {
+            $(`#${id_modal} [aria-item="${key}"`).html(e);
+        });
+    } else {
+        $(`#${id_modal} [aria-item`).each((i, e) => {
+            $(e).html('');
+        });
+    }
 }
 
 function llenarInfoTipoInc(id_modal, data) {

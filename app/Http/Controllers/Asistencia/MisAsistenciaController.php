@@ -96,20 +96,33 @@ class MisAsistenciaController extends Controller
                     $tipo_asistencia = 0;
                 }
 
+                if ($justificacion && $justificacion->estatus == 10) {
+                    $tipo_asistencia = 7;
+                }
+
                 // Acciones dinámicas
                 $acciones = [];
                 // Si es un tipo de asistencia que puede ser justificado, no tiene justificación aún y es el día actual
-                if (in_array($tipo_asistencia, [0, 1, 4, 7]) && !$justificacion && $fechaActual) {
+                if ($tipo_asistencia == 7 && $justificacion && $justificacion?->estatus == 10 && $fechaActual) {
                     $acciones[] = [
-                        'funcion' => "solicitarJustificacion({$a->id}, '{$a->fecha}', '{$a->hora}', {$tipo_asistencia})",
-                        'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencia->color . ';"></i>Justificar ' . $tipoAsistencia->descripcion
+                        'funcion' => "justificarAsistencia({$justificacion->id}, '{$a->fecha}', '{$a->hora}', {$tipo_asistencia})",
+                        'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencias->get(7)->color . ';"></i>Justificar Derivado'
                     ];
                     $notificacion = $tipo_asistencia == 7; // notificar solo si es tipo 7 (derivado)
                 }
-                // Si ya tiene justificación, se puede obtener la justificación
-                if ($justificacion) {
+
+                // Si es un tipo de asistencia que puede ser justificado, no tiene justificación aún y es el día actual
+                if (in_array($tipo_asistencia, [1, 4]) && !$justificacion && $fechaActual) {
                     $acciones[] = [
-                        'funcion' => "obtenerJustificacion('{$a->fecha}', '{$a->hora}', {$tipo_asistencia})",
+                        'funcion' => "justificarAsistencia({$a->id}, '{$a->fecha}', '{$a->hora}', {$tipo_asistencia})",
+                        'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencia->color . ';"></i>Justificar ' . $tipoAsistencia->descripcion
+                    ];
+                }
+
+                // Si ya tiene justificación, se puede obtener la justificación
+                if ($justificacion && $justificacion?->estatus != 10) {
+                    $acciones[] = [
+                        'funcion' => "showJustificacion({$justificacion->id}, '{$a->fecha}', '{$a->hora}', {$tipo_asistencia})",
                         'texto' => '<i class="fas fa-scale-balanced me-2 text-info"></i>Ver justificación'
                     ];
                 }
@@ -178,115 +191,6 @@ class MisAsistenciaController extends Controller
         } catch (Exception $e) {
             Log::error('[MisAsistenciaController@uploadMedia] ' . $e->getMessage());
             return ApiResponse::error('Error al subir el archivo.');
-        }
-    }
-
-    public function storeJustificaciones(Request $request)
-    {
-        $user_id = session('user_id');
-        $validator = Validator::make($request->all(), [
-            'fecha_justi' => 'required|date',
-            'tipo_asistencia_justi' => 'required|in:1,4,7',
-            'asunto_justi' => 'required|string|max:255',
-            'contenidoHTML' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            return ApiResponse::validation($validator->errors()->toArray());
-        }
-
-        try {
-            // Verifica si ya existe una justificación para esa fecha
-            $yaJustificada = DB::table('justificaciones')->where('user_id', $user_id)
-                ->where('fecha', $request->fecha_justi)
-                ->exists();
-
-            if ($yaJustificada) {
-                return ApiResponse::success('Ya existe una justificación para esa fecha.');
-            }
-
-            DB::beginTransaction();
-            // Crea la justificación
-            $justificacion = DB::table('justificaciones')->insert([
-                'user_id' => $user_id,
-                'fecha' => $request->fecha_justi,
-                'tipo_asistencia' => $request->tipo_asistencia_justi,
-                'asunto' => $request->asunto_justi,
-                'contenido_html' => $request->contenidoHTML,
-                'created_at' => $request->created,
-                'estatus' => 0, // pendiente
-            ]);
-            DB::commit();
-
-            return ApiResponse::success('Justificación registrada correctamente.');
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::error('[MisAsistenciaController@update] ' . $e->getMessage());
-            return ApiResponse::error('Error al actualizar el registro.');
-        }
-    }
-
-    /**
-     * Muestra la justificación de un usuario en una fecha específica.
-     */
-    public function showJustificacion($fecha)
-    {
-        try {
-            $user_id = session('user_id');
-            if (!is_numeric($user_id)) {
-                return response()->json([
-                    'ok' => false,
-                    'message' => 'El ID de usuario debe ser numérico.'
-                ], 400);
-            }
-
-            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
-                return response()->json([
-                    'ok' => false,
-                    'message' => 'La fecha debe tener el formato YYYY-MM-DD.'
-                ], 400);
-            }
-
-            // ✅ Busca la justificación
-            $justificacion = DB::table('justificaciones')->where('user_id', $user_id)
-                ->where('fecha', $fecha)
-                ->first();
-
-            if (!$justificacion) {
-                return response()->json([
-                    'ok' => false,
-                    'message' => 'No se encontró una justificación para el usuario en esa fecha.'
-                ], 404);
-            }
-
-            // 🧾 Formatea la respuesta
-            return response()->json([
-                'ok' => true,
-                'data' => [
-                    'id' => $justificacion->id,
-                    'user_id' => $justificacion->user_id,
-                    'fecha' => $justificacion->fecha,
-                    'tipo_asistencia' => $justificacion->tipo_asistencia,
-                    'asunto' => $justificacion->asunto,
-                    'contenido_html' => $justificacion->contenido_html,
-                    'estatus' => $justificacion->estatus,
-                    'created_at' => $justificacion->created_at,
-                    'updated_at' => $justificacion->updated_at,
-                ]
-            ], 200);
-        } catch (Exception $e) {
-            // 🚨 Captura cualquier error inesperado
-            Log::error('Error al obtener la justificación', [
-                'user_id' => $user_id,
-                'fecha' => $fecha,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return response()->json([
-                'ok' => false,
-                'message' => 'Ocurrió un error interno al obtener la justificación. Intente nuevamente más tarde.'
-            ], 500);
         }
     }
 }

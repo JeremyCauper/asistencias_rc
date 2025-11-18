@@ -20,15 +20,6 @@
         const tipoModalidad = @json($tipoModalidad);
         const areas = @json($areas);
     </script>
-    <style>
-        #contenido_justificacion {
-            height: 450px;
-        }
-
-        #respuesta-justificacion {
-            height: 400px;
-        }
-    </style>
 @endsection
 
 @section('navbar')
@@ -188,9 +179,9 @@
 
             if (notificaciones.length === 0) {
                 notiList.innerHTML += `
-                                        <li class="dropdown-item-text text-center text-muted py-2">
-                                          Sin notificaciones
-                                        </li>`;
+                                            <li class="dropdown-item-text text-center text-muted py-2">
+                                              Sin notificaciones
+                                            </li>`;
                 $(notiCount).fadeOut();
                 return;
             }
@@ -207,16 +198,16 @@
                 };
 
                 const item = `
-                    <li class="dropdown-item p-3" role="button" onclick="verJustificacion(${noti.user_id})">
-                        <div class="d-flex align-items-center">
-                        <span class="img-xs rounded-circle text-white acronimo" style="background-color: ${colores(iniciales)};">${iniciales}</span>
-                        <div class="mx-3">
-                            <p class="fw-bold mb-1">Justificación pendiente</p>
-                            <p class="text-muted mb-0">${noti.personal}</p>
-                        </div>
-                        <span class="badge rounded-pill" style="background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>
-                        </div>
-                    </li>`;
+                        <li class="dropdown-item p-3" role="button" onclick="verJustificacion(${noti.user_id})">
+                            <div class="d-flex align-items-center">
+                            <span class="img-xs rounded-circle text-white acronimo" style="background-color: ${colores(iniciales)};">${iniciales}</span>
+                            <div class="mx-3">
+                                <p class="fw-bold mb-1">Justificación pendiente</p>
+                                <p class="text-muted mb-0">${noti.personal}</p>
+                            </div>
+                            <span class="badge rounded-pill" style="background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>
+                            </div>
+                        </li>`;
                 notiList.innerHTML += item;
                 $(notiCount).fadeIn();
             });
@@ -315,14 +306,14 @@
                     scrollX: true,
                     scrollY: 400,
                     dom: `<"row"
-                        <"col-lg-12 mb-2"B>>
-                        <"row"
-                            <"col-xsm-6 text-xsm-start text-center my-1 botones-table">
-                            <"col-xsm-6 text-xsm-end text-center my-1"f>>
-                        <"contenedor_tabla my-2"tr>
-                        <"row"
-                            <"col-md-5 text-md-start text-center my-1"i>
-                            <"col-md-7 text-md-end text-center my-1"p>>`,
+                            <"col-lg-12 mb-2"B>>
+                            <"row"
+                                <"col-xsm-6 text-xsm-start text-center my-1 botones-table">
+                                <"col-xsm-6 text-xsm-end text-center my-1"f>>
+                            <"contenedor_tabla my-2"tr>
+                            <"row"
+                                <"col-md-5 text-md-start text-center my-1"i>
+                                <"col-md-7 text-md-end text-center my-1"p>>`,
                     ajax: {
                         url: __url + `/asistencias-diarias/listar?fecha=${$('#filtro_fecha').val()}&tipoModalidad=${$('#tipoModalidad').val()}&tipoPersonal=${$('#tipoPersonal').val()}`,
                         dataSrc: function (json) {
@@ -611,6 +602,7 @@
     <!-- Incluye ExcelJS desde CDN -->
     <script src="{{secure_asset('front/vendor/quill/quill.min.js')}}"></script>
 
+    <script src="{{secure_asset('front/js/editorQuill.js')}}"></script>
     <script src="{{secure_asset('front/js/asistencias/asistencias.js')}}"></script>
     @if (!in_array(session('tipo_usuario'), [1, 5, 6]) || session('tipo_sistema'))
         <script src="{{secure_asset('front/vendor/exceljs/exceljs.min.js')}}"></script>

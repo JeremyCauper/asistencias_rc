@@ -1,6 +1,7 @@
 $(document).ready(function () {
     $('.modal').on('hidden.bs.modal', function () {
-        quill.setContents([]); // Limpia el editor
+        llenarInfoModal('modalVerJustificacion');
+        quillJustificacion.quill.setContents([]); // Limpia el editor
     });
 
     // eventos 
@@ -72,132 +73,9 @@ $(document).ready(function () {
     );
 });
 
-const quill = new Quill('#editor-container', {
-    theme: 'snow',
-    modules: {
-        toolbar: {
-            container: [
-                ['bold', 'italic', 'underline'],
-                [{
-                    'header': [1, 2, false]
-                }],
-                ['link', 'image', 'video', 'pdf'],
-                [{
-                    'list': 'ordered'
-                }, {
-                    'list': 'bullet'
-                }]
-            ],
-            handlers: {
-                'image': subirImagen,
-                'video': subirVideo,
-                'pdf': subirPDF
-            }
-        }
-    }
-});
+const quillJustificacion = new EditorJustificacion('#editor-container');
 
-// const toolbar = quill.getModule('toolbar');
-for (const [key, value] of Object.entries({
-    link: 'link',
-    image: 'file-image',
-    video: 'file-video',
-    pdf: 'file-pdf'
-})) {
-    const customButton = document.querySelector('.ql-' + key);
-    if (customButton) customButton.innerHTML = `<i class="far fa-${value}"></i>`; // emoji o ícono custom
-}
-
-// Subir imagen
-function subirImagen() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.click();
-
-    input.onchange = async () => {
-        const file = input.files[0];
-        if (file.size > 3 * 1024 * 1024) {
-            alert('Máximo 3MB para imágenes');
-            return;
-        }
-        await uploadFile(file, 'image');
-    };
-}
-
-// Subir video
-function subirVideo() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'video/*';
-    input.click();
-
-    input.onchange = async () => {
-        const file = input.files[0];
-        if (file.size > 10 * 1024 * 1024) {
-            alert('Máximo 10MB para videos');
-            return;
-        }
-        await uploadFile(file, 'video');
-    };
-}
-
-// Subir PDF
-function subirPDF() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/pdf';
-    input.click();
-
-    input.onchange = async () => {
-        const file = input.files[0];
-        if (file.size > 5 * 1024 * 1024) {
-            alert('Máximo 5MB para PDF');
-            return;
-        }
-        await uploadFile(file, 'pdf');
-    };
-}
-
-// Subir al backend
-async function uploadFile(file, tipo) {
-    try {
-        boxAlert.loading('Subiendo documento...')
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const res = await fetch(__url + "/asistencias/uploadMedia", {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': __token
-            },
-            body: formData
-        });
-
-        const data = await res.json();
-        if (data.url) {
-            const range = quill.getSelection(true);
-
-            if (tipo === 'image') {
-                quill.insertEmbed(range.index, 'image', location.origin + data.url);
-            } else if (tipo === 'video') {
-                quill.insertEmbed(range.index, 'video', location.origin + data.url);
-            } else if (tipo === 'pdf') {
-                // Insertar como enlace o iframe pequeño
-                quill.insertEmbed(range.index, 'text', '');
-                quill.clipboard.dangerouslyPasteHTML(range.index, `<a href="${location.origin + data.url}" target="_blank">📄${file.name}</a>`);
-            }
-        } else {
-            alert('Error subiendo archivo');
-        }
-    } catch (error) {
-        console.log(error);
-    } finally {
-        Swal.close()
-    }
-}
-
-function solicitarJustificacion(id, fecha, hora, tipo_asistencia) {
+function justificarAsistencia(id, fecha, hora, tipo_asistencia) {
     try {
         $('#modalJustificacion').modal('show');
         fMananger.formModalLoding('modalJustificacion', 'show');
@@ -213,8 +91,7 @@ function solicitarJustificacion(id, fecha, hora, tipo_asistencia) {
             estado: `<span class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>`,
         });
 
-        $('#fecha_justi').val(fecha);
-        $('#tipo_asistencia_justi').val(tipo_asistencia);
+        $('#id_justificacion').val(id);
         fMananger.formModalLoding('modalJustificacion', 'hide');
     } catch (e) {
         console.log(e);
@@ -227,10 +104,10 @@ document.getElementById('formJustificacion').addEventListener('submit', async fu
     fMananger.formModalLoding('modalJustificacion', 'show');
 
     // Obtiene el contenido HTML del editor
-    const contenidoHTML = quill.root.innerHTML;
+    const contenidoHTML = quillJustificacion.quill.root.innerHTML;
 
     // Verifica si hay contenido vacío
-    if (quill.getText().trim().length === 0) {
+    if (quillJustificacion.quill.getText().trim().length === 0) {
         boxAlert.box({ i: 'warning', h: 'Por favor, escribe una justificación antes de enviar.' });
         return;
     }
@@ -239,38 +116,11 @@ document.getElementById('formJustificacion').addEventListener('submit', async fu
     if (!valid.success) {
         return fMananger.formModalLoding('modalJustificacion', 'hide');
     }
-
-    const fechaActual = new Date().toLocaleDateString('es-PE', { year: 'numeric', month: 'long', day: 'numeric' });
-    const horaActual = new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    const horaCreated = date('Y-m-d H:i:s');
-
-    let tpersonal = tipoPersonal[tipoUsuario] || { descripcion: 'Tecnico', color: '#9fa6b2' };
-
-    // Plantilla HTML estilo correo
-    const htmlCorreo = `
-        <div class="p-3">
-            <div class="d-flex align-items-center mb-3">
-                <span class="img-xs rounded-circle text-white acronimo" style="background-color: ${acronimo_bg} !important;">${acronimo}</span>
-                <div class="ms-2">
-                    <p class="fw-bold mb-1">${nomUsuario}</p>
-                </div>
-                <span class="badge rounded-pill ms-auto" style="background-color: ${tpersonal.color} !important;font-size: .7rem;">${tpersonal.descripcion}</span>
-            </div>
-            <p>📅 <small class="fw-bold">Fecha de creación:</small> ${fechaActual} a las ${horaActual}</p>
-            <p class="mt-1">✉️ Justificación de <span class="fw-bold" style="color: ${window.tasistencia.color};">${window.tasistencia.descripcion}</span></p>
-            <hr>
-            <div>${contenidoHTML}</div>
-            <hr class="mb-0">
-        </div>
-        <div class="px-3 py-2 text-end">Sistema de Control de Asistencia del Personal</div>
-    `;
-    valid.data.data.contenidoHTML = utf8ToBase64(htmlCorreo);
-    valid.data.data.created = horaCreated;
-    console.log(valid.data.data);
+    valid.data.data.mensaje = utf8ToBase64(contenidoHTML);
 
     try {
         const body = JSON.stringify(valid.data.data);
-        const response = await fetch(__url + '/asistencias/justificaciones', {
+        const response = await fetch(__url + '/justificacion/responder-justificacion', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -287,7 +137,7 @@ document.getElementById('formJustificacion').addEventListener('submit', async fu
         }
 
         boxAlert.box({ h: data.message || 'Justificación enviada' });
-        quill.setContents([]); // Limpia el editor
+        quillJustificacion.quill.setContents([]); // Limpia el editor
         this.reset();
         updateTable();
         $('#modalJustificacion').modal('hide');
@@ -305,12 +155,12 @@ document.getElementById('formJustificacion').addEventListener('submit', async fu
     }
 });
 
-async function obtenerJustificacion(fecha, hora, tipo_asistencia) {
+async function showJustificacion(id, fecha, hora, tipo_asistencia) {
     try {
         $('#modalVerJustificacion').modal('show');
         fMananger.formModalLoding('modalVerJustificacion', 'show');
 
-        const response = await fetch(__url + `/asistencias/justificaciones/${fecha}`);
+        const response = await fetch(__url + `/justificacion/mostrar/${id}`);
         const result = await response.json();
 
         if (!response.ok) throw new Error(result.message || 'Error desconocido');
