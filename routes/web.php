@@ -5,10 +5,10 @@ use App\Http\Controllers\Api\Syncs\SyncPersonalController;
 use App\Http\Controllers\Asistencia\AsistenciaController;
 use App\Http\Controllers\Asistencia\ExcelAsistenciaController;
 use App\Http\Controllers\Asistencia\MisAsistenciaController;
+use App\Http\Controllers\Justificacion\JustificacionController;
 use App\Http\Controllers\Mantenimientos\AreaPersonal\AreaPersonalController;
 use App\Http\Controllers\MantenimientosDeveloper\Menu\MenuController;
 use App\Http\Controllers\MantenimientosDeveloper\TipoPersonal\TipoPersonalController;
-use App\Http\Controllers\MensajeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConsultaController;
 use App\Http\Controllers\Controller;
@@ -48,7 +48,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/personal/cambiarEstatus', [SyncPersonalController::class, 'cambiarEstatus']);
     Route::delete('/personal/{id}', [SyncPersonalController::class, 'marcarEliminar']);
 
-
     Route::controller(AsistenciaController::class)
         ->prefix('asistencias-diarias')
         ->as('asistenciasDiarias.')
@@ -58,15 +57,21 @@ Route::middleware('auth')->group(function () {
             Route::get('/mostrar/{id}', 'show')->name('show');
             Route::post('/ingresar-descuento', 'ingresarDescuento')->name('ingresarDescuento');
             Route::put('/actualizar-justificacion-estado', 'updateJustificacionEstatus')->name('updateJustificacionEstatus');
-            Route::put('/marcar-derivado/{id}', 'marcarDerivado')->name('marcarDerivado');
         });
-
 
     Route::get('/asistencias/misasistencias', [MisAsistenciaController::class, 'view']);
     Route::get('/asistencias/listar', [MisAsistenciaController::class, 'listar']);
     Route::post('/asistencias/uploadMedia', [MisAsistenciaController::class, 'uploadMedia']);
-    Route::post('/asistencias/justificaciones', [MisAsistenciaController::class, 'storeJustificaciones']);
-    Route::get('/asistencias/justificaciones/{fecha}', [MisAsistenciaController::class, 'showJustificacion']);
+
+    Route::controller(JustificacionController::class)
+        ->prefix('justificacion')
+        ->as('justificacion.')
+        ->group(function () {
+            Route::get('/mostrar/{id}', 'showJustificacion')->name('showJustificacion');
+            Route::post('/justificar', 'storeJustificacion')->name('justificar');
+            Route::post('/responder-justificacion', 'responseJustificacion')->name('responseJustificacion');
+            Route::put('/marcar-derivado/{id}', 'marcarDerivado')->name('marcarDerivado');
+        });
 
     Route::controller(AreaPersonalController::class)
         ->prefix('mantenimiento/area-personal')
@@ -148,8 +153,5 @@ Route::middleware('auth')->group(function () {
         });
 });
 
-Route::get('/mensajes', [MensajeController::class, 'index']);
-Route::post('/guardar', [MensajeController::class, 'guardar'])->name('guardar');
-Route::post('/upload-media', [MensajeController::class, 'uploadMedia'])->name('upload.media');
 Route::get('/obtener_modulos/{tipo}/{accesso}', [Controller::class, 'obtenerModulos']);
 Route::get('/obtener_modulos2/{tipo}/{accesso}', [Controller::class, 'obtenerModulos2']);

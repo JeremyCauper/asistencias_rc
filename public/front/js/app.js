@@ -310,10 +310,16 @@ async function consultarDniInput($this) {
     }
 }
 
-function llenarInfoModal(id_modal, data) {
-    Object.entries(data).forEach(([key, e]) => {
-        $(`#${id_modal} [aria-item="${key}"]`).html(e);
-    });
+function llenarInfoModal(id_modal, data = {}) {
+    if (Object.entries(data).length) {
+        Object.entries(data).forEach(([key, e]) => {
+            $(`#${id_modal} [aria-item="${key}"`).html(e);
+        });
+    } else {
+        $(`#${id_modal} [aria-item`).each((i, e) => {
+            $(e).html('');
+        });
+    }
 }
 
 function llenarInfoTipoInc(id_modal, data) {
@@ -701,24 +707,34 @@ function esCelular() {
 
 // Codificar HTML con emojis Binario y después a Base64
 function utf8ToBase64(str) {
-    // 1. Convertimos el string a bytes (UTF-8)
-    const bytes = new TextEncoder().encode(str);
-    // 2. Creamos un string binario desde esos bytes
-    let binary = '';
-    bytes.forEach(b => binary += String.fromCharCode(b));
-    // 3. Codificamos el string binario a Base64
-    return btoa(binary);
+    try {
+        // 1. Convertimos el string a bytes (UTF-8)
+        const bytes = new TextEncoder().encode(str);
+        // 2. Creamos un string binario desde esos bytes
+        let binary = '';
+        bytes.forEach(b => binary += String.fromCharCode(b));
+        // 3. Codificamos el string binario a Base64
+        return btoa(binary);
+    } catch {
+        alert('Error al codificar el contenido.');
+        return false;
+    }
 }
 
 
 // Decodificar Base64 a Binario a HTML con emojis
 function base64ToUtf8(base64) {
-    // 1. Decodificamos Base64 a un string binario
-    const binary = atob(base64);
-    // 2. Lo convertimos de binario a bytes
-    const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
-    // 3. Lo decodificamos de bytes a string UTF-8
-    return new TextDecoder().decode(bytes);
+    try {
+        // 1. Decodificamos Base64 a un string binario
+        const binary = atob(base64);
+        // 2. Lo convertimos de binario a bytes
+        const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+        // 3. Lo decodificamos de bytes a string UTF-8
+        return new TextDecoder().decode(bytes);
+    } catch {
+        alert('Error al decodificar el contenido.');
+        return '<em class="text-danger">Error al decodificar el contenido.</em>';
+    }
 }
 
 function colores(c) {

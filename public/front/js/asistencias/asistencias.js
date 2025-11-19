@@ -171,7 +171,7 @@ async function marcarDerivado(id) {
         if (!confirm) return;
 
         boxAlert.loading();
-        const res = await fetch(`${url_base}/marcar-derivado/${id}`, {
+        const res = await fetch(`${__url}/justificacion/marcar-derivado/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

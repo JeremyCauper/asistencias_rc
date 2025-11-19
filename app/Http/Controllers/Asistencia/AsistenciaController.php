@@ -120,8 +120,10 @@ class AsistenciaController extends Controller
                     ->whereIn('rol_system', $tipoPersonal)
                     ->get()->toArray();
 
-                $limitePuntual = strtotime(date("Y-m-d 08:30:59"));
-                $limiteDerivado = strtotime(date("Y-m-d 10:00:00"));
+                $tipoAsistencias = JsonDB::table('tipo_asistencia')->whereIn('id', [1, 4, 7])->get()->keyBy('id');
+
+                $limitePuntual = strtotime(date("Y-m-d {$this->horaLimitePuntual}"));
+                $limiteDerivado = strtotime(date("Y-m-d {$this->horaLimiteDerivado}"));
                 $horaActual = time();
                 $fechaActual = date('Y-m-d') == $fecha;
                 $mesActual = date('Y-m') == date('Y-m', $strtoTime);
@@ -150,6 +152,10 @@ class AsistenciaController extends Controller
                         $tipo_asistencia = 0;
                     }
 
+                    if ($justificacion && $justificacion->estatus == 10) {
+                        $tipo_asistencia = 7;
+                    }
+
                     // Acciones dinámicas
                     $acciones = [];
                     // Solo si tine id de asistencia y permisos adecuados por tipo de usuario o sistema y mes actual
@@ -162,19 +168,34 @@ class AsistenciaController extends Controller
                     }
 
                     // Derivar asistencia solo si es tipo asistencia 0: pendiente o 1: falta, antes de las 10:00 y es para la fecha actual
-                    if (in_array($tipo_asistencia, [0, 1]) && $horaActual < $limiteDerivado && $fechaActual) {
+                    if (in_array($tipo_asistencia, [0, 1]) && !$justificacion && $horaActual < $limiteDerivado && $fechaActual) {
                         $acciones[] = [
                             'funcion' => "marcarDerivado($asistencia_id)",
                             'texto' => '<i class="fas fa-random me-2 text-info"></i> Derivar'
                         ];
                     }
+                    
                     // Permite ver justificación si existe y está pendiente, si se cumple la condición envia notificación
-                    if ($justificacion && $justificacion->estatus == 0) {
+                    if ($justificacion && $justificacion->estatus != 10) {
+                        $tJustificacion = [
+                            ['color' => 'secondary', 'text' => 'Pendiente'],
+                            ['color' => 'success', 'text' => 'Aprobada'],
+                            ['color' => 'danger', 'text' => 'Rechazada'],
+                        ][$justificacion->estatus];
+
                         $acciones[] = [
                             'funcion' => "verJustificacion($asistencia_id)",
-                            'texto' => '<i class="fas fa-clock text-warning me-2 text-secondary"></i> Ver Justificación'
+                            'texto' => '<i class="fas fa-clock me-2 text-' . $tJustificacion['color'] .'"></i> Justificación ' . $tJustificacion['text']
                         ];
-                        $notificacion = true;
+                        $notificacion = $justificacion->estatus == 0;
+                    }
+
+                    if (!$justificacion && in_array($tipo_asistencia, [1, 4]) && in_array(session('tipo_usuario'), [2, 4, 5, 7])) {
+                        $tipoAsistencia = $tipoAsistencias->get($tipo_asistencia);
+                        $acciones[] = [
+                            'funcion' => "justificarAsistencia({$p->user_id}, '{$fecha}', '{$hora}', {$tipo_asistencia})",
+                            'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencia->color . ';"></i>Justificar ' . $tipoAsistencia->descripcion
+                        ];
                     }
 
                     $listado[] = [
