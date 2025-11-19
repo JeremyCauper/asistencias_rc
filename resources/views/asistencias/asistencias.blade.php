@@ -20,6 +20,11 @@
         const tipoModalidad = @json($tipoModalidad);
         const areas = @json($areas);
     </script>
+    <style>
+        /* #modalJustificacion [aria-item="contenido_html"] {
+            height: 450px;
+        } */
+    </style>
 @endsection
 
 @section('navbar')
@@ -179,9 +184,9 @@
 
             if (notificaciones.length === 0) {
                 notiList.innerHTML += `
-                                            <li class="dropdown-item-text text-center text-muted py-2">
-                                              Sin notificaciones
-                                            </li>`;
+                                                    <li class="dropdown-item-text text-center text-muted py-2">
+                                                      Sin notificaciones
+                                                    </li>`;
                 $(notiCount).fadeOut();
                 return;
             }
@@ -198,16 +203,16 @@
                 };
 
                 const item = `
-                        <li class="dropdown-item p-3" role="button" onclick="verJustificacion(${noti.user_id})">
-                            <div class="d-flex align-items-center">
-                            <span class="img-xs rounded-circle text-white acronimo" style="background-color: ${colores(iniciales)};">${iniciales}</span>
-                            <div class="mx-3">
-                                <p class="fw-bold mb-1">Justificación pendiente</p>
-                                <p class="text-muted mb-0">${noti.personal}</p>
-                            </div>
-                            <span class="badge rounded-pill" style="background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>
-                            </div>
-                        </li>`;
+                                <li class="dropdown-item p-3" role="button" onclick="verJustificacion(${noti.user_id})">
+                                    <div class="d-flex align-items-center">
+                                    <span class="img-xs rounded-circle text-white acronimo" style="background-color: ${colores(iniciales)};">${iniciales}</span>
+                                    <div class="mx-3">
+                                        <p class="fw-bold mb-1">Justificación pendiente</p>
+                                        <p class="text-muted mb-0">${noti.personal}</p>
+                                    </div>
+                                    <span class="badge rounded-pill" style="background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>
+                                    </div>
+                                </li>`;
                 notiList.innerHTML += item;
                 $(notiCount).fadeIn();
             });
@@ -306,14 +311,14 @@
                     scrollX: true,
                     scrollY: 400,
                     dom: `<"row"
-                            <"col-lg-12 mb-2"B>>
-                            <"row"
-                                <"col-xsm-6 text-xsm-start text-center my-1 botones-table">
-                                <"col-xsm-6 text-xsm-end text-center my-1"f>>
-                            <"contenedor_tabla my-2"tr>
-                            <"row"
-                                <"col-md-5 text-md-start text-center my-1"i>
-                                <"col-md-7 text-md-end text-center my-1"p>>`,
+                                    <"col-lg-12 mb-2"B>>
+                                    <"row"
+                                        <"col-xsm-6 text-xsm-start text-center my-1 botones-table">
+                                        <"col-xsm-6 text-xsm-end text-center my-1"f>>
+                                    <"contenedor_tabla my-2"tr>
+                                    <"row"
+                                        <"col-md-5 text-md-start text-center my-1"i>
+                                        <"col-md-7 text-md-end text-center my-1"p>>`,
                     ajax: {
                         url: __url + `/asistencias-diarias/listar?fecha=${$('#filtro_fecha').val()}&tipoModalidad=${$('#tipoModalidad').val()}&tipoPersonal=${$('#tipoPersonal').val()}`,
                         dataSrc: function (json) {
@@ -519,6 +524,10 @@
                 </div>
 
                 <div class="modal-body">
+                    <div class="mb-1">
+                        <span style="font-size: .85rem;" aria-item="personal">...</span>
+                    </div>
+
                     <!-- Asunto -->
                     <div class="d-flex justify-content-between align-items-center mt-2 mb-2">
                         <label class="form-label me-2">Asistencia:
@@ -544,11 +553,59 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="modal-footer">
                     <button type="button" class="btn btn-link" data-mdb-dismiss="modal">Cerrar</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal de Justificación -->
+    <div class="modal fade" id="modalJustificar" tabindex="-1" aria-labelledby="modalJustificarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <form id="formJustificar" class="modal-content">
+
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalJustificarLabel">Justificar asistencia</h5>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="list-group list-group-light">
+                            <div class="list-group-item">
+                                <label class="form-label me-2">Fecha Asistencia: </label><span style="font-size: .75rem;"
+                                    aria-item="fecha">...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center my-2">
+                        <h6 class="font-weight-semibold text-primary tt-upper m-0" style="font-size: smaller;">Ingresar
+                            Justificación</h6>
+                        <span aria-item="estado">...</span>
+                    </div>
+
+                    <!-- Asunto -->
+                    <div class="mb-3">
+                        <label for="asunto" class="form-label requested">Asunto</label>
+                        <input type="text" class="form-control" id="asunto" name="asunto"
+                            placeholder="Motivo de la justificación" requested="Asunto">
+                    </div>
+
+                    <!-- Editor Quill -->
+                    <div class="mb-3">
+                        <label class="form-label requested">Contenido</label>
+                        <div id="editor-justificar"></div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init
+                        data-mdb-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Enviar <i class="far fa-paper-plane"></i></button>
+                </div>
+            </form>
         </div>
     </div>
 

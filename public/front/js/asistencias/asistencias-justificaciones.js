@@ -1,6 +1,13 @@
 
 $(document).ready(function () {
     const quillRespJustificacion = new EditorJustificacion('#respuesta-justificacion');
+    const quilleditorJustificar = new EditorJustificacion('#editor-justificar');
+
+    $('.modal').on('hidden.bs.modal', function () {
+        llenarInfoModal('modalJustificacion');
+        quillRespJustificacion.quill.setContents([]); // Limpia el editor
+        quilleditorJustificar.quill.setContents([]); // Limpia el editor
+    });
 
     /** ============================
      *  🔹 CONFIGURACIONES GLOBALES
@@ -17,10 +24,11 @@ $(document).ready(function () {
      *  ============================ */
     window.verJustificacion = async (id) => {
         try {
+            $('#responderJustificacion').fadeOut();
             $('#modalJustificacion').modal('show');
             fMananger.formModalLoding('modalJustificacion', 'show');
 
-            const res = await $.getJSON(`${__url}/justificacion/mostrar/${id}`);
+            const res = await $.getJSON(`${__url}/asistencias-diarias/mostrar/${id}`);
             fMananger.formModalLoding('modalJustificacion', 'hide');
 
             if (!res?.data) {
@@ -32,10 +40,13 @@ $(document).ready(function () {
             }
 
             const data = res.data;
-            console.log(data);
 
             const just = data.justificacion;
             const personal = data.personal;
+
+            if (just.estatus === 0) {
+                $('#responderJustificacion').slideDown();
+            }
 
             if (!just) {
                 return boxAlert.box({
@@ -45,11 +56,11 @@ $(document).ready(function () {
                 });
             }
 
-            const tasistencia = tipoAsistencia.find(s => s.id == just.tipo_asistencia)
+            const tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
                 || { descripcion: 'Pendiente', color: '#9fa6b2' };
 
             const estado = ESTADOS_JUSTIFICACION[just.estatus || 0];
-            const contenidoHTML = decodeHtmlContent(just.contenido_html);
+            const contenidoHTML = base64ToUtf8(just.contenido_html);
 
             llenarInfoModal('modalJustificacion', {
                 estado: badgeHtml(estado.color, estado.descripcion),
@@ -62,11 +73,6 @@ $(document).ready(function () {
 
             window.currentJustificacionId = just.id;
             window.currentJustificacionStatus = just.estatus;
-            if (just.estatus === 0) {
-                $('#responderJustificacion').slideDown();
-            } else {
-                $('#responderJustificacion').slideUp();
-            }
         } catch (error) {
             fMananger.formModalLoding('modalJustificacion', 'hide');
             console.error(error);
@@ -77,16 +83,6 @@ $(document).ready(function () {
             });
         }
     };
-
-    function decodeHtmlContent(content) {
-        try {
-            const decoded = base64ToUtf8(content);
-            window.contenido_HTML = decoded;
-            return decoded;
-        } catch {
-            return '<em class="text-danger">Error al decodificar el contenido.</em>';
-        }
-    }
 
     function badgeHtml(color, text, customColor = false) {
         return customColor
@@ -129,13 +125,17 @@ $(document).ready(function () {
 
             boxAlert.loading();
             const id = window.currentJustificacionId;
-            const res = await fetch(`${__url}/asistencias/justificaciones/${id}/estatus`, {
-                method: "PUT",
+            const res = await fetch(__url + '/justificacion/responder-justificacion', {
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": __token
                 },
-                body: JSON.stringify({ estatus, mensaje }),
+                body: JSON.stringify({
+                    id_justificacion: id,
+                    estatus,
+                    mensaje
+                }),
             });
 
             const data = await res.json();
@@ -148,7 +148,7 @@ $(document).ready(function () {
             llenarInfoModal('modalJustificacion', {
                 estado: badgeHtml(estado.color, estado.descripcion),
                 tipo_asistencia: badgeHtml(tasistencia.color, tasistencia.descripcion, true),
-                contenido_html: htmlCorreo
+                contenido_html: base64ToUtf8(resp.contenido)
             });
 
             boxAlert.box({ h: data.message });
@@ -159,4 +159,94 @@ $(document).ready(function () {
             boxAlert.box({ i: 'error', h: err.message || "No se pudo actualizar el estado." });
         }
     };
+
+    window.justificarAsistencia = async (user_id, fecha, hora, tipo_asistencia) => {
+        try {
+            $('#modalJustificar').modal('show');
+            fMananger.formModalLoding('modalJustificar', 'show');
+
+            let tasistencia = tipoAsistencia.find(s => s.id == tipo_asistencia)
+                || { descripcion: 'Pendiente', color: '#9fa6b2' };
+            window.tasistencia = tasistencia;
+
+            llenarInfoModal('modalJustificar', {
+                fecha: `${fecha} ${(hora || '')}`,
+                estado: `<span class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>`,
+            });
+            window.tasistencia = tasistencia;
+
+            window.user_id = user_id;
+            window.fecha = fecha;
+            window.tipo_asistencia = tipo_asistencia;
+            fMananger.formModalLoding('modalJustificar', 'hide');
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    // Captura del formulario
+    document.getElementById('formJustificar').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const msg = `¿Estás de enviar la justificación?`;
+        if (!await boxAlert.confirm({ h: msg })) return;
+        fMananger.formModalLoding('modalJustificar', 'show');
+
+        // Obtiene el contenido HTML del editor
+        const contenidoHTML = quilleditorJustificar.quill.root.innerHTML;
+
+        // Verifica si hay contenido vacío
+        if (quilleditorJustificar.quill.getText().trim().length === 0) {
+            boxAlert.box({ i: 'warning', h: 'Por favor, escribe una justificación antes de enviar.' });
+            return;
+        }
+
+        var valid = validFrom(this);
+        if (!valid.success) {
+            return fMananger.formModalLoding('modalJustificar', 'hide');
+        }
+        let mensaje = utf8ToBase64(contenidoHTML);
+
+        try {
+            const body = JSON.stringify({
+                user_id: window.user_id,
+                fecha: window.fecha,
+                tipo_asistencia: window.tipo_asistencia,
+                asunto: $('#asunto').val(),
+                contenido: mensaje,
+                estatus: 1
+            });
+            const response = await fetch(__url + '/justificacion/justificar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': __token,
+                },
+                body,
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                const mensaje = data.message || 'No se pudo completar la operación.';
+                return boxAlert.box({ i: 'error', t: 'Algo salió mal...', h: mensaje });
+            }
+
+            boxAlert.box({ h: data.message || 'Justificación enviada' });
+            quilleditorJustificar.quill.setContents([]); // Limpia el editor
+            this.reset();
+            updateTable();
+            $('#modalJustificar').modal('hide');
+        } catch (error) {
+            fMananger.formModalLoding('modalJustificar', 'hide');
+            console.error('Error en la solicitud:', error);
+
+            boxAlert.box({
+                i: 'error',
+                t: 'Error en la conexión',
+                h: 'Ocurrió un problema al procesar la solicitud. Verifica tu conexión e intenta nuevamente.'
+            });
+        } finally {
+            fMananger.formModalLoding('modalJustificar', 'hide');
+        }
+    });
 });

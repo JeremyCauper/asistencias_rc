@@ -120,6 +120,8 @@ class AsistenciaController extends Controller
                     ->whereIn('rol_system', $tipoPersonal)
                     ->get()->toArray();
 
+                $tipoAsistencias = JsonDB::table('tipo_asistencia')->whereIn('id', [1, 4, 7])->get()->keyBy('id');
+
                 $limitePuntual = strtotime(date("Y-m-d {$this->horaLimitePuntual}"));
                 $limiteDerivado = strtotime(date("Y-m-d {$this->horaLimiteDerivado}"));
                 $horaActual = time();
@@ -172,13 +174,28 @@ class AsistenciaController extends Controller
                             'texto' => '<i class="fas fa-random me-2 text-info"></i> Derivar'
                         ];
                     }
+                    
                     // Permite ver justificación si existe y está pendiente, si se cumple la condición envia notificación
-                    if ($justificacion && $justificacion->estatus == 0) {
+                    if ($justificacion && $justificacion->estatus != 10) {
+                        $tJustificacion = [
+                            ['color' => 'secondary', 'text' => 'Pendiente'],
+                            ['color' => 'success', 'text' => 'Aprobada'],
+                            ['color' => 'danger', 'text' => 'Rechazada'],
+                        ][$justificacion->estatus];
+
                         $acciones[] = [
-                            'funcion' => "verJustificacion($justificacion->id)",
-                            'texto' => '<i class="fas fa-clock text-warning me-2 text-secondary"></i> Ver Justificación'
+                            'funcion' => "verJustificacion($asistencia_id)",
+                            'texto' => '<i class="fas fa-clock me-2 text-' . $tJustificacion['color'] .'"></i> Justificación ' . $tJustificacion['text']
                         ];
-                        $notificacion = true;
+                        $notificacion = $justificacion->estatus == 0;
+                    }
+
+                    if (!$justificacion && in_array($tipo_asistencia, [1, 4]) && in_array(session('tipo_usuario'), [2, 4, 5, 7])) {
+                        $tipoAsistencia = $tipoAsistencias->get($tipo_asistencia);
+                        $acciones[] = [
+                            'funcion' => "justificarAsistencia({$p->user_id}, '{$fecha}', '{$hora}', {$tipo_asistencia})",
+                            'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencia->color . ';"></i>Justificar ' . $tipoAsistencia->descripcion
+                        ];
                     }
 
                     $listado[] = [

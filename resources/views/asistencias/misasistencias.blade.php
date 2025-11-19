@@ -15,10 +15,6 @@
         const tipoPersonal = @json($tipoPersonal);
     </script>
     <style>
-        #editor-container,
-        #ver_contenido_html {
-            height: 450px;
-        }
     </style>
 @endsection
 
@@ -158,20 +154,20 @@
         <div class="card-body">
             <h6 class="fw-bold">📅 Mis asistencias diarias</h6>
             <!-- <div class="row mb-2">
-                    <div class="col-4 my-1">
-                        <small class="form-label mb-0" for="fecha">Fecha</small>
-                        <div class="input-group">
-                            <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
-                                <i class="fas fa-angle-left"></i>
-                            </button>
-                            <input type="month" id="filtro_fecha" class="form-control" value="{{ date('Y-m') }}">
-                            <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
-                                <i class="fas fa-angle-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-1 my-1 text-end mt-auto"><button class="btn btn-primary" onclick="filtroBusqueda()" data-mdb-ripple-init>Filtrar</button></div>
-                </div> -->
+                                    <div class="col-4 my-1">
+                                        <small class="form-label mb-0" for="fecha">Fecha</small>
+                                        <div class="input-group">
+                                            <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
+                                                <i class="fas fa-angle-left"></i>
+                                            </button>
+                                            <input type="month" id="filtro_fecha" class="form-control" value="{{ date('Y-m') }}">
+                                            <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
+                                                <i class="fas fa-angle-right"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-1 my-1 text-end mt-auto"><button class="btn btn-primary" onclick="filtroBusqueda()" data-mdb-ripple-init>Filtrar</button></div>
+                                </div> -->
             <table id="tablaMisAsistencias" class="table table-hover text-nowrap w-100">
                 <thead>
                     <tr class="text-bg-primary text-center">
@@ -244,10 +240,8 @@
                     {
                         data: 'tipo_asistencia',
                         render: function (data, type, row) {
-                            let tasistencia = tipoAsistencia[data] || {
-                                descripcion: 'Pendiente',
-                                color: '#9fa6b2'
-                            };
+                            let tasistencia = tipoAsistencia.find(s => s.id == data)
+                                || { descripcion: 'Pendiente', color: '#9fa6b2' };
                             return `<label class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</label>`;
                         }
                     },
@@ -285,22 +279,23 @@
                 }
 
                 function searchTable(search) {
-                    let tasistencia = tipoAsistencia[search]?.descripcion || '';
-                    tablaMisAsistencias.column([4]).search(tasistencia).draw();
+                    let tasistencia = tipoAsistencia.find(s => s.id == search)
+                        || { descripcion: 'Pendiente', color: '#9fa6b2' };
+                    tablaMisAsistencias.column([4]).search(tasistencia?.descripcion || '').draw();
                 }
             </script>
         </div>
     </div>
 
-    <button class="d-none" data-mdb-modal-init data-mdb-target="#modalJustificacion"></button>
+    <button class="d-none" data-mdb-modal-init data-mdb-target="#modalJustificarDerivado"></button>
     <!-- Modal de Justificación -->
-    <div class="modal fade" id="modalJustificacion" tabindex="-1" aria-labelledby="modalJustificacionLabel"
+    <div class="modal fade" id="modalJustificarDerivado" tabindex="-1" aria-labelledby="modalJustificarDerivadoLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <form id="formJustificacion" class="modal-content">
+            <form id="formJustificarDerivado" class="modal-content">
 
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="modalJustificacionLabel">Justificar asistencia</h5>
+                    <h5 class="modal-title" id="modalJustificarDerivadoLabel">Justificar asistencia</h5>
                     <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
@@ -332,7 +327,56 @@
                     <!-- Editor Quill -->
                     <div class="mb-3">
                         <label class="form-label requested">Contenido</label>
-                        <div id="editor-container"></div>
+                        <div id="editor-justificarDerivado"></div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init
+                        data-mdb-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Enviar <i class="far fa-paper-plane"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Justificación -->
+    <div class="modal fade" id="modalJustificar" tabindex="-1" aria-labelledby="modalJustificarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <form id="formJustificar" class="modal-content">
+
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalJustificarLabel">Justificar asistencia</h5>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="list-group list-group-light">
+                            <div class="list-group-item">
+                                <label class="form-label me-2">Fecha Asistencia: </label><span style="font-size: .75rem;"
+                                    aria-item="fecha">...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center my-2">
+                        <h6 class="font-weight-semibold text-primary tt-upper m-0" style="font-size: smaller;">Ingresar
+                            Justificación</h6>
+                        <span aria-item="estado">...</span>
+                    </div>
+
+                    <!-- Asunto -->
+                    <div class="mb-3">
+                        <label for="asunto_justificar" class="form-label requested">Asunto</label>
+                        <input type="text" class="form-control" id="asunto_justificar" name="asunto_justificar"
+                            placeholder="Motivo de la justificación" requested="Asunto">
+                    </div>
+
+                    <!-- Editor Quill -->
+                    <div class="mb-3">
+                        <label class="form-label requested">Contenido</label>
+                        <div id="editor-justificar"></div>
                     </div>
 
                 </div>
@@ -349,7 +393,7 @@
     <!-- Modal Ver Justificación -->
     <div class="modal fade" id="modalVerJustificacion" tabindex="-1" aria-labelledby="modalVerJustificacionLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content border-0 shadow-lg">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="modalVerJustificacionLabel">
@@ -362,7 +406,6 @@
                 <div class="modal-body">
                     <!-- Asunto -->
                     <div class="d-flex justify-content-between align-items-center mt-2 mb-2">
-
                         <label class="form-label me-2">Asistencia:
                             <span style="font-size: .75rem;" aria-item="ver_fecha_asistencia">...</span>
                         </label>
@@ -374,11 +417,9 @@
                         <h4 class="p-3" aria-item="ver_asunto">...</h4>
                         <div aria-item="ver_contenido_html"></div>
                     </div>
-
-                    <div class="text-end mt-2">
-                        <button type="button" class="btn btn-link" data-mdb-ripple-init
-                            data-mdb-dismiss="modal">Cerrar</button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-mdb-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>

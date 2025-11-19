@@ -21,7 +21,7 @@ class MisAsistenciaController extends Controller
         try {
             $empresas = DB::table('empresa')->get();
             $tipoModalidad = JsonDB::table('tipo_modalidad')->get()->keyBy('id');
-            $tipoAsistencia = JsonDB::table('tipo_asistencia')->get()->keyBy('id');
+            $tipoAsistencia = JsonDB::table('tipo_asistencia')->get();
             $tipoPersonal = JsonDB::table('tipo_personal')->get()->keyBy('id');
 
             return view('asistencias.misasistencias', [
@@ -77,7 +77,6 @@ class MisAsistenciaController extends Controller
                 $diaSemana = strtolower(date('l', strtotime($a->fecha)));
                 $descuento = $descuentos->get($a->fecha) ?? null;
                 $justificacion = $justificaciones->get($a->fecha) ?? null;
-                $tipoAsistencia = $tipoAsistencias->get($a->tipo_asistencia);
                 $notificacion = false;
                 $campoDia = [
                     'monday' => 'Lunes',
@@ -96,7 +95,7 @@ class MisAsistenciaController extends Controller
                     $tipo_asistencia = 0;
                 }
 
-                if ($justificacion && $justificacion->estatus == 10) {
+                if ($justificacion && $justificacion->estatus == 10 && $horaActual < $limiteDerivado && $fechaActual) {
                     $tipo_asistencia = 7;
                 }
 
@@ -105,7 +104,7 @@ class MisAsistenciaController extends Controller
                 // Si es un tipo de asistencia que puede ser justificado, no tiene justificación aún y es el día actual
                 if ($tipo_asistencia == 7 && $justificacion && $justificacion?->estatus == 10 && $fechaActual) {
                     $acciones[] = [
-                        'funcion' => "justificarAsistencia({$justificacion->id}, '{$a->fecha}', '{$a->hora}', {$tipo_asistencia})",
+                        'funcion' => "justificarDerivado({$justificacion->id}, '{$a->fecha}', '{$a->hora}', {$tipo_asistencia})",
                         'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencias->get(7)->color . ';"></i>Justificar Derivado'
                     ];
                     $notificacion = $tipo_asistencia == 7; // notificar solo si es tipo 7 (derivado)
@@ -113,17 +112,24 @@ class MisAsistenciaController extends Controller
 
                 // Si es un tipo de asistencia que puede ser justificado, no tiene justificación aún y es el día actual
                 if (in_array($tipo_asistencia, [1, 4]) && !$justificacion && $fechaActual) {
+                    $tipoAsistencia = $tipoAsistencias->get($a->tipo_asistencia);
                     $acciones[] = [
-                        'funcion' => "justificarAsistencia({$a->id}, '{$a->fecha}', '{$a->hora}', {$tipo_asistencia})",
+                        'funcion' => "justificarAsistencia('{$a->fecha}', '{$a->hora}', {$tipo_asistencia})",
                         'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencia->color . ';"></i>Justificar ' . $tipoAsistencia->descripcion
                     ];
                 }
 
                 // Si ya tiene justificación, se puede obtener la justificación
                 if ($justificacion && $justificacion?->estatus != 10) {
+                    $tJustificacion = [
+                        ['color' => 'secondary', 'text' => 'Pendiente'],
+                        ['color' => 'success', 'text' => 'Aprobada'],
+                        ['color' => 'danger', 'text' => 'Rechazada'],
+                    ][$justificacion->estatus];
+
                     $acciones[] = [
                         'funcion' => "showJustificacion({$justificacion->id}, '{$a->fecha}', '{$a->hora}', {$tipo_asistencia})",
-                        'texto' => '<i class="fas fa-scale-balanced me-2 text-info"></i>Ver justificación'
+                        'texto' => '<i class="fas fa-clock me-2 text-' . $tJustificacion['color'] .'"></i> Justificación ' . $tJustificacion['text']
                     ];
                 }
 

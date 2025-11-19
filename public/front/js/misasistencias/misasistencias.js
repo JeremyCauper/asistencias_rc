@@ -1,7 +1,8 @@
 $(document).ready(function () {
     $('.modal').on('hidden.bs.modal', function () {
         llenarInfoModal('modalVerJustificacion');
-        quillJustificacion.quill.setContents([]); // Limpia el editor
+        quillJustificarDerivado.quill.setContents([]); // Limpia el editor
+        quilleditorJustificar.quill.setContents([]); // Limpia el editor
     });
 
     // eventos 
@@ -73,48 +74,49 @@ $(document).ready(function () {
     );
 });
 
-const quillJustificacion = new EditorJustificacion('#editor-container');
+const quillJustificarDerivado = new EditorJustificacion('#editor-justificarDerivado');
+const quilleditorJustificar = new EditorJustificacion('#editor-justificar');
 
-function justificarAsistencia(id, fecha, hora, tipo_asistencia) {
+function justificarDerivado(id, fecha, hora, tipo_asistencia) {
     try {
-        $('#modalJustificacion').modal('show');
-        fMananger.formModalLoding('modalJustificacion', 'show');
+        $('#modalJustificarDerivado').modal('show');
+        fMananger.formModalLoding('modalJustificarDerivado', 'show');
 
-        let tasistencia = tipoAsistencia[tipo_asistencia] || {
-            descripcion: 'Pendiente',
-            color: '#9fa6b2'
-        };
+        let tasistencia = tipoAsistencia.find(s => s.id == tipo_asistencia)
+            || { descripcion: 'Pendiente', color: '#9fa6b2' };
         window.tasistencia = tasistencia;
 
-        llenarInfoModal('modalJustificacion', {
+        llenarInfoModal('modalJustificarDerivado', {
             fecha: `${fecha} ${(hora || '')}`,
             estado: `<span class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>`,
         });
 
         $('#id_justificacion').val(id);
-        fMananger.formModalLoding('modalJustificacion', 'hide');
+        fMananger.formModalLoding('modalJustificarDerivado', 'hide');
     } catch (e) {
         console.log(e);
     }
 }
 
 // Captura del formulario
-document.getElementById('formJustificacion').addEventListener('submit', async function (e) {
+document.getElementById('formJustificarDerivado').addEventListener('submit', async function (e) {
     e.preventDefault();
-    fMananger.formModalLoding('modalJustificacion', 'show');
+    const msg = `¿Estás de enviar la justificación?`;
+    if (!await boxAlert.confirm({ h: msg })) return;
+    fMananger.formModalLoding('modalJustificarDerivado', 'show');
 
     // Obtiene el contenido HTML del editor
-    const contenidoHTML = quillJustificacion.quill.root.innerHTML;
+    const contenidoHTML = quillJustificarDerivado.quill.root.innerHTML;
 
     // Verifica si hay contenido vacío
-    if (quillJustificacion.quill.getText().trim().length === 0) {
+    if (quillJustificarDerivado.quill.getText().trim().length === 0) {
         boxAlert.box({ i: 'warning', h: 'Por favor, escribe una justificación antes de enviar.' });
         return;
     }
 
     var valid = validFrom(this);
     if (!valid.success) {
-        return fMananger.formModalLoding('modalJustificacion', 'hide');
+        return fMananger.formModalLoding('modalJustificarDerivado', 'hide');
     }
     valid.data.data.mensaje = utf8ToBase64(contenidoHTML);
 
@@ -137,12 +139,12 @@ document.getElementById('formJustificacion').addEventListener('submit', async fu
         }
 
         boxAlert.box({ h: data.message || 'Justificación enviada' });
-        quillJustificacion.quill.setContents([]); // Limpia el editor
+        quillJustificarDerivado.quill.setContents([]); // Limpia el editor
         this.reset();
         updateTable();
-        $('#modalJustificacion').modal('hide');
+        $('#modalJustificarDerivado').modal('hide');
     } catch (error) {
-        fMananger.formModalLoding('modal_tipo_personal', 'hide');
+        fMananger.formModalLoding('modalJustificarDerivado', 'hide');
         console.error('Error en la solicitud:', error);
 
         boxAlert.box({
@@ -151,7 +153,95 @@ document.getElementById('formJustificacion').addEventListener('submit', async fu
             h: 'Ocurrió un problema al procesar la solicitud. Verifica tu conexión e intenta nuevamente.'
         });
     } finally {
-        fMananger.formModalLoding('modalJustificacion', 'hide');
+        fMananger.formModalLoding('modalJustificarDerivado', 'hide');
+    }
+});
+
+async function justificarAsistencia(fecha, hora, tipo_asistencia) {
+    try {
+        $('#modalJustificar').modal('show');
+        fMananger.formModalLoding('modalJustificar', 'show');
+
+        let tasistencia = tipoAsistencia.find(s => s.id == tipo_asistencia)
+            || { descripcion: 'Pendiente', color: '#9fa6b2' };
+        window.tasistencia = tasistencia;
+
+        llenarInfoModal('modalJustificar', {
+            fecha: `${fecha} ${(hora || '')}`,
+            estado: `<span class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>`,
+        });
+        window.tasistencia = tasistencia;
+
+        window.fecha = fecha;
+        window.tipo_asistencia = tipo_asistencia;
+        fMananger.formModalLoding('modalJustificar', 'hide');
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+// Captura del formulario
+document.getElementById('formJustificar').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const msg = `¿Estás de enviar la justificación?`;
+    if (!await boxAlert.confirm({ h: msg })) return;
+    fMananger.formModalLoding('modalJustificar', 'show');
+
+    // Obtiene el contenido HTML del editor
+    const contenidoHTML = quilleditorJustificar.quill.root.innerHTML;
+
+    // Verifica si hay contenido vacío
+    if (quilleditorJustificar.quill.getText().trim().length === 0) {
+        boxAlert.box({ i: 'warning', h: 'Por favor, escribe una justificación antes de enviar.' });
+        return;
+    }
+
+    var valid = validFrom(this);
+    if (!valid.success) {
+        return fMananger.formModalLoding('modalJustificar', 'hide');
+    }
+    let mensaje = utf8ToBase64(contenidoHTML);
+
+    try {
+        const body = JSON.stringify({
+            fecha: window.fecha,
+            tipo_asistencia: window.tipo_asistencia,
+            asunto: $('#asunto_justificar').val(),
+            contenido: mensaje
+        });
+        
+        const response = await fetch(__url + '/justificacion/justificar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': __token,
+            },
+            body,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            const mensaje = data.message || 'No se pudo completar la operación.';
+            return boxAlert.box({ i: 'error', t: 'Algo salió mal...', h: mensaje });
+        }
+
+        boxAlert.box({ h: data.message || 'Justificación enviada' });
+        quilleditorJustificar.quill.setContents([]); // Limpia el editor
+        this.reset();
+        updateTable();
+        $('#modalJustificar').modal('hide');
+    } catch (error) {
+        fMananger.formModalLoding('modalJustificar', 'hide');
+        console.error('Error en la solicitud:', error);
+
+        boxAlert.box({
+            i: 'error',
+            t: 'Error en la conexión',
+            h: 'Ocurrió un problema al procesar la solicitud. Verifica tu conexión e intenta nuevamente.'
+        });
+    } finally {
+        fMananger.formModalLoding('modalJustificar', 'hide');
     }
 });
 
@@ -166,24 +256,21 @@ async function showJustificacion(id, fecha, hora, tipo_asistencia) {
         if (!response.ok) throw new Error(result.message || 'Error desconocido');
         let data = result.data;
 
-        let tasistencia = tipoAsistencia[tipo_asistencia] || {
-            descripcion: 'Pendiente',
-            color: '#9fa6b2'
-        };
+        let tasistencia = tipoAsistencia.find(s => s.id == tipo_asistencia)
+            || { descripcion: 'Pendiente', color: '#9fa6b2' };
 
         let estado = [
             { descripcion: 'Pendiente', color: 'secondary' },
             { descripcion: 'Aprobada', color: 'success' },
             { descripcion: 'Rechazada', color: 'danger' },
-        ][data.estatus || 0];
+        ][data.justificacion.estatus || 0];
 
         llenarInfoModal('modalVerJustificacion', {
             ver_estatus: `<span class="badge badge-${estado.color} ms-2" style="font-size: 0.75rem;">${estado.descripcion}</span>`,
             ver_fecha_asistencia: `${fecha} ${hora || ''}`,
             ver_tipo_asistencia: `<span class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>`,
-            ver_creado: 'Creado el ' + data.created_at,
-            ver_asunto: data.asunto,
-            ver_contenido_html: base64ToUtf8(data.contenido_html)
+            ver_asunto: data.justificacion.asunto,
+            ver_contenido_html: base64ToUtf8(data.justificacion.contenido_html)
         });
 
         fMananger.formModalLoding('modalVerJustificacion', 'hide');
@@ -191,27 +278,4 @@ async function showJustificacion(id, fecha, hora, tipo_asistencia) {
         console.error(error);
         alert(error.message);
     }
-}
-
-
-// Codificar HTML con emojis Binario y después a Base64
-function utf8ToBase64(str) {
-    // 1. Convertimos el string a bytes (UTF-8)
-    const bytes = new TextEncoder().encode(str);
-    // 2. Creamos un string binario desde esos bytes
-    let binary = '';
-    bytes.forEach(b => binary += String.fromCharCode(b));
-    // 3. Codificamos el string binario a Base64
-    return btoa(binary);
-}
-
-
-// Decodificar Base64 a Binario a HTML con emojis
-function base64ToUtf8(base64) {
-    // 1. Decodificamos Base64 a un string binario
-    const binary = atob(base64);
-    // 2. Lo convertimos de binario a bytes
-    const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
-    // 3. Lo decodificamos de bytes a string UTF-8
-    return new TextDecoder().decode(bytes);
 }
