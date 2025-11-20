@@ -56,7 +56,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/listar', 'listar')->name('listar');
             Route::get('/mostrar/{id}', 'show')->name('show');
             Route::post('/ingresar-descuento', 'ingresarDescuento')->name('ingresarDescuento');
-            Route::put('/actualizar-justificacion-estado', 'updateJustificacionEstatus')->name('updateJustificacionEstatus');
         });
 
     Route::get('/asistencias/misasistencias', [MisAsistenciaController::class, 'view']);

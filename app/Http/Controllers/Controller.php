@@ -8,13 +8,21 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
-    public $horaLimitePuntual = "08:30:59";
-    public $horaLimiteDerivado = "10:30:00";
+    public $horaLimitePuntual;
+    public $horaLimiteDerivado;
+
+    public function __construct() {
+        $config_system = DB::table('config_system')->get()->keyBy('config');
+
+        $this->horaLimitePuntual = $config_system['horaLimitePuntual']?->values ?? "08:30:59";
+        $this->horaLimiteDerivado = $config_system['horaLimiteDerivado']?->values ?? "10:30:00";
+    }
 
     public function obtenerModulos2($tipo_acceso, $sistema)
     {

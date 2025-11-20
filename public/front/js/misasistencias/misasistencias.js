@@ -1,8 +1,8 @@
 $(document).ready(function () {
     $('.modal').on('hidden.bs.modal', function () {
         llenarInfoModal('modalVerJustificacion');
-        quillJustificarDerivado.quill.setContents([]); // Limpia el editor
-        quilleditorJustificar.quill.setContents([]); // Limpia el editor
+        quillJustificarDerivado.clear(); // Limpia el editor
+        quilleditorJustificar.clear(); // Limpia el editor
     });
 
     // eventos 
@@ -74,11 +74,19 @@ $(document).ready(function () {
     );
 });
 
-const quillJustificarDerivado = new EditorJustificacion('#editor-justificarDerivado');
+const quillJustificarDerivado = new EditorJustificacion('#editor-justificarDerivado', {
+    botones: ['camera']
+});
 const quilleditorJustificar = new EditorJustificacion('#editor-justificar');
 
 function justificarDerivado(id, fecha, hora, tipo_asistencia) {
     try {
+        if (!esCelular()) {
+            boxAlert.box({
+                i: 'info',
+                h: 'Esta función está limitada solo a celulares.'
+            });
+        }
         $('#modalJustificarDerivado').modal('show');
         fMananger.formModalLoding('modalJustificarDerivado', 'show');
 
@@ -105,12 +113,14 @@ document.getElementById('formJustificarDerivado').addEventListener('submit', asy
     if (!await boxAlert.confirm({ h: msg })) return;
     fMananger.formModalLoding('modalJustificarDerivado', 'show');
 
-    // Obtiene el contenido HTML del editor
-    const contenidoHTML = quillJustificarDerivado.quill.root.innerHTML;
-
     // Verifica si hay contenido vacío
-    if (quillJustificarDerivado.quill.getText().trim().length === 0) {
-        boxAlert.box({ i: 'warning', h: 'Por favor, escribe una justificación antes de enviar.' });
+    if (quillJustificarDerivado.isEmpty() ) {
+        boxAlert.box({ i: 'warning', h: 'Por favor, el contenido no puede estar vacio.' });
+        return;
+    }
+
+    if (quillJustificarDerivado.isEmptyImg() ) {
+        boxAlert.box({ i: 'warning', h: 'Tiene que subir minimo una foto.' });
         return;
     }
 
@@ -118,7 +128,9 @@ document.getElementById('formJustificarDerivado').addEventListener('submit', asy
     if (!valid.success) {
         return fMananger.formModalLoding('modalJustificarDerivado', 'hide');
     }
-    valid.data.data.mensaje = utf8ToBase64(contenidoHTML);
+
+    // Obtiene el contenido HTML del editor
+    valid.data.data.mensaje = utf8ToBase64(quillJustificarDerivado.html());
 
     try {
         const body = JSON.stringify(valid.data.data);
@@ -139,7 +151,7 @@ document.getElementById('formJustificarDerivado').addEventListener('submit', asy
         }
 
         boxAlert.box({ h: data.message || 'Justificación enviada' });
-        quillJustificarDerivado.quill.setContents([]); // Limpia el editor
+        quillJustificarDerivado.clear(); // Limpia el editor
         this.reset();
         updateTable();
         $('#modalJustificarDerivado').modal('hide');
@@ -188,10 +200,10 @@ document.getElementById('formJustificar').addEventListener('submit', async funct
     fMananger.formModalLoding('modalJustificar', 'show');
 
     // Obtiene el contenido HTML del editor
-    const contenidoHTML = quilleditorJustificar.quill.root.innerHTML;
+    const contenidoHTML = quilleditorJustificar.html();
 
     // Verifica si hay contenido vacío
-    if (quilleditorJustificar.quill.getText().trim().length === 0) {
+    if (quilleditorJustificar.isEmpty()) {
         boxAlert.box({ i: 'warning', h: 'Por favor, escribe una justificación antes de enviar.' });
         return;
     }
@@ -209,7 +221,7 @@ document.getElementById('formJustificar').addEventListener('submit', async funct
             asunto: $('#asunto_justificar').val(),
             contenido: mensaje
         });
-        
+
         const response = await fetch(__url + '/justificacion/justificar', {
             method: 'POST',
             headers: {
@@ -227,7 +239,7 @@ document.getElementById('formJustificar').addEventListener('submit', async funct
         }
 
         boxAlert.box({ h: data.message || 'Justificación enviada' });
-        quilleditorJustificar.quill.setContents([]); // Limpia el editor
+        quilleditorJustificar.clear(); // Limpia el editor
         this.reset();
         updateTable();
         $('#modalJustificar').modal('hide');

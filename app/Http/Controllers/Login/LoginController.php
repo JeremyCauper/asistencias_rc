@@ -42,19 +42,19 @@ class LoginController extends Controller
         $acceso = JsonDB::table('tipo_personal')->where('id', Auth::user()->rol_system)->first();
 
         session([
-            'customModulos' => $modulos->menus,
-            'rutaRedirect' => $modulos->ruta,
-            'user_id' => Auth::user()->user_id,
-            'tipo_usuario' => Auth::user()->rol_system,
-            'tipo_sistema' => Auth::user()->sistema,
-            'cambio' => Auth::user()->password_view == '123456',
-            'personal' => Auth::user(),
+            'customModulos'       => $modulos->menus,
+            'rutaRedirect'        => $modulos->ruta,
+            'user_id'             => Auth::user()->user_id,
+            'tipo_usuario'        => Auth::user()->rol_system,
+            'tipo_sistema'        => Auth::user()->sistema,
+            'cambio'              => Auth::user()->password_view == '123456',
+            'personal'            => Auth::user(),
             'config' => (object) [
-                'acceso' => $acceso?->descripcion ?? null,
-                'accesoCl' => $acceso?->color ?? null,
+                'acceso'        => $acceso?->descripcion ?? null,
+                'accesoCl'      => $acceso?->color ?? null,
                 'nombre_perfil' => $nombres ?? null,
-                'sigla' => Auth::user()->nombre[0] . Auth::user()->apellido[0],
-                'siglaBg' => $this->colores(Auth::user()->nombre[0]),
+                'sigla'         => Auth::user()->nombre[0] . Auth::user()->apellido[0],
+                'siglaBg'       => $this->colores(Auth::user()->nombre[0]),
             ],
         ]);
 

@@ -17,6 +17,8 @@ class MisAsistenciaController extends Controller
 {
     public function view()
     {
+        // $config_system = session('config_system')->get('horaLimitePuntua')?->values;
+        // dd($config_system);
         // $this->validarPermisos(6, 14);
         try {
             $empresas = DB::table('empresa')->get();
@@ -69,8 +71,8 @@ class MisAsistenciaController extends Controller
                 ->whereBetween('fecha', [$fechaIni, $fechaFin])
                 ->get()->toArray();
 
-            $limitePuntual = strtotime(date("Y-m-d {$this->horaLimitePuntual}"));
-            $limiteDerivado = strtotime(date("Y-m-d {$this->horaLimiteDerivado}"));
+            $limitePuntual = strtotime(date("Y-m-d " . $this->horaLimitePuntual));
+            $limiteDerivado = strtotime(date("Y-m-d " . $this->horaLimiteDerivado));
             $horaActual = time();
 
             foreach ($asistencias as $a) {
@@ -129,7 +131,7 @@ class MisAsistenciaController extends Controller
 
                     $acciones[] = [
                         'funcion' => "showJustificacion({$justificacion->id}, '{$a->fecha}', '{$a->hora}', {$tipo_asistencia})",
-                        'texto' => '<i class="fas fa-clock me-2 text-' . $tJustificacion['color'] .'"></i> Justificación ' . $tJustificacion['text']
+                        'texto' => '<i class="fas fa-clock me-2 text-' . $tJustificacion['color'] . '"></i> Justificación ' . $tJustificacion['text']
                     ];
                 }
 
@@ -156,6 +158,7 @@ class MisAsistenciaController extends Controller
         try {
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
+
                 $mime = $file->getClientMimeType();
                 $isImage = str_starts_with($mime, 'image/');
                 $isVideo = str_starts_with($mime, 'video/');
@@ -165,32 +168,43 @@ class MisAsistenciaController extends Controller
                     return response()->json(['error' => 'Tipo de archivo no permitido'], 415);
                 }
 
-                // Límites
-                $maxImage = 3 * 1024 * 1024; // 3MB
-                $maxVideo = 10 * 1024 * 1024; // 10MB
-                $maxPdf = 10 * 1024 * 1024; // 10MB
+                // límites
+                $maxImage = 3 * 1024 * 1024;
+                $maxVideo = 10 * 1024 * 1024;
+                $maxPdf = 10 * 1024 * 1024;
 
                 if ($isImage && $file->getSize() > $maxImage) {
-                    ApiResponse::error('Imagen mayor a 3MB');
+                    return ApiResponse::error('Imagen mayor a 3MB');
                 }
                 if ($isVideo && $file->getSize() > $maxVideo) {
-                    ApiResponse::error('Video mayor a 10MB');
+                    return ApiResponse::error('Video mayor a 10MB');
                 }
                 if ($isPdf && $file->getSize() > $maxPdf) {
-                    ApiResponse::error('Pdf mayor a 10MB');
+                    return ApiResponse::error('Pdf mayor a 10MB');
                 }
 
-                // Guardar en public/media/año/mes
-                $path = $file->store('media/' . date('Y/m'), 'public');
-                $url = Storage::url("app/public/$path");
+                // 📌 NOMBRE ÚNICO
+                $extension = $file->getClientOriginalExtension();
+                $nombre_archivo = time() . '_' . bin2hex(random_bytes(8));
+                $nombre = $nombre_archivo . '.' . $extension;
+
+                // 📌 Guardar manualmente el archivo usando el nombre único
+                $path = 'media/' . date('Y/m') . '/' . $nombre;
+                Storage::disk('public')->put($path, file_get_contents($file));
+
+                $url = Storage::url($path);
 
                 DB::beginTransaction();
-                $id = DB::table('media_archivos')->insertGetId([
-                    'path_archivo' => $path,
+                DB::table('media_archivos')->insert([
+                    'nombre_archivo' => $nombre_archivo,
+                    'url_archivo' => $path,
                 ]);
                 DB::commit();
 
-                return ApiResponse::success('Archivo subido correctamente.', ['url' => $url, 'archivo_id' => $id]);
+                return ApiResponse::success('Archivo subido correctamente.', [
+                    'url' => $path,
+                    'nombre_archivo' => $nombre_archivo,
+                ]);
             } else {
                 return ApiResponse::error('No se ha subido ningún archivo.');
             }

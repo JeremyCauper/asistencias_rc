@@ -22,8 +22,8 @@
     </script>
     <style>
         /* #modalJustificacion [aria-item="contenido_html"] {
-            height: 450px;
-        } */
+                                height: 450px;
+                            } */
     </style>
 @endsection
 
@@ -184,9 +184,9 @@
 
             if (notificaciones.length === 0) {
                 notiList.innerHTML += `
-                                                    <li class="dropdown-item-text text-center text-muted py-2">
-                                                      Sin notificaciones
-                                                    </li>`;
+                                    <li class="dropdown-item-text text-center text-muted py-2">
+                                        Sin notificaciones
+                                    </li>`;
                 $(notiCount).fadeOut();
                 return;
             }
@@ -203,16 +203,16 @@
                 };
 
                 const item = `
-                                <li class="dropdown-item p-3" role="button" onclick="verJustificacion(${noti.user_id})">
-                                    <div class="d-flex align-items-center">
-                                    <span class="img-xs rounded-circle text-white acronimo" style="background-color: ${colores(iniciales)};">${iniciales}</span>
-                                    <div class="mx-3">
-                                        <p class="fw-bold mb-1">Justificación pendiente</p>
-                                        <p class="text-muted mb-0">${noti.personal}</p>
-                                    </div>
-                                    <span class="badge rounded-pill" style="background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>
-                                    </div>
-                                </li>`;
+                                                    <li class="dropdown-item p-3" role="button" onclick="verJustificacion(${noti.user_id})">
+                                                        <div class="d-flex align-items-center">
+                                                        <span class="img-xs rounded-circle text-white acronimo" style="background-color: ${colores(iniciales)};">${iniciales}</span>
+                                                        <div class="mx-3">
+                                                            <p class="fw-bold mb-1">Justificación pendiente</p>
+                                                            <p class="text-muted mb-0">${noti.personal}</p>
+                                                        </div>
+                                                        <span class="badge rounded-pill" style="background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>
+                                                        </div>
+                                                    </li>`;
                 notiList.innerHTML += item;
                 $(notiCount).fadeIn();
             });
@@ -225,7 +225,10 @@
     <!-- Tabla -->
     <div class="card">
         <div class="card-body">
-            <h6 class="fw-bold">📅 Panel de Asistencias Diarias</h6>
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold">📅 Panel de Asistencias Diarias</h6>
+                <span id="feriado-text"></span>
+            </div>
             <div class="row mb-2">
                 <div class="col-md-7 my-1">
                     <label class="form-label-filter" for="empresas">Empresa</label>
@@ -280,7 +283,7 @@
                         <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
                             <i class="fas fa-angle-left"></i>
                         </button>
-                        <input type="date" id="filtro_fecha" class="form-control" value="{{ date('Y-m-d') }}">
+                        <input type="date" id="filtro_fecha" class="form-control" value="{{ date('Y-m-19') }}">
                         <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
                             <i class="fas fa-angle-right"></i>
                         </button>
@@ -322,6 +325,9 @@
                     ajax: {
                         url: __url + `/asistencias-diarias/listar?fecha=${$('#filtro_fecha').val()}&tipoModalidad=${$('#tipoModalidad').val()}&tipoPersonal=${$('#tipoPersonal').val()}`,
                         dataSrc: function (json) {
+                            let feriado = json.data?.feriado || {};
+                            $('#feriado-text').html(Object.keys(feriado).length ? `<b>${feriado.tipo}:</b> ${feriado.nombre}` : '');
+
                             let lista = json.data?.listado || [];
                             cargarNotificaciones(lista)
                             let estadosAsistencias = [{
@@ -652,7 +658,6 @@
             </div>
         </div>
     </div>
-
 @endsection
 
 @section('scripts')

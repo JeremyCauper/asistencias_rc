@@ -114,17 +114,17 @@ class JustificacionController extends Controller
 
             // Manejo del estatus
             $estatusOriginal = $justificacion->estatus;
-            $limiteDerivado = strtotime(date("Y-m-d {$this->horaLimiteDerivado}"));
+            $limiteDerivado = strtotime(date("Y-m-d " . $this->horaLimiteDerivado));
             $horaActual = time();
 
-            if ($estatusOriginal == 10 && $horaActual < $limiteDerivado) {
-                return ApiResponse::error('Solo se puede responder la drivación hasta las 10:20:00 am');
+            if ($estatusOriginal == 10 && $horaActual > $limiteDerivado) {
+                return ApiResponse::error('Solo se puede responder la drivación hasta las ' . $this->horaLimiteDerivado);
             }
 
             $estatus = ($estatusOriginal == 10)
-            ? 0
-            : ($request->estatus ?? $estatusOriginal);
-            
+                ? 0
+                : ($request->estatus ?? $estatusOriginal);
+
             $now = now();
             // Crear contenido HTML
             $contenido = $this->createBodyMessage(
@@ -218,7 +218,7 @@ class JustificacionController extends Controller
     public function marcarDerivado(int $id)
     {
         try {
-            $limiteDerivado = strtotime(date("Y-m-d 09:30:00"));
+            $limiteDerivado = strtotime(date("Y-m-d 10:00:00"));
             $horaActual = time();
 
             if ($horaActual < $limiteDerivado) {

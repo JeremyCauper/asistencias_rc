@@ -1,12 +1,12 @@
 
+const quillRespJustificacion = new EditorJustificacion('#respuesta-justificacion');
+const quilleditorJustificar = new EditorJustificacion('#editor-justificar');
 $(document).ready(function () {
-    const quillRespJustificacion = new EditorJustificacion('#respuesta-justificacion');
-    const quilleditorJustificar = new EditorJustificacion('#editor-justificar');
 
     $('.modal').on('hidden.bs.modal', function () {
         llenarInfoModal('modalJustificacion');
-        quillRespJustificacion.quill.setContents([]); // Limpia el editor
-        quilleditorJustificar.quill.setContents([]); // Limpia el editor
+        quillRespJustificacion.clear(); // Limpia el editor
+        quilleditorJustificar.clear(); // Limpia el editor
     });
 
     /** ============================
@@ -115,7 +115,7 @@ $(document).ready(function () {
 
             const estado = ESTADOS_JUSTIFICACION[estatus || 0];
             const textoEditor = quillRespJustificacion.quill.getText().trim();
-            const contenidoHTMLResp = quillRespJustificacion.quill.root.innerHTML;
+            const contenidoHTMLResp = quillRespJustificacion.html();
 
             if (!textoEditor && estatus === 2) {
                 return boxAlert.box({ i: 'warning', h: 'Escribe una respuesta antes de enviar.' });
@@ -192,10 +192,10 @@ $(document).ready(function () {
         fMananger.formModalLoding('modalJustificar', 'show');
 
         // Obtiene el contenido HTML del editor
-        const contenidoHTML = quilleditorJustificar.quill.root.innerHTML;
+        const contenidoHTML = quilleditorJustificar.html();
 
         // Verifica si hay contenido vacío
-        if (quilleditorJustificar.quill.getText().trim().length === 0) {
+        if (quilleditorJustificar.isEmpty()) {
             boxAlert.box({ i: 'warning', h: 'Por favor, escribe una justificación antes de enviar.' });
             return;
         }
@@ -232,7 +232,7 @@ $(document).ready(function () {
             }
 
             boxAlert.box({ h: data.message || 'Justificación enviada' });
-            quilleditorJustificar.quill.setContents([]); // Limpia el editor
+            quilleditorJustificar.clear(); // Limpia el editor
             this.reset();
             updateTable();
             $('#modalJustificar').modal('hide');
