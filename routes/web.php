@@ -162,3 +162,6 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/obtener_modulos/{tipo}/{accesso}', [Controller::class, 'obtenerModulos']);
 Route::get('/obtener_modulos2/{tipo}/{accesso}', [Controller::class, 'obtenerModulos2']);
+Route::get('/foto', function () {
+    return view('welcome');
+});

@@ -28,12 +28,12 @@ class MediaArchivoController extends Controller
                 }
 
                 // límites
-                $maxImage = 3 * 1024 * 1024;
+                $maxImage = 10 * 1024 * 1024;
                 $maxVideo = 10 * 1024 * 1024;
                 $maxPdf = 10 * 1024 * 1024;
 
                 if ($isImage && $file->getSize() > $maxImage) {
-                    return ApiResponse::error('Imagen mayor a 3MB');
+                    return ApiResponse::error('Imagen mayor a 10MB');
                 }
                 if ($isVideo && $file->getSize() > $maxVideo) {
                     return ApiResponse::error('Video mayor a 10MB');

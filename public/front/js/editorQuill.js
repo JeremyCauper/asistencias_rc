@@ -36,7 +36,7 @@ class EditorJustificacion {
                 toolbar: {
                     container: toolbar,
                     handlers: {
-                        image: () => this.handleFileUpload('image', 'image/*', 3),
+                        image: () => this.handleFileUpload('image', 'image/*', 4),
                         video: () => this.handleFileUpload('video', 'video/*', 10),
                         pdf: () => this.handleFileUpload('pdf', 'application/pdf', 5),
                         camera: () => this.handleCamera()
@@ -66,7 +66,7 @@ class EditorJustificacion {
     customizeToolbarIcons(icons) {
         setTimeout(() => {
             for (const [key, icon] of Object.entries(icons)) {
-                const editor = document.getElementById('editor-justificar').parentNode;
+                const editor = document.getElementById(this.selector.replace('#', '')).parentNode;
                 const customButton = editor.querySelector('.ql-' + key);
                 if (customButton) customButton.innerHTML = `<i class="far fa-${icon}"></i>`; // emoji o ícono custom
             }
@@ -140,6 +140,24 @@ class EditorJustificacion {
         input.click();
     }
 
+    async convertToWebP(file) {
+        try {
+            const sizeMB = file.size / (1024 * 1024);
+
+            const options = {
+                maxSizeMB: 10,
+                initialQuality: sizeMB > 1 ? 1 : 0.2,
+                fileType: "image/webp"
+            };
+
+            return await imageCompression(file, options);
+        }
+        catch (err) {
+            console.error("Error al convertir WebP:", err);
+            return file; // si falla, devuelve el archivo original
+        }
+    }
+
     /** ============================
      *  🔹 SUBIDA AL BACKEND
      * ============================ */
@@ -147,8 +165,22 @@ class EditorJustificacion {
         try {
             boxAlert.loading("Subiendo archivo...");
 
+            let fileToUpload = file;
+
+            /** ============================
+             * 🔄 Convertir imágenes a WebP
+             * ============================ */
+            if (tipo === "image") {
+                const converted = await this.convertToWebP(file);
+                fileToUpload = new File(
+                    [converted],
+                    file.name.replace(/\.[^.]+$/, "") + ".webp",
+                    { type: "image/webp" }
+                );
+            }
+
             const form = new FormData();
-            form.append("file", file);
+            form.append("file", fileToUpload);
 
             const res = await fetch(`${__url}/media-archivo/upload-media/justificaciones`, {
                 method: "POST",
@@ -157,19 +189,18 @@ class EditorJustificacion {
             });
 
             const data = await res.json();
-            if (!data.data.url) throw new Error("Error al subir");
+            if (!data.data.url) throw new Error(data.message || "Error al subir");
 
+            Swal.close();
             const id = data.data.nombre_archivo;
             const url = `${__url.replaceAll('public', 'storage/app/public/')}${data.data.url}`;
 
             const range = this.quill.getSelection(true);
-            this.insertFile(tipo, url, file.name, id, range.index);
+            this.insertFile(tipo, url, fileToUpload.name, id, range.index);
 
         } catch (e) {
             console.error(e);
-            boxAlert.box({ i: "error", h: "No se pudo subir el archivo." });
-        } finally {
-            Swal.close();
+            boxAlert.box({ i: "error", h: e || "No se pudo subir el archivo." });
         }
     }
 

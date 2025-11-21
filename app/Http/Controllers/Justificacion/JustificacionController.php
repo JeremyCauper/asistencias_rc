@@ -415,7 +415,7 @@ class JustificacionController extends Controller
     public function eliminarFile()
     {
         try {
-            $ruta = 'asistencias_rc/justificaciones/2025/11/1763689902_99ca0c9665d82b18.png';
+            $ruta = 'asistencias_rc/justificaciones/2025/11/1763710725_59a36764f39fcba1.webp';
 
             $eliminado = Storage::disk('s3')->delete($ruta);
 
