@@ -17,6 +17,7 @@ use App\Http\Controllers\Personal\PersonalController;
 use App\Http\Controllers\MantenimientosDeveloper\Menu\SubMenuController;
 use App\Http\Controllers\MantenimientosDeveloper\TipoAsistencia\TipoAsistenciaController;
 use App\Http\Controllers\MantenimientosDeveloper\TipoModalidad\TipoModalidadController;
+use App\Http\Controllers\MediaArchivo\MediaArchivoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,12 +57,17 @@ Route::middleware('auth')->group(function () {
             Route::get('/listar', 'listar')->name('listar');
             Route::get('/mostrar/{id}', 'show')->name('show');
             Route::post('/ingresar-descuento', 'ingresarDescuento')->name('ingresarDescuento');
-            Route::put('/actualizar-justificacion-estado', 'updateJustificacionEstatus')->name('updateJustificacionEstatus');
         });
 
     Route::get('/asistencias/misasistencias', [MisAsistenciaController::class, 'view']);
     Route::get('/asistencias/listar', [MisAsistenciaController::class, 'listar']);
-    Route::post('/asistencias/uploadMedia', [MisAsistenciaController::class, 'uploadMedia']);
+
+    Route::controller(MediaArchivoController::class)
+        ->prefix('media-archivo')
+        ->as('mediaArchivo.')
+        ->group(function () {
+            Route::post('/upload-media/{carpeta}', 'uploadMedia')->name('uploadMedia');
+        });
 
     Route::controller(JustificacionController::class)
         ->prefix('justificacion')
@@ -71,6 +77,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/justificar', 'storeJustificacion')->name('justificar');
             Route::post('/responder-justificacion', 'responseJustificacion')->name('responseJustificacion');
             Route::put('/marcar-derivado/{id}', 'marcarDerivado')->name('marcarDerivado');
+            Route::get('/eliminarFile', 'eliminarFile')->name('eliminarFile');
         });
 
     Route::controller(AreaPersonalController::class)
@@ -155,3 +162,6 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/obtener_modulos/{tipo}/{accesso}', [Controller::class, 'obtenerModulos']);
 Route::get('/obtener_modulos2/{tipo}/{accesso}', [Controller::class, 'obtenerModulos2']);
+Route::get('/foto', function () {
+    return view('welcome');
+});

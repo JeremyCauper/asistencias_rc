@@ -154,20 +154,20 @@
         <div class="card-body">
             <h6 class="fw-bold">📅 Mis asistencias diarias</h6>
             <!-- <div class="row mb-2">
-                                    <div class="col-4 my-1">
-                                        <small class="form-label mb-0" for="fecha">Fecha</small>
-                                        <div class="input-group">
-                                            <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
-                                                <i class="fas fa-angle-left"></i>
-                                            </button>
-                                            <input type="month" id="filtro_fecha" class="form-control" value="{{ date('Y-m') }}">
-                                            <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
-                                                <i class="fas fa-angle-right"></i>
-                                            </button>
+                                        <div class="col-4 my-1">
+                                            <small class="form-label mb-0" for="fecha">Fecha</small>
+                                            <div class="input-group">
+                                                <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
+                                                    <i class="fas fa-angle-left"></i>
+                                                </button>
+                                                <input type="month" id="filtro_fecha" class="form-control" value="{{ date('Y-m') }}">
+                                                <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
+                                                    <i class="fas fa-angle-right"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-1 my-1 text-end mt-auto"><button class="btn btn-primary" onclick="filtroBusqueda()" data-mdb-ripple-init>Filtrar</button></div>
-                                </div> -->
+                                        <div class="col-1 my-1 text-end mt-auto"><button class="btn btn-primary" onclick="filtroBusqueda()" data-mdb-ripple-init>Filtrar</button></div>
+                                    </div> -->
             <table id="tablaMisAsistencias" class="table table-hover text-nowrap w-100">
                 <thead>
                     <tr class="text-bg-primary text-center">
@@ -258,7 +258,7 @@
                     ],
                     createdRow: function (row, data, dataIndex) {
                         $(row).addClass('text-center');
-                        $(row).find('td:eq(5)').addClass(`td-acciones`);
+                        $(row).find('td:eq(6)').addClass(`td-acciones`);
                     },
                     order: [
                         [1, 'desc']
@@ -269,6 +269,7 @@
                 function updateTable() {
                     tablaMisAsistencias.ajax.reload();
                 }
+                mostrar_acciones(tablaMisAsistencias);
 
                 function filtroBusqueda() {
                     var filtroFecha = $('#filtro_fecha').val();
@@ -428,6 +429,8 @@
 @endsection
 
 @section('scripts')
+    <!-- Librería Browser Image Compression -->
+    <script src="{{secure_asset('front/vendor/browser-image-compression/browser-image-compression.js')}}"></script>
     <script src="{{secure_asset('front/vendor/quill/quill.min.js')}}"></script>
     <script src="{{secure_asset('front/js/editorQuill.js')}}"></script>
     <script src="{{secure_asset('front/js/misasistencias/misasistencias.js')}}"></script>

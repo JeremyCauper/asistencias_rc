@@ -322,6 +322,46 @@ function llenarInfoModal(id_modal, data = {}) {
     }
 }
 
+function setMediaUrls(contenedorId, archivos, baseUrl = '') {
+    const $contenedor = $(contenedorId);
+
+    if ($contenedor.length === 0) {
+        alert("Contenedor no encontrado:", contenedorId);
+        return;
+    }
+
+    // Seleccionar todos los elementos con data-id dentro del contenedor
+    $contenedor.find("[data-id]").each(function () {
+        const $el = $(this);
+        const id = $el.data("id");
+
+        // Buscar coincidencia en el array de archivos
+        const file = archivos.find(x => x.nombre_archivo == id);
+
+        if (!file) {
+            console.warn("Archivo no encontrado para id:", id);
+            return;
+        }
+
+        // Concatenar URL final
+        const fullUrl = file.url_publica;
+
+        // Asignar según tipo de elemento
+        if ($el.is("img")) {
+            $el.attr("src", fullUrl);
+        } else if ($el.is("video")) {
+            $el.attr("src", fullUrl);
+        } else if ($el.is("a")) {
+            $el.attr("href", fullUrl);
+        }
+
+        // Opcional: manejar estatus (ejemplo)
+        if (file.estatus === 2) {
+            $el.css("opacity", 0.6);
+        }
+    });
+}
+
 function llenarInfoTipoInc(id_modal, data) {
     let tipoi = data.incidencia.tipo_incidencia;
     let estado = data.incidencia.estado_informe;

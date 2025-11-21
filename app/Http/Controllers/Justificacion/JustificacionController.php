@@ -10,8 +10,9 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use IntlDateFormatter;
+use Illuminate\Contracts\Filesystem\Filesystem;
 
 class JustificacionController extends Controller
 {
@@ -23,6 +24,7 @@ class JustificacionController extends Controller
                 'tipo_asistencia' => 'required|in:1,4',
                 'asunto' => 'required|string|max:255',
                 'contenido' => 'required|string',
+                'archivos' => 'nullable'
             ]);
 
             if ($validator->fails()) {
@@ -62,16 +64,22 @@ class JustificacionController extends Controller
                 'estatus' => $estatus, // pendiente
             ]);
 
+            $asistencias = DB::table('asistencias')->where([
+                'user_id' => $user_id,
+                'fecha' => $request->fecha,
+            ])->first();
+
             // Procesar asistencia solo cuando corresponde
-            if ($estatus == 1) {
-                DB::table('asistencias')
-                    ->where([
-                        'user_id' => $user_id,
-                        'fecha' => $request->fecha,
-                    ])
-                    ->update([
+            if ($asistencias) {
+                if ($estatus == 1) {
+                    DB::table('asistencias')->where('id', $asistencias->id)->update([
                         'tipo_asistencia' => 3,
                     ]);
+                }
+
+                if (!empty($request->archivos)) {
+                    $this->procesarArchivosJustificacion($request->archivos, $asistencias->id);
+                }
             }
             DB::commit();
 
@@ -88,6 +96,7 @@ class JustificacionController extends Controller
         $validaciones = [
             'id_justificacion' => 'required|integer',
             'mensaje' => 'required|string',
+            'archivos' => 'nullable',
         ];
         $message = 'Justificación registrada correctamente.';
 
@@ -114,17 +123,17 @@ class JustificacionController extends Controller
 
             // Manejo del estatus
             $estatusOriginal = $justificacion->estatus;
-            $limiteDerivado = strtotime(date("Y-m-d {$this->horaLimiteDerivado}"));
+            $limiteDerivado = strtotime(date("Y-m-d " . $this->horaLimiteDerivado));
             $horaActual = time();
 
-            if ($estatusOriginal == 10 && $horaActual < $limiteDerivado) {
-                return ApiResponse::error('Solo se puede responder la drivación hasta las 10:20:00 am');
+            if ($estatusOriginal == 10 && $horaActual > $limiteDerivado) {
+                return ApiResponse::error('Solo se puede responder la drivación hasta las ' . $this->horaLimiteDerivado);
             }
 
             $estatus = ($estatusOriginal == 10)
-            ? 0
-            : ($request->estatus ?? $estatusOriginal);
-            
+                ? 0
+                : ($request->estatus ?? $estatusOriginal);
+
             $now = now();
             // Crear contenido HTML
             $contenido = $this->createBodyMessage(
@@ -149,32 +158,41 @@ class JustificacionController extends Controller
                 ->where('id', $request->id_justificacion)
                 ->update($values);
 
+            $asistencias = DB::table('asistencias')->where([
+                'user_id' => $justificacion->user_id,
+                'fecha' => $justificacion->fecha,
+            ])->first();
+
             // Procesar asistencia solo cuando corresponde
-            if (in_array($estatus, [1, 2]) && $estatusOriginal != 10) {
+            if ($asistencias) {
+                // Procesar asistencia solo cuando corresponde
+                if (in_array($estatus, [1, 2]) && $estatusOriginal != 10) {
 
-                // Decidir tipo de asistencia de forma clara
-                $tipoAsistencia = match (true) {
-                    $estatus == 1 && $justificacion->tipo_asistencia == 7 => 7,
-                    $estatus == 1 => 3,
-                    default => $justificacion->tipo_asistencia
-                };
+                    // Decidir tipo de asistencia de forma clara
+                    $tipoAsistencia = match (true) {
+                        $estatus == 1 && $justificacion->tipo_asistencia == 7 => 7,
+                        $estatus == 1 => 3,
+                        default => $justificacion->tipo_asistencia
+                    };
 
-                DB::table('asistencias')
-                    ->where([
-                        'user_id' => $justificacion->user_id,
-                        'fecha' => $justificacion->fecha,
-                    ])
-                    ->update([
+                    DB::table('asistencias')->where('id', $asistencias->id)->update([
                         'hora' => $tipoAsistencia == 7 ? $now->format('H:i:s') : null,
                         'tipo_asistencia' => $tipoAsistencia,
                     ]);
+                }
+
+                if (!empty($request->archivos)) {
+                    $this->procesarArchivosJustificacion($request->archivos, $asistencias->id);
+                }
+                $archivos = DB::table('media_archivos')->where('asistencia_id', $asistencias->id)->get();
             }
 
             DB::commit();
             return ApiResponse::success($message, [
                 'estatus' => $estatus,
                 'tipo_asistencia' => $tipoAsistencia,
-                'contenido' => $contenido
+                'contenido' => $contenido,
+                'archivos' => $archivos ?? []
             ]);
         } catch (Exception $e) {
             DB::rollBack();
@@ -218,7 +236,7 @@ class JustificacionController extends Controller
     public function marcarDerivado(int $id)
     {
         try {
-            $limiteDerivado = strtotime(date("Y-m-d 09:30:00"));
+            $limiteDerivado = strtotime(date("Y-m-d 10:00:00"));
             $horaActual = time();
 
             if ($horaActual < $limiteDerivado) {
@@ -263,6 +281,66 @@ class JustificacionController extends Controller
         } catch (Exception $e) {
             Log::error('[AsistenciaController@marcarDerivado] ' . $e->getMessage());
             return ApiResponse::error('Error al cambiar el estado.');
+        }
+    }
+
+    private function procesarArchivosJustificacion($nombresArchivos, int $asistenciaId)
+    {
+        // Obtener los registros desde la BD
+        $archivos = DB::table('media_archivos')
+            ->whereIn('nombre_archivo', $nombresArchivos)
+            ->get();
+
+        if ($archivos->isEmpty()) {
+            throw new Exception("No se encontraron archivos en media_archivos.");
+        }
+
+        foreach ($archivos as $archivo) {
+            try {
+                $path_archivo = $archivo->path_archivo;
+                $nombre_archivo = $archivo->nombre_archivo;
+                $rutaLocal = storage_path("app/public/{$path_archivo}");
+
+                $dirname = pathinfo($path_archivo, PATHINFO_DIRNAME); // solo la carpeta
+                $filename = pathinfo($path_archivo, PATHINFO_BASENAME); // nombre + extensión
+
+                if (!file_exists($rutaLocal)) {
+                    Log::error("Archivo no encontrado: {$rutaLocal}");
+                    throw new Exception("No se encontró el archivo local: {$nombre_archivo}");
+                }
+
+                $rutaS3 = Storage::disk('s3')->putFileAs(
+                    $dirname,
+                    new \Illuminate\Http\File($rutaLocal),
+                    $filename
+                );
+
+                if (!$rutaS3) {
+                    throw new Exception("Error al subir a S3: {$nombre_archivo}");
+                }
+
+                $urlS3 = Storage::disk('s3')->url($rutaS3);
+
+                DB::table('media_archivos')->where('id', $archivo->id)
+                    ->update([
+                        'asistencia_id' => $asistenciaId,
+                        'estatus' => 1,
+                        'url_publica' => $urlS3
+                    ]);
+
+                // ELIMINAR ARCHIVO LOCAL SOLO SI TODO SALIÓ BIEN
+                try {
+                    unlink($rutaLocal);
+                } catch (\Throwable $t) {
+                    // Si falla la eliminación local, no debe romper todo el proceso
+                    Log::warning("No se pudo eliminar archivo local: {$rutaLocal}. Error: {$t->getMessage()}");
+                }
+            } catch (Exception $e) {
+                // Log detallado
+                Log::error("[procesarArchivosJustificacion] {$e->getMessage()} Archivo: {$archivo->nombre_archivo}");
+                // Lanzar nuevamente para que el método principal haga rollback
+                throw $e;
+            }
         }
     }
 
@@ -332,5 +410,32 @@ class JustificacionController extends Controller
     private function base64ToUtf8($base64)
     {
         return base64_decode($base64);
+    }
+
+    public function eliminarFile()
+    {
+        try {
+            $ruta = 'asistencias_rc/justificaciones/2025/11/1763710725_59a36764f39fcba1.webp';
+
+            $eliminado = Storage::disk('s3')->delete($ruta);
+
+            if (!$eliminado) {
+                return response()->json([
+                    'ok' => false,
+                    'mensaje' => 'El archivo no existe o no se pudo eliminar.'
+                ]);
+            }
+
+            return response()->json([
+                'ok' => true,
+                'mensaje' => 'Archivo eliminado correctamente.'
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'ok' => false,
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 }

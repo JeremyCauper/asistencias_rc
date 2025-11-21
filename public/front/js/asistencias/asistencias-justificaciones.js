@@ -1,12 +1,12 @@
 
+const quillRespJustificacion = new EditorJustificacion('#respuesta-justificacion');
+const quilleditorJustificar = new EditorJustificacion('#editor-justificar');
 $(document).ready(function () {
-    const quillRespJustificacion = new EditorJustificacion('#respuesta-justificacion');
-    const quilleditorJustificar = new EditorJustificacion('#editor-justificar');
 
     $('.modal').on('hidden.bs.modal', function () {
         llenarInfoModal('modalJustificacion');
-        quillRespJustificacion.quill.setContents([]); // Limpia el editor
-        quilleditorJustificar.quill.setContents([]); // Limpia el editor
+        quillRespJustificacion.clear(); // Limpia el editor
+        quilleditorJustificar.clear(); // Limpia el editor
     });
 
     /** ============================
@@ -43,6 +43,7 @@ $(document).ready(function () {
 
             const just = data.justificacion;
             const personal = data.personal;
+            const archivos = data.archivos;
 
             if (just.estatus === 0) {
                 $('#responderJustificacion').slideDown();
@@ -70,6 +71,7 @@ $(document).ready(function () {
                 asunto: just.asunto,
                 contenido_html: contenidoHTML
             });
+            setMediaUrls('#modalJustificacion [aria-item="contenido_html"]', archivos);
 
             window.currentJustificacionId = just.id;
             window.currentJustificacionStatus = just.estatus;
@@ -114,16 +116,16 @@ $(document).ready(function () {
             }
 
             const estado = ESTADOS_JUSTIFICACION[estatus || 0];
-            const textoEditor = quillRespJustificacion.quill.getText().trim();
-            const contenidoHTMLResp = quillRespJustificacion.quill.root.innerHTML;
+            const contenidoHTMLResp = quillRespJustificacion.html();
 
-            if (!textoEditor && estatus === 2) {
+            if (!quillRespJustificacion.isEmpty() && estatus === 2) {
                 return boxAlert.box({ i: 'warning', h: 'Escribe una respuesta antes de enviar.' });
             }
 
             const mensaje = utf8ToBase64(contenidoHTMLResp);
 
             boxAlert.loading();
+            const archivos_data = Object.keys(quillRespJustificacion.mediaMap || {});
             const id = window.currentJustificacionId;
             const res = await fetch(__url + '/justificacion/responder-justificacion', {
                 method: "POST",
@@ -134,7 +136,8 @@ $(document).ready(function () {
                 body: JSON.stringify({
                     id_justificacion: id,
                     estatus,
-                    mensaje
+                    mensaje,
+                    archivos: archivos_data
                 }),
             });
 
@@ -150,6 +153,7 @@ $(document).ready(function () {
                 tipo_asistencia: badgeHtml(tasistencia.color, tasistencia.descripcion, true),
                 contenido_html: base64ToUtf8(resp.contenido)
             });
+            setMediaUrls('#modalJustificacion [aria-item="contenido_html"]', resp.archivos);
 
             boxAlert.box({ h: data.message });
             $('#responderJustificacion').slideUp();
@@ -192,10 +196,10 @@ $(document).ready(function () {
         fMananger.formModalLoding('modalJustificar', 'show');
 
         // Obtiene el contenido HTML del editor
-        const contenidoHTML = quilleditorJustificar.quill.root.innerHTML;
+        const contenidoHTML = quilleditorJustificar.html();
 
         // Verifica si hay contenido vacío
-        if (quilleditorJustificar.quill.getText().trim().length === 0) {
+        if (quilleditorJustificar.isEmpty()) {
             boxAlert.box({ i: 'warning', h: 'Por favor, escribe una justificación antes de enviar.' });
             return;
         }
@@ -205,6 +209,7 @@ $(document).ready(function () {
             return fMananger.formModalLoding('modalJustificar', 'hide');
         }
         let mensaje = utf8ToBase64(contenidoHTML);
+            const archivos_data = Object.keys(quilleditorJustificar.mediaMap || {});
 
         try {
             const body = JSON.stringify({
@@ -213,8 +218,11 @@ $(document).ready(function () {
                 tipo_asistencia: window.tipo_asistencia,
                 asunto: $('#asunto').val(),
                 contenido: mensaje,
+                archivos: archivos_data,
                 estatus: 1
             });
+            console.log(body);
+            
             const response = await fetch(__url + '/justificacion/justificar', {
                 method: 'POST',
                 headers: {
@@ -232,7 +240,7 @@ $(document).ready(function () {
             }
 
             boxAlert.box({ h: data.message || 'Justificación enviada' });
-            quilleditorJustificar.quill.setContents([]); // Limpia el editor
+            quilleditorJustificar.clear(); // Limpia el editor
             this.reset();
             updateTable();
             $('#modalJustificar').modal('hide');

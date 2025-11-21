@@ -17,6 +17,8 @@ class MisAsistenciaController extends Controller
 {
     public function view()
     {
+        // $config_system = session('config_system')->get('horaLimitePuntua')?->values;
+        // dd($config_system);
         // $this->validarPermisos(6, 14);
         try {
             $empresas = DB::table('empresa')->get();
@@ -69,8 +71,8 @@ class MisAsistenciaController extends Controller
                 ->whereBetween('fecha', [$fechaIni, $fechaFin])
                 ->get()->toArray();
 
-            $limitePuntual = strtotime(date("Y-m-d {$this->horaLimitePuntual}"));
-            $limiteDerivado = strtotime(date("Y-m-d {$this->horaLimiteDerivado}"));
+            $limitePuntual = strtotime(date("Y-m-d " . $this->horaLimitePuntual));
+            $limiteDerivado = strtotime(date("Y-m-d " . $this->horaLimiteDerivado));
             $horaActual = time();
 
             foreach ($asistencias as $a) {
@@ -128,8 +130,8 @@ class MisAsistenciaController extends Controller
                     ][$justificacion->estatus];
 
                     $acciones[] = [
-                        'funcion' => "showJustificacion({$justificacion->id}, '{$a->fecha}', '{$a->hora}', {$tipo_asistencia})",
-                        'texto' => '<i class="fas fa-clock me-2 text-' . $tJustificacion['color'] .'"></i> Justificación ' . $tJustificacion['text']
+                        'funcion' => "showJustificacion({$a->id})",
+                        'texto' => '<i class="fas fa-clock me-2 text-' . $tJustificacion['color'] . '"></i> Justificación ' . $tJustificacion['text']
                     ];
                 }
 
@@ -148,55 +150,6 @@ class MisAsistenciaController extends Controller
         } catch (Exception $e) {
             Log::error('[MisAsistenciaController@listar] ' . $e->getMessage());
             return ApiResponse::error(message: 'No se pudo obtener el listado.');
-        }
-    }
-
-    public function uploadMedia(Request $request)
-    {
-        try {
-            if ($request->hasFile('file')) {
-                $file = $request->file('file');
-                $mime = $file->getClientMimeType();
-                $isImage = str_starts_with($mime, 'image/');
-                $isVideo = str_starts_with($mime, 'video/');
-                $isPdf = str_starts_with($mime, 'application/pdf');
-
-                if (!($isImage || $isVideo || $isPdf)) {
-                    return response()->json(['error' => 'Tipo de archivo no permitido'], 415);
-                }
-
-                // Límites
-                $maxImage = 3 * 1024 * 1024; // 3MB
-                $maxVideo = 10 * 1024 * 1024; // 10MB
-                $maxPdf = 10 * 1024 * 1024; // 10MB
-
-                if ($isImage && $file->getSize() > $maxImage) {
-                    ApiResponse::error('Imagen mayor a 3MB');
-                }
-                if ($isVideo && $file->getSize() > $maxVideo) {
-                    ApiResponse::error('Video mayor a 10MB');
-                }
-                if ($isPdf && $file->getSize() > $maxPdf) {
-                    ApiResponse::error('Pdf mayor a 10MB');
-                }
-
-                // Guardar en public/media/año/mes
-                $path = $file->store('media/' . date('Y/m'), 'public');
-                $url = Storage::url("app/public/$path");
-
-                DB::beginTransaction();
-                $id = DB::table('media_archivos')->insertGetId([
-                    'path_archivo' => $path,
-                ]);
-                DB::commit();
-
-                return ApiResponse::success('Archivo subido correctamente.', ['url' => $url, 'archivo_id' => $id]);
-            } else {
-                return ApiResponse::error('No se ha subido ningún archivo.');
-            }
-        } catch (Exception $e) {
-            Log::error('[MisAsistenciaController@uploadMedia] ' . $e->getMessage());
-            return ApiResponse::error('Error al subir el archivo.');
         }
     }
 }

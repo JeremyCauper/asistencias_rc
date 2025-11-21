@@ -9,12 +9,6 @@ use App\Services\JsonDB;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Maatwebsite\Excel\Facades\Excel;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -122,8 +116,8 @@ class AsistenciaController extends Controller
 
                 $tipoAsistencias = JsonDB::table('tipo_asistencia')->whereIn('id', [1, 4, 7])->get()->keyBy('id');
 
-                $limitePuntual = strtotime(date("Y-m-d {$this->horaLimitePuntual}"));
-                $limiteDerivado = strtotime(date("Y-m-d {$this->horaLimiteDerivado}"));
+                $limitePuntual = strtotime(date("Y-m-d " . $this->horaLimitePuntual));
+                $limiteDerivado = strtotime(date("Y-m-d " . $this->horaLimiteDerivado));
                 $horaActual = time();
                 $fechaActual = date('Y-m-d') == $fecha;
                 $mesActual = date('Y-m') == date('Y-m', $strtoTime);
@@ -155,11 +149,12 @@ class AsistenciaController extends Controller
                     if ($justificacion && $justificacion->estatus == 10) {
                         $tipo_asistencia = 7;
                     }
+                    $isAdmin = in_array(Auth::user()->rol_system, [2, 4, 5, 7]);
 
                     // Acciones dinámicas
                     $acciones = [];
                     // Solo si tine id de asistencia y permisos adecuados por tipo de usuario o sistema y mes actual
-                    if ($asistencia_id && in_array(Auth::user()->rol_system, [2, 4, 5, 7]) || Auth::user()->sistema == 1 && $mesActual) {
+                    if ($asistencia_id && $isAdmin || Auth::user()->sistema == 1 && $mesActual) {
                         $acciones[] = [
                             'funcion' => "modificarDescuento($asistencia_id)",
                             'texto' => '<i class="fas fa-file-invoice-dollar me-2 text-secondary"></i> ' .
@@ -174,7 +169,7 @@ class AsistenciaController extends Controller
                             'texto' => '<i class="fas fa-random me-2 text-info"></i> Derivar'
                         ];
                     }
-                    
+
                     // Permite ver justificación si existe y está pendiente, si se cumple la condición envia notificación
                     if ($justificacion && $justificacion->estatus != 10) {
                         $tJustificacion = [
@@ -185,12 +180,12 @@ class AsistenciaController extends Controller
 
                         $acciones[] = [
                             'funcion' => "verJustificacion($asistencia_id)",
-                            'texto' => '<i class="fas fa-clock me-2 text-' . $tJustificacion['color'] .'"></i> Justificación ' . $tJustificacion['text']
+                            'texto' => '<i class="fas fa-clock me-2 text-' . $tJustificacion['color'] . '"></i> Justificación ' . $tJustificacion['text']
                         ];
                         $notificacion = $justificacion->estatus == 0;
                     }
 
-                    if (!$justificacion && in_array($tipo_asistencia, [1, 4]) && in_array(session('tipo_usuario'), [2, 4, 5, 7])) {
+                    if (!$justificacion && in_array($tipo_asistencia, [1, 4])) { // && $isAdmin
                         $tipoAsistencia = $tipoAsistencias->get($tipo_asistencia);
                         $acciones[] = [
                             'funcion' => "justificarAsistencia({$p->user_id}, '{$fecha}', '{$hora}', {$tipo_asistencia})",
@@ -257,6 +252,11 @@ class AsistenciaController extends Controller
                 ])
                 ->first();
 
+            $archivos = DB::table('media_archivos')
+                ->select('nombre_archivo', 'path_archivo', 'url_publica', 'estatus')
+                ->where('asistencia_id', $asistencia->id)
+                ->get();
+
             // Agregar los datos adicionales a la respuesta
             $detalle = [
                 'id' => $asistencia->id,
@@ -267,7 +267,8 @@ class AsistenciaController extends Controller
                 'tipo_asistencia' => $asistencia->tipo_asistencia,
                 'personal' => $personal,
                 'descuento' => $descuento,
-                'justificacion' => $justificacion
+                'justificacion' => $justificacion,
+                'archivos' => $archivos
             ];
 
             return ApiResponse::success('Consulta exitosa.', $detalle);
@@ -312,75 +313,6 @@ class AsistenciaController extends Controller
             DB::rollBack();
             Log::error('[AsistenciaController@ingresarDescuento] ' . $e->getMessage());
             return ApiResponse::error('Error al actualizar el descuento.');
-        }
-    }
-
-    public function updateJustificacionEstatus(Request $request, int $id)
-    {
-        try {
-            $validated = $request->validate([
-                'estatus' => 'required|in:1,2', // 1=aprobado, 2=rechazado
-                'contenidoHTML' => 'required|string',
-            ]);
-
-            $justificacion = DB::table('justificaciones')->where('id', $id)->first();
-            if (!$justificacion) {
-                return ApiResponse::notFound('Justificación no encontrada.');
-            }
-
-            if ($justificacion->estatus != 0) {
-                return ApiResponse::badRequest('Esta justificación ya fue procesada.');
-            }
-
-            DB::beginTransaction();
-
-            $isAprobado = $validated['estatus'] == 1;
-            $tipoAsistencia = $justificacion->tipo_asistencia == 7
-                ? 7
-                : ($isAprobado ? 3 : $justificacion->tipo_asistencia);
-
-            if ($isAprobado && in_array($justificacion->tipo_asistencia, [1, 4])) {
-                DB::table('descuentos_asistencia')
-                    ->where([
-                        'user_id' => $justificacion->user_id,
-                        'fecha' => $justificacion->fecha,
-                    ])
-                    ->delete();
-            }
-
-            DB::table('asistencias')
-                ->where([
-                    'user_id' => $justificacion->user_id,
-                    'fecha' => $justificacion->fecha,
-                ])
-                ->update([
-                    'hora' => $tipoAsistencia == 7 ? date('H:i:s', strtotime($justificacion->created_at)) : null,
-                    'tipo_asistencia' => $tipoAsistencia,
-                ]);
-
-            DB::table('justificaciones')->where('id', $id)
-                ->update([
-                    'estatus' => $validated['estatus'],
-                    'contenido_html' => $validated['contenidoHTML'],
-                ]);
-
-            DB::commit();
-
-            $mensaje = $isAprobado
-                ? 'Justificación aprobada correctamente.'
-                : 'Justificación rechazada correctamente.';
-
-            return ApiResponse::success($mensaje, [
-                'estatus' => $validated['estatus'],
-                'tipo_asistencia' => $tipoAsistencia,
-            ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            DB::rollBack();
-            return ApiResponse::validation($e->errors());
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::error('[AsistenciaController@updateJustificacionEstatus] ' . $e->getMessage());
-            return ApiResponse::error('Error al actualizar el estatus de la justificación.');
         }
     }
 
