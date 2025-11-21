@@ -114,12 +114,12 @@ document.getElementById('formJustificarDerivado').addEventListener('submit', asy
     fMananger.formModalLoding('modalJustificarDerivado', 'show');
 
     // Verifica si hay contenido vacío
-    if (quillJustificarDerivado.isEmpty() ) {
+    if (quillJustificarDerivado.isEmpty()) {
         boxAlert.box({ i: 'warning', h: 'Por favor, el contenido no puede estar vacio.' });
         return;
     }
 
-    if (quillJustificarDerivado.isEmptyImg() ) {
+    if (quillJustificarDerivado.isEmptyImg()) {
         boxAlert.box({ i: 'warning', h: 'Tiene que subir minimo una foto.' });
         return;
     }
@@ -129,8 +129,10 @@ document.getElementById('formJustificarDerivado').addEventListener('submit', asy
         return fMananger.formModalLoding('modalJustificarDerivado', 'hide');
     }
 
+    const archivos_data = Object.keys(quillJustificarDerivado.mediaMap || {});
     // Obtiene el contenido HTML del editor
     valid.data.data.mensaje = utf8ToBase64(quillJustificarDerivado.html());
+    valid.data.data.archivos = archivos_data;
 
     try {
         const body = JSON.stringify(valid.data.data);
@@ -213,13 +215,15 @@ document.getElementById('formJustificar').addEventListener('submit', async funct
         return fMananger.formModalLoding('modalJustificar', 'hide');
     }
     let mensaje = utf8ToBase64(contenidoHTML);
+    const archivos_data = Object.keys(quilleditorJustificar.mediaMap || {});
 
     try {
         const body = JSON.stringify({
             fecha: window.fecha,
             tipo_asistencia: window.tipo_asistencia,
             asunto: $('#asunto_justificar').val(),
-            contenido: mensaje
+            contenido: mensaje,
+            archivos: archivos_data
         });
 
         const response = await fetch(__url + '/justificacion/justificar', {
@@ -262,32 +266,48 @@ async function showJustificacion(id, fecha, hora, tipo_asistencia) {
         $('#modalVerJustificacion').modal('show');
         fMananger.formModalLoding('modalVerJustificacion', 'show');
 
-        const response = await fetch(__url + `/justificacion/mostrar/${id}`);
-        const result = await response.json();
+        const res = await $.getJSON(`${__url}/asistencias-diarias/mostrar/${id}`);
+        fMananger.formModalLoding('modalJustificacion', 'hide');
 
-        if (!response.ok) throw new Error(result.message || 'Error desconocido');
-        let data = result.data;
+        if (!res?.data) {
+            return boxAlert.box({
+                i: 'error',
+                t: 'No se pudo obtener la información',
+                h: res.message || 'No se encontraron datos de la asistencia seleccionada.'
+            });
+        }
 
-        let tasistencia = tipoAsistencia.find(s => s.id == tipo_asistencia)
+        const data = res.data;
+
+        const just = data.justificacion;
+        const archivos = data.archivos;
+
+        let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
             || { descripcion: 'Pendiente', color: '#9fa6b2' };
 
         let estado = [
             { descripcion: 'Pendiente', color: 'secondary' },
             { descripcion: 'Aprobada', color: 'success' },
             { descripcion: 'Rechazada', color: 'danger' },
-        ][data.justificacion.estatus || 0];
+        ][just.estatus || 0];
 
         llenarInfoModal('modalVerJustificacion', {
             ver_estatus: `<span class="badge badge-${estado.color} ms-2" style="font-size: 0.75rem;">${estado.descripcion}</span>`,
-            ver_fecha_asistencia: `${fecha} ${hora || ''}`,
+            ver_fecha_asistencia: `${data.fecha} ${data.hora || ''}`,
             ver_tipo_asistencia: `<span class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>`,
-            ver_asunto: data.justificacion.asunto,
-            ver_contenido_html: base64ToUtf8(data.justificacion.contenido_html)
+            ver_asunto: just.asunto,
+            ver_contenido_html: base64ToUtf8(just.contenido_html)
         });
+        setMediaUrls('#modalVerJustificacion [aria-item="ver_contenido_html"]', archivos);
 
         fMananger.formModalLoding('modalVerJustificacion', 'hide');
     } catch (error) {
+        fMananger.formModalLoding('modalVerJustificacion', 'hide');
         console.error(error);
-        alert(error.message);
+        boxAlert.box({
+            i: 'error',
+            t: 'Error en la solicitud',
+            h: 'No se pudo recuperar la información del servidor.'
+        });
     }
 }

@@ -131,7 +131,7 @@ class EditorJustificacion {
 
             const limit = maxMB * 1024 * 1024;
             if (file.size > limit) {
-                return alert(`Máximo ${maxMB}MB para ${tipo}`);
+                return boxAlert.box({ i: "warning", h: `Máximo ${maxMB}MB para ${tipo}` });
             }
 
             this.uploadFile(file, tipo);
@@ -150,7 +150,7 @@ class EditorJustificacion {
             const form = new FormData();
             form.append("file", file);
 
-            const res = await fetch(`${__url}/asistencias/uploadMedia`, {
+            const res = await fetch(`${__url}/media-archivo/upload-media/justificaciones`, {
                 method: "POST",
                 headers: { "X-CSRF-TOKEN": __token },
                 body: form
@@ -212,7 +212,7 @@ class EditorJustificacion {
         // Detectar eliminados
         for (const id in this.mediaMap) {
             if (!currentIds.includes(id)) {
-                console.log("Eliminado:", this.mediaMap[id]);
+                // console.log("Eliminado:", this.mediaMap[id]);
 
                 // Aquí haces lo que quieras:
                 // - eliminar de una lista

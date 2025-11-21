@@ -17,6 +17,7 @@ use App\Http\Controllers\Personal\PersonalController;
 use App\Http\Controllers\MantenimientosDeveloper\Menu\SubMenuController;
 use App\Http\Controllers\MantenimientosDeveloper\TipoAsistencia\TipoAsistenciaController;
 use App\Http\Controllers\MantenimientosDeveloper\TipoModalidad\TipoModalidadController;
+use App\Http\Controllers\MediaArchivo\MediaArchivoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,7 +61,13 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/asistencias/misasistencias', [MisAsistenciaController::class, 'view']);
     Route::get('/asistencias/listar', [MisAsistenciaController::class, 'listar']);
-    Route::post('/asistencias/uploadMedia', [MisAsistenciaController::class, 'uploadMedia']);
+
+    Route::controller(MediaArchivoController::class)
+        ->prefix('media-archivo')
+        ->as('mediaArchivo.')
+        ->group(function () {
+            Route::post('/upload-media/{carpeta}', 'uploadMedia')->name('uploadMedia');
+        });
 
     Route::controller(JustificacionController::class)
         ->prefix('justificacion')
@@ -70,6 +77,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/justificar', 'storeJustificacion')->name('justificar');
             Route::post('/responder-justificacion', 'responseJustificacion')->name('responseJustificacion');
             Route::put('/marcar-derivado/{id}', 'marcarDerivado')->name('marcarDerivado');
+            Route::get('/eliminarFile', 'eliminarFile')->name('eliminarFile');
         });
 
     Route::controller(AreaPersonalController::class)

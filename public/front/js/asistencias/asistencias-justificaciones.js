@@ -43,6 +43,7 @@ $(document).ready(function () {
 
             const just = data.justificacion;
             const personal = data.personal;
+            const archivos = data.archivos;
 
             if (just.estatus === 0) {
                 $('#responderJustificacion').slideDown();
@@ -70,6 +71,7 @@ $(document).ready(function () {
                 asunto: just.asunto,
                 contenido_html: contenidoHTML
             });
+            setMediaUrls('#modalJustificacion [aria-item="contenido_html"]', archivos);
 
             window.currentJustificacionId = just.id;
             window.currentJustificacionStatus = just.estatus;
@@ -114,16 +116,16 @@ $(document).ready(function () {
             }
 
             const estado = ESTADOS_JUSTIFICACION[estatus || 0];
-            const textoEditor = quillRespJustificacion.quill.getText().trim();
             const contenidoHTMLResp = quillRespJustificacion.html();
 
-            if (!textoEditor && estatus === 2) {
+            if (!quillRespJustificacion.isEmpty() && estatus === 2) {
                 return boxAlert.box({ i: 'warning', h: 'Escribe una respuesta antes de enviar.' });
             }
 
             const mensaje = utf8ToBase64(contenidoHTMLResp);
 
             boxAlert.loading();
+            const archivos_data = Object.keys(quillRespJustificacion.mediaMap || {});
             const id = window.currentJustificacionId;
             const res = await fetch(__url + '/justificacion/responder-justificacion', {
                 method: "POST",
@@ -134,7 +136,8 @@ $(document).ready(function () {
                 body: JSON.stringify({
                     id_justificacion: id,
                     estatus,
-                    mensaje
+                    mensaje,
+                    archivos: archivos_data
                 }),
             });
 
@@ -150,6 +153,7 @@ $(document).ready(function () {
                 tipo_asistencia: badgeHtml(tasistencia.color, tasistencia.descripcion, true),
                 contenido_html: base64ToUtf8(resp.contenido)
             });
+            setMediaUrls('#modalJustificacion [aria-item="contenido_html"]', resp.archivos);
 
             boxAlert.box({ h: data.message });
             $('#responderJustificacion').slideUp();
@@ -205,6 +209,7 @@ $(document).ready(function () {
             return fMananger.formModalLoding('modalJustificar', 'hide');
         }
         let mensaje = utf8ToBase64(contenidoHTML);
+            const archivos_data = Object.keys(quilleditorJustificar.mediaMap || {});
 
         try {
             const body = JSON.stringify({
@@ -213,8 +218,11 @@ $(document).ready(function () {
                 tipo_asistencia: window.tipo_asistencia,
                 asunto: $('#asunto').val(),
                 contenido: mensaje,
+                archivos: archivos_data,
                 estatus: 1
             });
+            console.log(body);
+            
             const response = await fetch(__url + '/justificacion/justificar', {
                 method: 'POST',
                 headers: {

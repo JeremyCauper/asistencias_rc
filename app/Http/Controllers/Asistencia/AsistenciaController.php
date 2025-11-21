@@ -169,7 +169,7 @@ class AsistenciaController extends Controller
                             'texto' => '<i class="fas fa-random me-2 text-info"></i> Derivar'
                         ];
                     }
-                    
+
                     // Permite ver justificación si existe y está pendiente, si se cumple la condición envia notificación
                     if ($justificacion && $justificacion->estatus != 10) {
                         $tJustificacion = [
@@ -180,7 +180,7 @@ class AsistenciaController extends Controller
 
                         $acciones[] = [
                             'funcion' => "verJustificacion($asistencia_id)",
-                            'texto' => '<i class="fas fa-clock me-2 text-' . $tJustificacion['color'] .'"></i> Justificación ' . $tJustificacion['text']
+                            'texto' => '<i class="fas fa-clock me-2 text-' . $tJustificacion['color'] . '"></i> Justificación ' . $tJustificacion['text']
                         ];
                         $notificacion = $justificacion->estatus == 0;
                     }
@@ -252,6 +252,11 @@ class AsistenciaController extends Controller
                 ])
                 ->first();
 
+            $archivos = DB::table('media_archivos')
+                ->select('nombre_archivo', 'path_archivo', 'url_publica', 'estatus')
+                ->where('asistencia_id', $asistencia->id)
+                ->get();
+
             // Agregar los datos adicionales a la respuesta
             $detalle = [
                 'id' => $asistencia->id,
@@ -262,7 +267,8 @@ class AsistenciaController extends Controller
                 'tipo_asistencia' => $asistencia->tipo_asistencia,
                 'personal' => $personal,
                 'descuento' => $descuento,
-                'justificacion' => $justificacion
+                'justificacion' => $justificacion,
+                'archivos' => $archivos
             ];
 
             return ApiResponse::success('Consulta exitosa.', $detalle);

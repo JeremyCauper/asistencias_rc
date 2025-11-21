@@ -130,7 +130,7 @@ class MisAsistenciaController extends Controller
                     ][$justificacion->estatus];
 
                     $acciones[] = [
-                        'funcion' => "showJustificacion({$justificacion->id}, '{$a->fecha}', '{$a->hora}', {$tipo_asistencia})",
+                        'funcion' => "showJustificacion({$a->id})",
                         'texto' => '<i class="fas fa-clock me-2 text-' . $tJustificacion['color'] . '"></i> Justificación ' . $tJustificacion['text']
                     ];
                 }
@@ -150,67 +150,6 @@ class MisAsistenciaController extends Controller
         } catch (Exception $e) {
             Log::error('[MisAsistenciaController@listar] ' . $e->getMessage());
             return ApiResponse::error(message: 'No se pudo obtener el listado.');
-        }
-    }
-
-    public function uploadMedia(Request $request)
-    {
-        try {
-            if ($request->hasFile('file')) {
-                $file = $request->file('file');
-
-                $mime = $file->getClientMimeType();
-                $isImage = str_starts_with($mime, 'image/');
-                $isVideo = str_starts_with($mime, 'video/');
-                $isPdf = str_starts_with($mime, 'application/pdf');
-
-                if (!($isImage || $isVideo || $isPdf)) {
-                    return response()->json(['error' => 'Tipo de archivo no permitido'], 415);
-                }
-
-                // límites
-                $maxImage = 3 * 1024 * 1024;
-                $maxVideo = 10 * 1024 * 1024;
-                $maxPdf = 10 * 1024 * 1024;
-
-                if ($isImage && $file->getSize() > $maxImage) {
-                    return ApiResponse::error('Imagen mayor a 3MB');
-                }
-                if ($isVideo && $file->getSize() > $maxVideo) {
-                    return ApiResponse::error('Video mayor a 10MB');
-                }
-                if ($isPdf && $file->getSize() > $maxPdf) {
-                    return ApiResponse::error('Pdf mayor a 10MB');
-                }
-
-                // 📌 NOMBRE ÚNICO
-                $extension = $file->getClientOriginalExtension();
-                $nombre_archivo = time() . '_' . bin2hex(random_bytes(8));
-                $nombre = $nombre_archivo . '.' . $extension;
-
-                // 📌 Guardar manualmente el archivo usando el nombre único
-                $path = 'media/' . date('Y/m') . '/' . $nombre;
-                Storage::disk('public')->put($path, file_get_contents($file));
-
-                $url = Storage::url($path);
-
-                DB::beginTransaction();
-                DB::table('media_archivos')->insert([
-                    'nombre_archivo' => $nombre_archivo,
-                    'url_archivo' => $path,
-                ]);
-                DB::commit();
-
-                return ApiResponse::success('Archivo subido correctamente.', [
-                    'url' => $path,
-                    'nombre_archivo' => $nombre_archivo,
-                ]);
-            } else {
-                return ApiResponse::error('No se ha subido ningún archivo.');
-            }
-        } catch (Exception $e) {
-            Log::error('[MisAsistenciaController@uploadMedia] ' . $e->getMessage());
-            return ApiResponse::error('Error al subir el archivo.');
         }
     }
 }
