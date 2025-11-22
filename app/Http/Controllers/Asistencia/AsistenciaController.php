@@ -52,6 +52,9 @@ class AsistenciaController extends Controller
             $tipoPersonal = $request->query('tipoPersonal', null)
                 ? explode(',', $request->query('tipoPersonal'))
                 : null;
+            $tipoArea = $request->query('tipoArea', null)
+                ? explode(',', $request->query('tipoArea'))
+                : null;
             $listado = [];
 
             $wherePersonal = ['estatus' => 1];
@@ -112,6 +115,7 @@ class AsistenciaController extends Controller
                     ->where($wherePersonal)
                     ->whereIn('estado_sync', [1, 2, 3])
                     ->whereIn('rol_system', $tipoPersonal)
+                    ->whereIn('area_id', $tipoArea)
                     ->get()->toArray();
 
                 $tipoAsistencias = JsonDB::table('tipo_asistencia')->whereIn('id', [1, 4, 7])->get()->keyBy('id');

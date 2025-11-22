@@ -3,32 +3,32 @@
 
 <head>
     <script>
-        // if (0 == <?= session('tipo_sistema') ?>) {
-        //     (function() {
-        //         let abierto = false;
-        //         setInterval(() => {
-        //             const threshold = 160;
-        //             const ancho = window.outerWidth - window.innerWidth > threshold;
-        //             const alto = window.outerHeight - window.innerHeight > threshold;
+        if (0 == <?= session('tipo_sistema') ?>) {
+            (function() {
+                let abierto = false;
+                setInterval(() => {
+                    const threshold = 160;
+                    const ancho = window.outerWidth - window.innerWidth > threshold;
+                    const alto = window.outerHeight - window.innerHeight > threshold;
 
-        //             if ((ancho || alto) && !abierto) {
-        //                 console.warn('Para que quieres abrir, papu? 👀');
-        //                 abierto = true;
-        //                 fetch(__url + '/logout', {
-        //                         method: 'GET',
-        //                         mode: 'no-cors', // esto permite enviar la petición aunque no haya CORS
-        //                         cache: 'no-store'
-        //                     })
-        //                     .then(() => {
-        //                         location.href = __url + '/inicio';
-        //                     })
-        //                     .catch(err => console.error('Error al enviar la petición:', err));
-        //             } else if (!ancho && !alto && abierto) {
-        //                 abierto = false;
-        //             }
-        //         }, 1000);
-        //     })();
-        // }
+                    if ((ancho || alto) && !abierto) {
+                        console.warn('Para que quieres abrir, papu? 👀');
+                        abierto = true;
+                        fetch(__url + '/logout', {
+                                method: 'GET',
+                                mode: 'no-cors', // esto permite enviar la petición aunque no haya CORS
+                                cache: 'no-store'
+                            })
+                            .then(() => {
+                                location.href = __url + '/inicio';
+                            })
+                            .catch(err => console.error('Error al enviar la petición:', err));
+                    } else if (!ancho && !alto && abierto) {
+                        abierto = false;
+                    }
+                }, 1000);
+            })();
+        }
     </script>
     <!-- Required meta tags -->
     <meta charset="utf-8">
