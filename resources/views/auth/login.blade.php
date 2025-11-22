@@ -73,19 +73,16 @@
                         </div>
                         <!-- Usuario input -->
                         <div class="form-icon icon-usuario my-4">
-                            <input type="text" name="usuario" id="usuario" class="form-control" placeholder="Usuario"
-                                autofocus require="usuario">
+                            <input type="text" name="login_asist_usuario" id="login_asist_usuario" class="form-control"
+                                placeholder="Usuario" autofocus autocomplete="username asistencias" require="usuario">
                         </div>
 
                         <!-- Password input -->
-                        <!-- <div class="input-group form-outline my-4" style="padding: .1152rem;" data-mdb-input-init aria-cinput="contraseña">
-                            <span class="input-group-text border-0 px-2" for="contrasena"><i class="fas fa-key"></i></span>
-                            <input type="password" name="password" id="contrasena" class="form-control border-start-0 ps-1" placeholder="Contraseña" autofocus require="contraseña">
-                            <span class="input-group-text border-0 px-2" style="padding-top: 7px;"><i class="fas fa-eye-slash" id="icon-pass"></i></span>
-                        </div> -->
+                        
                         <div class="form-icon icon-contrasena my-4">
-                            <input type="password" name="clave" id="clave" class="form-control"
-                                placeholder="Contraseña" autofocus require="contraseña">
+                            <input type="password" name="login_asist_password" id="login_asist_password"
+                                class="form-control" placeholder="Contraseña" autofocus
+                                autocomplete="current-password asistencias" require="Contraseña">
                             <span class="icon-pass"><i class="fas fa-eye-slash"></i></span>
                         </div>
 

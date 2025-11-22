@@ -29,7 +29,7 @@ class User extends Authenticatable
         'estado_sync',
         'sistema',
         'rol_system',
-        'usuario',
+        // 'usuario',
         'password_system'
     ];
 
@@ -55,6 +55,11 @@ class User extends Authenticatable
     public function setPasswordAttribute($value)
     {
         $this->attributes['password_system'] = bcrypt($value);
+    }
+
+    public function username()
+    {
+        return 'dni';
     }
 
     public function getAuthPassword()

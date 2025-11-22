@@ -239,8 +239,8 @@ class JustificacionController extends Controller
             $limiteDerivado = strtotime(date("Y-m-d 10:00:00"));
             $horaActual = time();
 
-            if ($horaActual < $limiteDerivado) {
-                return ApiResponse::error('Solo se puede deribar hasta las 09:30:00 am');
+            if ($horaActual > $limiteDerivado) {
+                return ApiResponse::error('Solo se puede deribar hasta las 10:00:00 am');
             }
 
             $asistencia = DB::table('asistencias')->where('id', $id)->first();

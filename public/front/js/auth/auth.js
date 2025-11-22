@@ -46,7 +46,7 @@ document.getElementById('form-login').addEventListener('submit', function (event
                     errorMessage = 'Solicitud incorrecta. Verifica los datos ingresados.';
                     break;
                 case 401:
-                    errorMessage = 'Credenciales inválidas. Verifica tu usuario y clave.';
+                    errorMessage = 'Credenciales inválidas. Verifica tu usuario y contraseña.';
                     break;
                 case 404:
                     errorMessage = 'No se encontró el recurso solicitado.';
@@ -82,15 +82,15 @@ function funKeyup() {
     $(`[info-message="${this.getAttribute("require")}"]`).remove();
 }
 
-document.getElementById('usuario').addEventListener('keyup', funKeyup);
-document.getElementById('clave').addEventListener('keyup', funKeyup);
+document.getElementById('login_asist_usuario').addEventListener('keyup', funKeyup);
+document.getElementById('login_asist_password').addEventListener('keyup', funKeyup);
 
 document.querySelector('.icon-pass').addEventListener('click', function () {
-    let clave = document.getElementById('clave');
+    let login_asist_password = document.getElementById('login_asist_password');
     let icono = this.querySelector('i');
-    const isPassword = clave.type === 'password';
+    const isPassword = login_asist_password.type === 'password';
     icono.className = isPassword ? 'fas fa-eye' : 'fas fa-eye-slash';
-    clave.type = isPassword ? 'text' : 'password';
+    login_asist_password.type = isPassword ? 'text' : 'password';
 });
 
 

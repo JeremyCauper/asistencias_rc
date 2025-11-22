@@ -30,10 +30,6 @@ $(document).ready(function () {
             requested: true
         },
         {
-            control: '#usuario',
-            requested: true
-        },
-        {
             control: '#password_view',
             addLabel: 'Clave en Sistema',
             requested: true
@@ -93,7 +89,6 @@ $(document).ready(function () {
             $('#nombre').val(p.nombre);
             $('#apellido').val(p.apellido);
             $('#rol_system').val(p.rol_system).trigger('change');
-            $('#usuario').val(p.usuario);
             $('#password_view').val(p.password_view);
             $('#cardno').val(p.cardno);
             $('#rol_sensor').val(p.role).trigger('change');

@@ -25,13 +25,13 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'usuario' => 'required|string',
-            'clave' => 'required|string',
+            'login_asist_usuario' => 'required|string',
+            'login_asist_password' => 'required|string',
         ]);
 
         $credentials = [
-            'usuario' => $request->input('usuario'),
-            'password' => $request->input('clave'),
+            'dni' => $request->input('login_asist_usuario'),
+            'password' => $request->input('login_asist_password'),
         ];
 
         if (!Auth::attempt($credentials))

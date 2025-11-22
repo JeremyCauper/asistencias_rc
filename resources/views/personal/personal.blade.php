@@ -92,8 +92,7 @@
                     <th>Empresa</th>
                     <th>Area</th>
                     <th>Personal</th>
-                    <th>Usuario</th>
-                    <th>Clave</th>
+                    <th>Contraseña</th>
                     <th>Tipo</th>
                     <th>Estado Sync</th>
                     <th>Estado</th>
@@ -153,9 +152,6 @@
                         }
                     },
                     {
-                        data: 'usuario'
-                    },
-                    {
                         data: 'clave'
                     },
                     {
@@ -202,7 +198,7 @@
                 createdRow: function(row, data, dataIndex) {
                     $(row).addClass('text-center');
                     $(row).find('td:eq(1), td:eq(3)').addClass('text-start');
-                    $(row).find('td:eq(11)').addClass(`td-acciones`);
+                    $(row).find('td:eq(10)').addClass(`td-acciones`);
                 },
                 processing: true
             });
@@ -261,7 +257,7 @@
                     <div class="col-6 mb-2">
                         <input id="apellido" class="form-control">
                     </div>
-                    <div class="col-md-4 col-12 mb-2">
+                    <div class="col-6 mb-2">
                         <select id="rol_system" class="select">
                             <option value="">-- Seleccione --</option>
                             @foreach ($tipoPersonal as $v)
@@ -274,10 +270,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-4 col-6 mb-2">
-                        <input id="usuario" class="form-control">
-                    </div>
-                    <div class="col-md-4 col-6 mb-2">
+                    <div class="col-6 mb-2">
                         <input id="password_view" class="form-control">
                     </div>
 
