@@ -16,8 +16,8 @@ class EditorJustificacion {
     init() {
         const toolbarBtns = [];
 
-        if (this.botones.includes('link')) toolbarBtns.push('link');
         const mediaBtns = [];
+        if (this.botones.includes('link')) mediaBtns.push('link');
         if (this.botones.includes('image')) mediaBtns.push('image');
         if (this.botones.includes('video')) mediaBtns.push('video');
         if (this.botones.includes('pdf')) mediaBtns.push('pdf');

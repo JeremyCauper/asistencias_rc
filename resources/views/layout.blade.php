@@ -39,6 +39,10 @@
             --color-before: #ffffff;
         }
 
+        html {
+            overflow: hidden;
+        }
+
         body {
             background-color: var(--root-layout-bg);
         }
@@ -82,11 +86,18 @@
         .check-trail .toltip-theme {
             position: absolute;
             display: none;
-            top: 190%;
-            left: 50%;
-            font-size: 1rem !important;
+            top: 220%;
+            font-size: .85rem !important;
             transform: translate(-50%, -50%);
-            box-shadow: 0px 0px 2px rgba(var(--mdb-surface-color-rgb), 1), 0px 0px 2px rgba(var(--mdb-surface-color-rgb), 1);
+            border: 1px solid #ccc;
+            background-color: var(--root-container-bg);
+            color: var(--mdb-surface-color);
+        }
+
+        .check-trail .toltip-theme i {
+            color: var(--mdb-surface-color);
+            font-size: .6rem;
+            margin: 0 .2rem;
         }
 
         .check-trail:hover .toltip-theme {
@@ -295,6 +306,54 @@
             background-color: rgb(var(--mdb-surface-color-rgb), 6%);
         }
 
+        /* Sidebar Footer */
+        .sidebar .sidebar__footer {
+            position: absolute;
+            bottom: 0;
+            padding: .5rem 0;
+            cursor: default;
+        }
+
+        .sidebar .sidebar__footer .sidebar__footer-item .sidebar__footer-user {
+            --text-sm--line-height: 1.42857;
+            --menu-item-height: calc(.25rem*9);
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 6px 10px;
+            margin: 2px 6px;
+            color: var(--root-layout-color);
+            line-height: var(--text-sm--line-height);
+            min-height: var(--menu-item-height);
+            text-decoration: none;
+            gap: .5rem;
+            border-radius: 10px;
+            border: none;
+        }
+
+        .sidebar .sidebar__footer .sidebar__footer-item .sidebar__footer-user .sidebar__footer-user-sigla {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgb(48, 125, 251);
+            color: #ffffff;
+            font-weight: bold;
+            font-size: .8rem;
+            width: 1.75rem;
+            height: 1.75rem;
+        }
+
+        .sidebar .sidebar__footer .sidebar__footer-item .sidebar__footer-user .sidebar__footer-user-text {
+            text-align: start;
+        }
+
+        .sidebar .sidebar__footer .sidebar__footer-item .sidebar__footer-user .sidebar__footer-user-text h6 {
+            margin: 0;
+            font-size: .875rem;
+        }
+
+
+
         /* Sidebar a la derecha encongido solo iconos */
         .sidebar-only-icon.sidebar {
             width: 52px;
@@ -350,7 +409,7 @@
             font-size: .75rem;
             border-radius: .5rem;
             border: 1px solid #ccc;
-            left: 50px;
+            left: 55px;
         }
 
         .sidebar-only-icon.sidebar .sidebar__body .sidebar__item[data-collapse]:hover .sidebar__link .sidebar__link-text .truncate {
@@ -359,7 +418,7 @@
             font-size: .9rem;
             border-radius: .75rem .75rem 0 0;
             border: 1px solid #ccc;
-            left: 50px;
+            left: 55px;
         }
 
         .sidebar-only-icon.sidebar .sidebar__body .sidebar__item[data-collapse]:hover .sidebar__submenu {
@@ -371,7 +430,7 @@
             border-radius: 0 0 .75rem .75rem;
             border: 1px solid #ccc;
             top: 35px;
-            left: 56px;
+            left: 61px;
         }
 
         .sidebar-only-icon.sidebar.sidebar .sidebar__body .sidebar__item .sidebar__submenu .sidebar__submenu-link:not(.is-active) {
@@ -385,13 +444,6 @@
 
         .sidebar .sidebar__body .sidebar__item .sidebar__submenu .sidebar__submenu-link.is-active::before {
             background-color: rgb(48, 125, 251);
-        }
-
-
-        .sidebar__footer {
-            position: absolute;
-            bottom: 0;
-            padding: .5rem;
         }
 
         .content-wrapper {
@@ -482,15 +534,17 @@
             </div>
 
             <!-- Footer -->
-            <footer class="sidebar__footer">
-                <a class="sidebar-icon-logo" href="/">
-                    <div></div>
-                </a>
-
-                <button class="sidebar-close" type="button" aria-label="Cerrar barra lateral">
-                    <i class="fas fa-bars" style="color: #8f8f8f;"></i>
-                </button>
-            </footer>
+            <nav class="sidebar__footer">
+                <div class="sidebar__footer-item">
+                    <button class="sidebar__footer-user" href="/">
+                        <div class="sidebar__footer-user-sigla">JC</div>
+                        <div class="sidebar__footer-user-text">
+                            <h6>Jeremy P. Cauper S.</h6>
+                            <strong>Tecnico</strong>
+                        </div>
+                    </button>
+                </div>
+            </nav>
         </aside>
         <script>
             const sidebar = document.querySelector('.sidebar');
@@ -568,10 +622,10 @@
                         <input id="check" type="checkbox">
                         <label for="check" class="check-trail">
                             <span class="check-handler"></span>
-                            <span class="badge badge-secondary toltip-theme">
+                            <!-- <span class="badge badge-secondary toltip-theme">
                                 <b class="fw-bold">Shift</b><i class="fas fa-plus fa-2xs text-white"></i> <b
                                     class="fw-bold">D</b>
-                            </span>
+                            </span> -->
                         </label>
                         <script>
                             function esCelularTema() {
@@ -586,7 +640,7 @@
                             $('#check').prop('checked', localStorage.data_mdb_theme == 'light' ? true : false);
                             if (!esCelularTema()) {
                                 $('.check-trail').append(`<span class="badge badge-secondary toltip-theme">
-                                <b class="fw-bold">Ctrl</b><i class="fas fa-plus fa-2xs text-white"></i> Alt</b><i class="fas fa-plus fa-2xs text-white"></i> <b class="fw-bold">D</b>
+                                <b class="fw-bold">Ctrl</b><i class="fas fa-plus"></i> <b class="fw-bold">Alt</b><i class="fas fa-plus"></i> <b class="fw-bold">D</b>
                             </span>`);
                             }
 
@@ -605,7 +659,7 @@
                                     toggleTheme();
                                 });
 
-                                $(window).on('keydown', ({ key, shiftKey, ctrlKey, altKey  }) => {
+                                $(window).on('keydown', ({ key, shiftKey, ctrlKey, altKey }) => {
                                     if (ctrlKey && altKey && key.toLowerCase() === 'd') {
                                         toggleTheme(true);
                                     }
