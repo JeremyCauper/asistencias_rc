@@ -47,11 +47,20 @@ class MediaArchivoController extends Controller
                 $nombre_archivo = time() . '_' . bin2hex(random_bytes(8));
                 $nombre = $nombre_archivo . '.' . $extension;
 
-                // Guardar manualmente el archivo usando el nombre único
-                $path = 'asistencias_rc/' . ($carpeta ?? 'media') . '/' . date('Y/m') . '/' . $nombre;
-                Storage::disk('public')->put($path, file_get_contents($file));
+                $folder = 'asistencias_rc/' . ($carpeta ?? 'media') . '/' . date('Y/m');
+                $path = $folder . '/' . $nombre;
 
-                $url = Storage::url($path);
+                // Crear carpeta dentro de public/
+                $fullFolderPath = public_path($folder);
+
+                if (!file_exists($fullFolderPath)) {
+                    mkdir($fullFolderPath, 0755, true);
+                }
+
+                // Guardar archivo correctamente
+                if (!file_put_contents($fullFolderPath . '/' . $nombre, file_get_contents($file))) {
+                    return ApiResponse::error('No se ha subido ningún archivo.');
+                }
 
                 DB::beginTransaction();
                 DB::table('media_archivos')->insert([

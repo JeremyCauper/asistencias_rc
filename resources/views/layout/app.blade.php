@@ -17,9 +17,7 @@
                             console.warn('Para que quieres abrir, papu? 👀');
                             abierto = true;
                             fetch(url_base_logeo + '/logout', {
-                                method: 'GET',
-                                mode: 'no-cors', // esto permite enviar la petición aunque no haya CORS
-                                cache: 'no-store'
+                                method: 'GET'
                             })
                                 .then(() => {
                                     location.href = url_base_logeo + '/inicio';

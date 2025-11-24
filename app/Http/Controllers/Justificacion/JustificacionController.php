@@ -299,7 +299,7 @@ class JustificacionController extends Controller
             try {
                 $path_archivo = $archivo->path_archivo;
                 $nombre_archivo = $archivo->nombre_archivo;
-                $rutaLocal = storage_path("app/public/{$path_archivo}");
+                $rutaLocal = public_path($path_archivo);
 
                 $dirname = pathinfo($path_archivo, PATHINFO_DIRNAME); // solo la carpeta
                 $filename = pathinfo($path_archivo, PATHINFO_BASENAME); // nombre + extensión
