@@ -165,3 +165,6 @@ Route::get('/obtener_modulos2/{tipo}/{accesso}', [Controller::class, 'obtenerMod
 Route::get('/foto', function () {
     return view('welcome');
 });
+Route::get('/layout', function () {
+    return view('layout');
+});

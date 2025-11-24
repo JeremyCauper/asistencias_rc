@@ -3,7 +3,8 @@
 
 <head>
     <script>
-        if (0 == <?= session('tipo_sistema') ?>) {
+        const url_base_logeo = '{{ secure_url('') }}';
+        if (0 == {{ session('tipo_sistema') }}) {
             (function() {
                 let abierto = false;
                 setInterval(() => {
@@ -14,13 +15,13 @@
                     if ((ancho || alto) && !abierto) {
                         console.warn('Para que quieres abrir, papu? 👀');
                         abierto = true;
-                        fetch(__url + '/logout', {
+                        fetch(url_base_logeo + '/logout', {
                                 method: 'GET',
                                 mode: 'no-cors', // esto permite enviar la petición aunque no haya CORS
                                 cache: 'no-store'
                             })
                             .then(() => {
-                                location.href = __url + '/inicio';
+                                location.href = url_base_logeo + '/inicio';
                             })
                             .catch(err => console.error('Error al enviar la petición:', err));
                     } else if (!ancho && !alto && abierto) {
@@ -44,11 +45,7 @@
     <!-- MDB -->
     <link href="{{ secure_asset('front/vendor/mdboostrap/css/mdb.min7.2.0.css') }}" rel="stylesheet">
     <!-- Iconos -->
-    <!-- <link href="{{ secure_asset('front/vendor/simple-icon/bootstrap-icons.css') }}" rel="stylesheet">
-    <link href="{{ secure_asset('front/vendor/simple-icon/styles.min.css') }}" rel="stylesheet"> -->
     <link href="{{ secure_asset('front/vendor/select/select2.min.css') }}" rel="stylesheet">
-
-    <!-- <link rel="stylesheet" href="{{ secure_asset('front/vendor/flatpickr/flatpickr.min.css') }}"> -->
 
     <link rel="stylesheet" href="{{ secure_asset('front/vendor/sweetalert/animate.min.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('front/vendor/sweetalert/default.css') }}">
@@ -63,7 +60,7 @@
         const acronimo = '{{ session()->get('config')->sigla }}';
         const acronimo_bg = '{{ session()->get('config')->siglaBg }}';
         const tipoUsuario = {{ session('tipo_usuario') }};
-        const __url = "{{secure_url('') }}";
+        const __url = "{{ secure_url('') }}";
         const __asset = "{{ secure_asset('front/') }}";
         const __token = "{{ csrf_token() }}";;
     </script>
@@ -78,14 +75,6 @@
     <script src="{{ secure_asset('front/js/app/AlertMananger.js') }}"></script>
     <script src="{{ secure_asset('front/vendor/dataTable/jquery.dataTables.min.js') }}"></script>
     <script src="{{ secure_asset('front/js/app.js') }}"></script>
-
-    <!-- DataTables Buttons -- >
-  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
-  <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-
-  < !-- Excel export -- >
-  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script> -->
 
     <link rel="stylesheet" href="{{ secure_asset('front/css/tema.css') }}">
     <script src="{{ secure_asset('front/js/app/ToggleTema.js') }}"></script>
@@ -149,7 +138,7 @@
                                 </span>
                             </li>
                             <li>
-                                <a class="dropdown-item py-3" href="{{secure_url('/logout') }}">
+                                <a class="dropdown-item py-3" href="{{ secure_url('/logout') }}">
                                     <i class="dropdown-item-icon fas fa-power-off text-primary me-2"></i>
                                     Cerrar sesión
                                 </a>
@@ -168,8 +157,8 @@
                     body.addClass('sidebar-icon-only');
                 }
 
-                $(document).ready(function () {
-                    $('#expandir-menu i').on("click", function () {
+                $(document).ready(function() {
+                    $('#expandir-menu i').on("click", function() {
                         localStorage.sidebarIconOnly = false;
                         if (window.innerWidth > 992) {
                             body.toggleClass('sidebar-icon-only');
@@ -206,14 +195,18 @@
                     </li>
                     @foreach (session('customModulos') as $menu)
                         <li class="nav-item menu-item">
-                            <a class="nav-link menu-link" {{!empty($menu->submenu) ? (string) 'data-mdb-collapse-init role=button aria-expanded=false aria-controls=' . $menu->ruta : ''}} data-mdb-ripple-init
-                                href={{!empty($menu->submenu) ? "#$menu->ruta" : url($menu->ruta)}}>
+                            <a class="nav-link menu-link"
+                                {{ !empty($menu->submenu) ? (string) 'data-mdb-collapse-init role=button aria-expanded=false aria-controls=' . $menu->ruta : '' }}
+                                data-mdb-ripple-init
+                                href={{ !empty($menu->submenu) ? "#$menu->ruta" : url($menu->ruta) }}>
                                 <i class="{{ $menu->icon }} menu-icon"></i>
                                 <span class="menu-title">{{ $menu->descripcion }}</span>
-                                @if (!empty($menu->submenu)) <i class="menu-arrow"></i> @endif
+                                @if (!empty($menu->submenu))
+                                    <i class="menu-arrow"></i>
+                                @endif
                             </a>
                             @if (!empty($menu->submenu))
-                                <div class="collapse" id="{{$menu->ruta}}">
+                                <div class="collapse" id="{{ $menu->ruta }}">
                                     <ul class="nav flex-column sub-menu">
                                         @foreach ($menu->submenu as $categoria => $submenus)
                                             @if ($categoria !== 'sin_categoria' || count($menu->submenu) > 1)
@@ -223,7 +216,8 @@
                                             @endif
                                             @foreach ($submenus as $submenu)
                                                 <li class="nav-item">
-                                                    <a class="nav-link" href="{{url($submenu->ruta)}}">{{ $submenu->descripcion }}</a>
+                                                    <a class="nav-link"
+                                                        href="{{ url($submenu->ruta) }}">{{ $submenu->descripcion }}</a>
                                                 </li>
                                             @endforeach
                                         @endforeach
