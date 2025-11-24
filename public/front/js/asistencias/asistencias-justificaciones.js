@@ -191,18 +191,19 @@ $(document).ready(function () {
     // Captura del formulario
     document.getElementById('formJustificar').addEventListener('submit', async function (e) {
         e.preventDefault();
-        const msg = `¿Estás de enviar la justificación?`;
-        if (!await boxAlert.confirm({ h: msg })) return;
-        fMananger.formModalLoding('modalJustificar', 'show');
-
-        // Obtiene el contenido HTML del editor
-        const contenidoHTML = quilleditorJustificar.html();
-
         // Verifica si hay contenido vacío
         if (quilleditorJustificar.isEmpty()) {
             boxAlert.box({ i: 'warning', h: 'Por favor, escribe una justificación antes de enviar.' });
             return;
         }
+        
+        const msg = `¿Estás de enviar la justificación?`;
+        if (!await boxAlert.confirm({ h: msg })) return;
+
+        // Obtiene el contenido HTML del editor
+        const contenidoHTML = quilleditorJustificar.html();
+
+        fMananger.formModalLoding('modalJustificar', 'show');
 
         var valid = validFrom(this);
         if (!valid.success) {
@@ -221,7 +222,6 @@ $(document).ready(function () {
                 archivos: archivos_data,
                 estatus: 1
             });
-            console.log(body);
             
             const response = await fetch(__url + '/justificacion/justificar', {
                 method: 'POST',
