@@ -22,12 +22,25 @@
             --root-layout-bg: #f9f9f9;
             --root-layout-color: #424242;
             --root-container-bg: #ffffff;
+
+            --bg-trail: #bed9ff;
+            --bg-handler: #ddebff;
+            --color-before: #e4a11b;
+            --transition: all .2s ease;
         }
 
         [data-mdb-theme=dark] {
             --root-layout-bg: #424242;
             --root-layout-color: #ffffff;
-            --root-container-bg: #424242;
+            --root-container-bg: #303030;
+
+            --bg-trail: #303030;
+            --bg-handler: #424242;
+            --color-before: #ffffff;
+        }
+
+        body {
+            background-color: var(--root-layout-bg);
         }
 
         .layout {
@@ -39,6 +52,81 @@
             background-color: var(--root-layout-bg);
             box-shadow: none;
             height: var(--root-height-navbar);
+        }
+
+        .navbar .navbar-brand {
+            margin-right: 0;
+        }
+
+        /* Hide the input */
+        #check[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            z-index: -1;
+        }
+
+        .check-trail {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 3rem;
+            height: 1.76rem;
+            padding: .13rem .18rem;
+            background: var(--bg-trail);
+            border-radius: 2rem;
+            transition: var(--transition);
+            cursor: pointer;
+            border: var(--mdb-border-width) solid var(--mdb-border-color);
+        }
+
+        .check-trail .toltip-theme {
+            position: absolute;
+            display: none;
+            top: 190%;
+            left: 50%;
+            font-size: 1rem !important;
+            transform: translate(-50%, -50%);
+            box-shadow: 0px 0px 2px rgba(var(--mdb-surface-color-rgb), 1), 0px 0px 2px rgba(var(--mdb-surface-color-rgb), 1);
+        }
+
+        .check-trail:hover .toltip-theme {
+            display: flex;
+            align-items: center;
+        }
+
+        .check-handler {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 1.3rem;
+            height: 1.3rem;
+            position: relative;
+            background: var(--bg-handler);
+            border-radius: 50%;
+            margin-left: 4%;
+            transition: var(--transition);
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+            /* border: var(--mdb-border-width) solid var(--mdb-border-color); */
+
+            &::before {
+                content: "\f186";
+                position: absolute;
+                font-family: "Font Awesome 6 Free";
+                transition: var(--transition);
+                font-size: .72rem;
+                color: var(--color-before);
+            }
+        }
+
+        #check[type="checkbox"]:checked+.check-trail {
+
+            .check-handler {
+                margin-left: 45%;
+
+                &::before {
+                    content: "\f185";
+                }
+            }
         }
 
         /* Sidebar a la derecha */
@@ -308,6 +396,7 @@
 
         .content-wrapper {
             height: calc(100vh - var(--root-height-navbar));
+            background: var(--root-container-bg);
             border-radius: .75rem 0 0 0;
             border-top: 1px solid #dcdcdc;
             border-left: 1px solid #dcdcdc;
@@ -404,6 +493,10 @@
             </footer>
         </aside>
         <script>
+
+            if (eval(localStorage.sidebarIconOnly) && window.innerWidth > 992) {
+                body.addClass('sidebar-icon-only');
+            }
             const sidebar = document.querySelector('.sidebar');
             document.querySelectorAll('.sidebar__link-menu').forEach(link => {
                 link.addEventListener('click', () => {
@@ -466,6 +559,57 @@
             <!-- Navbar -->
             <nav class="navbar px-4">
                 <span class="navbar-brand mb-0 h4">Panel</span>
+                <div class="navbar-brand mb-0 h4">
+                    <div class="">
+                        <input id="check" type="checkbox">
+                        <label for="check" class="check-trail">
+                            <span class="check-handler"></span>
+                            <span class="badge badge-secondary toltip-theme">
+                                <b class="fw-bold">Shift</b><i class="fas fa-plus fa-2xs text-white"></i> <b
+                                    class="fw-bold">D</b>
+                            </span>
+                        </label>
+                        <script>
+                            function esCelularTema() {
+                                return /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
+                            }
+
+                            if (!localStorage.hasOwnProperty('data_mdb_theme') || !localStorage.data_mdb_theme) {
+                                localStorage.setItem('data_mdb_theme', 'light');
+                            }
+                            $('html').attr('data-mdb-theme', localStorage.data_mdb_theme);
+
+                            $('#check').prop('checked', localStorage.data_mdb_theme == 'light' ? true : false);
+                            if (!esCelularTema()) {
+                                $('.check-trail').append(`<span class="badge badge-secondary toltip-theme">
+                                <b class="fw-bold">Shift</b><i class="fas fa-plus fa-2xs text-white"></i> <b class="fw-bold">D</b>
+                            </span>`);
+                            }
+
+                            $(document).ready(function (tema = null) {
+                                const toggleTheme = (checked = null) => {
+                                    const checkbox = $('#check');
+                                    if (checked) {
+                                        checkbox.prop('checked', !checkbox.prop('checked'));
+                                    }
+                                    tema = checkbox.prop('checked') ? 'light' : 'dark';
+                                    localStorage.data_mdb_theme = tema;
+                                    $('html').attr('data-mdb-theme', tema);
+                                };
+
+                                $('#check').on('click', () => {
+                                    toggleTheme();
+                                });
+
+                                $(window).on('keydown', ({ key, shiftKey }) => {
+                                    if (shiftKey && key.toLowerCase() === 'd') {
+                                        toggleTheme(true);
+                                    }
+                                });
+                            });
+                        </script>
+                    </div>
+                </div>
             </nav>
 
             <!-- Content Wrapper -->

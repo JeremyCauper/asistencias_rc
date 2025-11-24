@@ -741,6 +741,12 @@ function cargarIframeDocumento(url) {
     });
 }
 
+function generateUrl(baseUrl, params) {
+    const url = new URL(baseUrl);
+    Object.keys(params).forEach(key => params[key] ? url.searchParams.set(key, params[key]) : null);
+    return url.toString();
+}
+
 function esCelular() {
     return /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
 }
