@@ -1,8 +1,11 @@
 $(document).ready(function () {
     const quillJustificarDerivado = new EditorJustificacion('#editor-justificarDerivado', {
-        botones: ['link', 'camera']
+        botones: ['link', 'pdf', 'camera']
     });
-    const quilleditorJustificar = new EditorJustificacion('#editor-justificar');
+    
+    const quilleditorJustificar = new EditorJustificacion('#editor-justificar', {
+        botones: ['link', 'pdf', 'camera']
+    });
 
     $('.modal').on('hidden.bs.modal', function () {
         llenarInfoModal('modalVerJustificacion');

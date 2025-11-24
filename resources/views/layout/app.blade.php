@@ -2,35 +2,37 @@
 <html lang="es" data-mdb-theme="light">
 
 <head>
-    <script>
-        const url_base_logeo = '{{ secure_url('') }}';
-        if (0 == {{ session('tipo_sistema') }}) {
-            (function() {
-                let abierto = false;
-                setInterval(() => {
-                    const threshold = 160;
-                    const ancho = window.outerWidth - window.innerWidth > threshold;
-                    const alto = window.outerHeight - window.innerHeight > threshold;
+    @if (env('APP_ENV') == 'produccion')
+        <script>
+            const url_base_logeo = '{{ secure_url('') }}';
+            if (0 == {{ session('tipo_sistema') }}) {
+                (function () {
+                    let abierto = false;
+                    setInterval(() => {
+                        const threshold = 160;
+                        const ancho = window.outerWidth - window.innerWidth > threshold;
+                        const alto = window.outerHeight - window.innerHeight > threshold;
 
-                    if ((ancho || alto) && !abierto) {
-                        console.warn('Para que quieres abrir, papu? 👀');
-                        abierto = true;
-                        fetch(url_base_logeo + '/logout', {
+                        if ((ancho || alto) && !abierto) {
+                            console.warn('Para que quieres abrir, papu? 👀');
+                            abierto = true;
+                            fetch(url_base_logeo + '/logout', {
                                 method: 'GET',
                                 mode: 'no-cors', // esto permite enviar la petición aunque no haya CORS
                                 cache: 'no-store'
                             })
-                            .then(() => {
-                                location.href = url_base_logeo + '/inicio';
-                            })
-                            .catch(err => console.error('Error al enviar la petición:', err));
-                    } else if (!ancho && !alto && abierto) {
-                        abierto = false;
-                    }
-                }, 1000);
-            })();
-        }
-    </script>
+                                .then(() => {
+                                    location.href = url_base_logeo + '/inicio';
+                                })
+                                .catch(err => console.error('Error al enviar la petición:', err));
+                        } else if (!ancho && !alto && abierto) {
+                            abierto = false;
+                        }
+                    }, 1000);
+                })();
+            }
+        </script>
+    @endif
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -67,7 +69,7 @@
     <!-- JQuery -->
     <script src="{{ secure_asset('front/vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ secure_asset('front/vendor/sweetalert/sweetalert2@11.js') }}"></script>
-    @if (session('cambio'))
+    @if (session('cambio') && env('APP_ENV') == 'produccion')
         <script id="cambioPass" src="{{ secure_asset('front/js/actualizarPassword.js') }}"></script>
     @endif
     <script src="{{ secure_asset('front/vendor/select/select2.min.js') }}"></script>
@@ -157,8 +159,8 @@
                     body.addClass('sidebar-icon-only');
                 }
 
-                $(document).ready(function() {
-                    $('#expandir-menu i').on("click", function() {
+                $(document).ready(function () {
+                    $('#expandir-menu i').on("click", function () {
                         localStorage.sidebarIconOnly = false;
                         if (window.innerWidth > 992) {
                             body.toggleClass('sidebar-icon-only');
@@ -195,9 +197,7 @@
                     </li>
                     @foreach (session('customModulos') as $menu)
                         <li class="nav-item menu-item">
-                            <a class="nav-link menu-link"
-                                {{ !empty($menu->submenu) ? (string) 'data-mdb-collapse-init role=button aria-expanded=false aria-controls=' . $menu->ruta : '' }}
-                                data-mdb-ripple-init
+                            <a class="nav-link menu-link" {{ !empty($menu->submenu) ? (string) 'data-mdb-collapse-init role=button aria-expanded=false aria-controls=' . $menu->ruta : '' }} data-mdb-ripple-init
                                 href={{ !empty($menu->submenu) ? "#$menu->ruta" : url($menu->ruta) }}>
                                 <i class="{{ $menu->icon }} menu-icon"></i>
                                 <span class="menu-title">{{ $menu->descripcion }}</span>
@@ -216,8 +216,7 @@
                                             @endif
                                             @foreach ($submenus as $submenu)
                                                 <li class="nav-item">
-                                                    <a class="nav-link"
-                                                        href="{{ url($submenu->ruta) }}">{{ $submenu->descripcion }}</a>
+                                                    <a class="nav-link" href="{{ url($submenu->ruta) }}">{{ $submenu->descripcion }}</a>
                                                 </li>
                                             @endforeach
                                         @endforeach

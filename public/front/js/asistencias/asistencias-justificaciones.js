@@ -118,7 +118,7 @@ $(document).ready(function () {
             const estado = ESTADOS_JUSTIFICACION[estatus || 0];
             const contenidoHTMLResp = quillRespJustificacion.html();
 
-            if (!quillRespJustificacion.isEmpty() && estatus === 2) {
+            if (quillRespJustificacion.isEmpty() && estatus === 2) {
                 return boxAlert.box({ i: 'warning', h: 'Escribe una respuesta antes de enviar.' });
             }
 
