@@ -108,10 +108,6 @@ $(document).ready(function () {
     // Captura del formulario
     document.getElementById('formJustificarDerivado').addEventListener('submit', async function (e) {
         e.preventDefault();
-        const msg = `¿Estás de enviar la justificación?`;
-        if (!await boxAlert.confirm({ h: msg })) return;
-        fMananger.formModalLoding('modalJustificarDerivado', 'show');
-
         // Verifica si hay contenido vacío
         if (quillJustificarDerivado.isEmpty()) {
             boxAlert.box({ i: 'warning', h: 'Por favor, el contenido no puede estar vacio.' });
@@ -122,6 +118,11 @@ $(document).ready(function () {
             boxAlert.box({ i: 'warning', h: 'Tiene que subir minimo una foto.' });
             return;
         }
+
+        const msg = `¿Estás de enviar la justificación?`;
+        if (!await boxAlert.confirm({ h: msg })) return;
+
+        fMananger.formModalLoding('modalJustificarDerivado', 'show');
 
         var valid = validFrom(this);
         if (!valid.success) {
@@ -196,18 +197,19 @@ $(document).ready(function () {
     // Captura del formulario
     document.getElementById('formJustificar').addEventListener('submit', async function (e) {
         e.preventDefault();
-        const msg = `¿Estás de enviar la justificación?`;
-        if (!await boxAlert.confirm({ h: msg })) return;
-        fMananger.formModalLoding('modalJustificar', 'show');
-
-        // Obtiene el contenido HTML del editor
-        const contenidoHTML = quilleditorJustificar.html();
-
         // Verifica si hay contenido vacío
         if (quilleditorJustificar.isEmpty()) {
             boxAlert.box({ i: 'warning', h: 'Por favor, escribe una justificación antes de enviar.' });
             return;
         }
+
+        const msg = `¿Estás de enviar la justificación?`;
+        if (!await boxAlert.confirm({ h: msg })) return;
+
+        fMananger.formModalLoding('modalJustificar', 'show');
+
+        // Obtiene el contenido HTML del editor
+        const contenidoHTML = quilleditorJustificar.html();
 
         var valid = validFrom(this);
         if (!valid.success) {

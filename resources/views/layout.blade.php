@@ -407,8 +407,8 @@
 <body>
     <div class="d-flex">
 
-        <!-- SIDEBAR -->
-        <aside class="sidebar-only-icon sidebar">
+        <!-- SIDEBAR sidebar-only-icon-->
+        <aside class="sidebar">
 
             <!-- Header -->
             <nav class="sidebar__header sidebar__header-only-icon">
@@ -493,11 +493,8 @@
             </footer>
         </aside>
         <script>
-
-            if (eval(localStorage.sidebarIconOnly) && window.innerWidth > 992) {
-                body.addClass('sidebar-icon-only');
-            }
             const sidebar = document.querySelector('.sidebar');
+
             document.querySelectorAll('.sidebar__link-menu').forEach(link => {
                 link.addEventListener('click', () => {
                     if (document.querySelector('.sidebar').classList.contains('sidebar-only-icon')) return;
@@ -523,21 +520,27 @@
                 });
             });
 
+            if (eval(localStorage.sidebarIconOnly_asistencias) || window.innerWidth < 900) {
+                sidebar.classList.add('sidebar-only-icon');
+            }
+
             if (sidebar) {
                 const btn_close = sidebar.querySelector('.sidebar__header .sidebar-close');
 
                 const sidebarHeader = () => {
                     sidebar.querySelector('.sidebar__header').classList.remove('sidebar__header-only-icon');
-                    if (sidebar.classList.contains('sidebar-only-icon'))
+                    if (sidebar.classList.contains('sidebar-only-icon')) {
                         setTimeout(() => {
                             sidebar.querySelector('.sidebar__header').classList.add('sidebar__header-only-icon');
                         }, 290);
+                    }
                 }
 
                 if (btn_close) {
                     btn_close.addEventListener('click', (e) => {
                         e.stopPropagation();
                         sidebar.classList.toggle('sidebar-only-icon');
+                        localStorage.sidebarIconOnly_asistencias = sidebar.classList.contains('sidebar-only-icon');
                         sidebarHeader();
                     });
                 }
@@ -548,6 +551,7 @@
 
                     if (!sidebar.classList.contains('sidebar-only-icon')) return;
                     sidebar.classList.remove('sidebar-only-icon');
+                    localStorage.sidebarIconOnly_asistencias = false;
                     sidebarHeader();
                 });
             }
@@ -582,7 +586,7 @@
                             $('#check').prop('checked', localStorage.data_mdb_theme == 'light' ? true : false);
                             if (!esCelularTema()) {
                                 $('.check-trail').append(`<span class="badge badge-secondary toltip-theme">
-                                <b class="fw-bold">Shift</b><i class="fas fa-plus fa-2xs text-white"></i> <b class="fw-bold">D</b>
+                                <b class="fw-bold">Ctrl</b><i class="fas fa-plus fa-2xs text-white"></i> Alt</b><i class="fas fa-plus fa-2xs text-white"></i> <b class="fw-bold">D</b>
                             </span>`);
                             }
 
@@ -601,11 +605,12 @@
                                     toggleTheme();
                                 });
 
-                                $(window).on('keydown', ({ key, shiftKey }) => {
-                                    if (shiftKey && key.toLowerCase() === 'd') {
+                                $(window).on('keydown', ({ key, shiftKey, ctrlKey, altKey  }) => {
+                                    if (ctrlKey && altKey && key.toLowerCase() === 'd') {
                                         toggleTheme(true);
                                     }
                                 });
+
                             });
                         </script>
                     </div>
