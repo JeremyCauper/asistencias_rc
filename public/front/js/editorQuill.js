@@ -193,7 +193,7 @@ class EditorJustificacion {
 
             Swal.close();
             const id = data.data.nombre_archivo;
-            const url = `${__url.replaceAll('public', 'storage/app/public/')}${data.data.url}`;
+            const url = `${__url.replaceAll('public', '')}${data.data.url}`;
 
             const range = this.quill.getSelection(true);
             this.insertFile(tipo, url, fileToUpload.name, id, range.index);
