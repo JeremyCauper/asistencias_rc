@@ -250,7 +250,7 @@
                         <label class="form-label-filter" for="areas">Areas</label>
                         <select id="areas" name="areas" multiple="multiple" class="multiselect-select-all">
                             @foreach ($areas as $v)
-                                <option {{ Auth::user()->area_id == $v->id ? 'selected' : '' }}
+                                <option {{ session('tipo_usuario') == 2 ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
                                     value="{{ $v->id }}">
                                     {{ $v->descripcion }}
                                 </option>
