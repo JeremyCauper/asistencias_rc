@@ -146,7 +146,7 @@ class AsistenciaController extends Controller
                     $asistencia_id = $asistencia?->id ?? null;
 
                     // Si aún no tiene registro pero debería asistir
-                    if (!$hora && $tipo_modalidad == 1 && $tipo_asistencia == 1 && $horaActual < $limitePuntual && $fechaActual) {
+                    if (!$hora && in_array($tipo_modalidad, [1, 2]) && $tipo_asistencia == 1 && $horaActual < $limitePuntual && $fechaActual) {
                         $tipo_asistencia = 0;
                     }
 
@@ -189,7 +189,7 @@ class AsistenciaController extends Controller
                         $notificacion = $justificacion->estatus == 0;
                     }
 
-                    if (!$justificacion && in_array($tipo_asistencia, [1, 4])) { // && $isAdmin
+                    if (!$justificacion && in_array($tipo_asistencia, [1, 4]) && $horaActual < $limitePuntual && $mesActual) { // && $isAdmin
                         $tipoAsistencia = $tipoAsistencias->get($tipo_asistencia);
                         $acciones[] = [
                             'funcion' => "justificarAsistencia({$p->user_id}, '{$fecha}', '{$hora}', {$tipo_asistencia})",

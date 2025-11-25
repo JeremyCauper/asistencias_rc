@@ -50,7 +50,7 @@ class SyncAsistenciasController extends Controller
 
                 if (!$campoDia || $feriados) {
                     $tipoAsistencia = $feriados ? 6 : 5;
-                } else if ($tipoModalidad == 2 || $tipoModalidad == 3) {
+                } else if ($tipoModalidad == 3) {
                     $tipoAsistencia = 2;
                 } else if ($tipoModalidad == 4) {
                     $tipoAsistencia = 3;

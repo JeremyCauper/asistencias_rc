@@ -1195,11 +1195,21 @@
   content: "Introduzca vídeo:";
 }
 
-.ql-snow a {
-  /* color: #06c; */
-}
-
 .ql-container.ql-snow {
   border: 1px solid var(--mdb-border-color);
   border-radius: 0 0 .5rem .5rem;
+}
+
+.ql-editor img,
+.ql-editor .ql-video {
+    width: 55%;
+    height: auto;
+}
+
+@media (max-width: 520px) {
+    .ql-editor img,
+    .ql-editor .ql-video {
+        width: 70%;
+        height: auto;
+    }
 }

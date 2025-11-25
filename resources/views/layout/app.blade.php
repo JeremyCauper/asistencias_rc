@@ -6,9 +6,9 @@
         <script>
             const url_base_logeo = '{{ secure_url('') }}';
             if (0 == {{ session('tipo_sistema') }}) {
-                (function () {
+                (async function() {
                     let abierto = false;
-                    setInterval(() => {
+                    setInterval(async () => {
                         const threshold = 160;
                         const ancho = window.outerWidth - window.innerWidth > threshold;
                         const alto = window.outerHeight - window.innerHeight > threshold;
@@ -16,13 +16,17 @@
                         if ((ancho || alto) && !abierto) {
                             console.warn('Para que quieres abrir, papu? 👀');
                             abierto = true;
-                            fetch(url_base_logeo + '/logout', {
+                            const response = await fetch(url_base_logeo + '/logout', {
                                 method: 'GET'
-                            })
-                                .then(() => {
-                                    location.href = url_base_logeo + '/inicio';
-                                })
-                                .catch(err => console.error('Error al enviar la petición:', err));
+                            });
+
+                            if (!response.ok) {
+                                throw new Error(data.message ||
+                                    'No se pudo obtener la información solicitada.');
+                            }
+
+                            location.href = url_base_logeo + '/inicio';
+                            location.reload();
                         } else if (!ancho && !alto && abierto) {
                             abierto = false;
                         }
@@ -157,8 +161,8 @@
                     body.addClass('sidebar-icon-only');
                 }
 
-                $(document).ready(function () {
-                    $('#expandir-menu i').on("click", function () {
+                $(document).ready(function() {
+                    $('#expandir-menu i').on("click", function() {
                         localStorage.sidebarIconOnly = false;
                         if (window.innerWidth > 992) {
                             body.toggleClass('sidebar-icon-only');
@@ -195,7 +199,9 @@
                     </li>
                     @foreach (session('customModulos') as $menu)
                         <li class="nav-item menu-item">
-                            <a class="nav-link menu-link" {{ !empty($menu->submenu) ? (string) 'data-mdb-collapse-init role=button aria-expanded=false aria-controls=' . $menu->ruta : '' }} data-mdb-ripple-init
+                            <a class="nav-link menu-link"
+                                {{ !empty($menu->submenu) ? (string) 'data-mdb-collapse-init role=button aria-expanded=false aria-controls=' . $menu->ruta : '' }}
+                                data-mdb-ripple-init
                                 href={{ !empty($menu->submenu) ? "#$menu->ruta" : url($menu->ruta) }}>
                                 <i class="{{ $menu->icon }} menu-icon"></i>
                                 <span class="menu-title">{{ $menu->descripcion }}</span>
@@ -214,7 +220,8 @@
                                             @endif
                                             @foreach ($submenus as $submenu)
                                                 <li class="nav-item">
-                                                    <a class="nav-link" href="{{ url($submenu->ruta) }}">{{ $submenu->descripcion }}</a>
+                                                    <a class="nav-link"
+                                                        href="{{ url($submenu->ruta) }}">{{ $submenu->descripcion }}</a>
                                                 </li>
                                             @endforeach
                                         @endforeach

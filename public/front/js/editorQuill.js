@@ -2,6 +2,7 @@ class EditorJustificacion {
     constructor(selector, op = {}) {
         this.selector = selector;
         this.mediaMap = {};
+        this.fileMap = [];
         this.botones = op.botones || ['link', 'image', 'video', 'pdf'];
         const altura = op.altura || '400';
 
@@ -36,7 +37,7 @@ class EditorJustificacion {
                 toolbar: {
                     container: toolbar,
                     handlers: {
-                        image: () => this.handleFileUpload('image', 'image/*', 4),
+                        image: () => this.handleFileUpload('image', 'image/*', 10),
                         video: () => this.handleFileUpload('video', 'video/*', 10),
                         pdf: () => this.handleFileUpload('pdf', 'application/pdf', 5),
                         camera: () => this.handleCamera()
@@ -77,6 +78,10 @@ class EditorJustificacion {
      *  🔹 CAPTURA CON CÁMARA
      * ============================ */
     handleCamera() {
+        if (!esCelular()) {
+            return boxAlert.box({ i: "warning", h: "Función solo disponible en dispositivos móviles." });
+        }
+
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = "image/*";
@@ -94,6 +99,18 @@ class EditorJustificacion {
             const delta = ahora - file.lastModified;
             const deltaDesdeApertura = ahora - tiempoApertura;
 
+            const fecha = new Date(file.lastModified);
+            const horas = fecha.getHours();        // 0–23
+            const minutos = fecha.getMinutes();    // 0–59
+            const segundos = fecha.getSeconds();   // 0–59
+            const pad = n => String(n).padStart(2, '0');
+
+            this.fileMap.push({
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                lastModified: `${pad(horas)}:${pad(minutos)}:${pad(segundos)}`
+            });
             /*
                 ✔ Condición real:
                 - Foto tomada hace menos de 15 segundos
@@ -105,7 +122,7 @@ class EditorJustificacion {
                 boxAlert.box({
                     i: 'warning',
                     t: 'Foto no permitida',
-                    h: 'La imagen debe ser tomada directamente desde la cámara y dentro de los primeros 15s de haber sido tomada.'
+                    h: 'La imagen debe ser tomada directamente desde la cámara y dentro de los primeros 15s de haber abierto la cámara.'
                 });
                 return; // ❌ Cancela subida
             }
@@ -141,29 +158,33 @@ class EditorJustificacion {
     }
 
     async convertToWebP(file) {
-        try {
-            const sizeMB = file.size / (1024 * 1024);
+        const sizeMB = file.size / (1024 * 1024);
+        const quality = sizeMB > 3 ? 0.90 : 0.45;
 
-            const options = {
-                maxSizeMB: 10,
-                initialQuality: sizeMB > 1 ? 1 : 0.2,
-                fileType: "image/webp"
-            };
+        boxAlert.loading(`Convertiendo imagen, ${sizeMB.toFixed(2)}MB... (puede tardar un poco)`);
 
-            return await imageCompression(file, options);
-        }
-        catch (err) {
-            console.error("Error al convertir WebP:", err);
-            return file; // si falla, devuelve el archivo original
-        }
+        return new Promise(resolve => {
+            new Compressor(file, {
+                quality: quality,
+                convertSize: 0,                 // convertir todo, incluso < 2MB
+                mimeType: "image/webp",         // salida WebP
+                success(result) {
+                    resolve(result);            // devuelve el archivo WebP
+                },
+                error(err) {
+                    console.error("Error al convertir WebP:", err);
+                    resolve(file);              // si falla, devuelve el original
+                }
+            });
+        });
     }
+
 
     /** ============================
      *  🔹 SUBIDA AL BACKEND
      * ============================ */
     async uploadFile(file, tipo) {
         try {
-            boxAlert.loading("Subiendo archivo...");
 
             let fileToUpload = file;
 
@@ -179,6 +200,7 @@ class EditorJustificacion {
                 );
             }
 
+            boxAlert.loading("Subiendo archivo...");
             const form = new FormData();
             form.append("file", fileToUpload);
 
@@ -189,7 +211,13 @@ class EditorJustificacion {
             });
 
             const data = await res.json();
-            if (!data.data.url) throw new Error(data.message || "Error al subir");
+
+            if (!res.ok || !data.success) {
+                const mensaje = data.message || 'No se pudo completar la operación.';
+                return boxAlert.box({ i: 'error', t: 'Algo salió mal...', h: mensaje });
+            }
+
+            if (!data.data?.url) throw new Error(data.message || "Error al subir");
 
             Swal.close();
             const id = data.data.nombre_archivo;
@@ -197,10 +225,13 @@ class EditorJustificacion {
 
             const range = this.quill.getSelection(true);
             this.insertFile(tipo, url, fileToUpload.name, id, range.index);
-
-        } catch (e) {
-            console.error(e);
-            boxAlert.box({ i: "error", h: e || "No se pudo subir el archivo." });
+        } catch (error) {
+            console.log(error);
+            boxAlert.box({
+                i: 'error',
+                t: 'Error en la conexión',
+                h: error.message || 'Ocurrió un problema al procesar la solicitud. Verifica tu conexión e intenta nuevamente.'
+            });
         }
     }
 
