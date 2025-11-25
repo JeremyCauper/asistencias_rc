@@ -36,7 +36,7 @@ class EditorJustificacion {
                 toolbar: {
                     container: toolbar,
                     handlers: {
-                        image: () => this.handleFileUpload('image', 'image/*', 4),
+                        image: () => this.handleFileUpload('image', 'image/*', 10),
                         video: () => this.handleFileUpload('video', 'video/*', 10),
                         pdf: () => this.handleFileUpload('pdf', 'application/pdf', 5),
                         camera: () => this.handleCamera()
@@ -146,7 +146,7 @@ class EditorJustificacion {
 
             const options = {
                 maxSizeMB: 10,
-                initialQuality: sizeMB > 1 ? 1 : 0.2,
+                initialQuality: sizeMB >= 3 ? .9 : .5,
                 fileType: "image/webp"
             };
 
@@ -189,7 +189,13 @@ class EditorJustificacion {
             });
 
             const data = await res.json();
-            if (!data.data.url) throw new Error(data.message || "Error al subir");
+
+            if (!response.ok || !data.success) {
+                const mensaje = data.message || 'No se pudo completar la operación.';
+                return boxAlert.box({ i: 'error', t: 'Algo salió mal...', h: mensaje });
+            }
+
+            if (!data.data?.url) throw new Error(data.message || "Error al subir");
 
             Swal.close();
             const id = data.data.nombre_archivo;
@@ -197,10 +203,12 @@ class EditorJustificacion {
 
             const range = this.quill.getSelection(true);
             this.insertFile(tipo, url, fileToUpload.name, id, range.index);
-
-        } catch (e) {
-            console.error(e);
-            boxAlert.box({ i: "error", h: e || "No se pudo subir el archivo." });
+        } catch (error) {
+            boxAlert.box({
+                i: 'error',
+                t: 'Error en la conexión',
+                h: 'Ocurrió un problema al procesar la solicitud. Verifica tu conexión e intenta nuevamente.'
+            });
         }
     }
 
