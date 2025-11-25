@@ -1,7 +1,6 @@
-
-const quillRespJustificacion = new EditorJustificacion('#respuesta-justificacion');
-const quilleditorJustificar = new EditorJustificacion('#editor-justificar');
 $(document).ready(function () {
+    const quillRespJustificacion = new EditorJustificacion('#respuesta-justificacion');
+    const quilleditorJustificar = new EditorJustificacion('#editor-justificar');
 
     $('.modal').on('hidden.bs.modal', function () {
         llenarInfoModal('modalJustificacion');
@@ -196,7 +195,7 @@ $(document).ready(function () {
             boxAlert.box({ i: 'warning', h: 'Por favor, escribe una justificación antes de enviar.' });
             return;
         }
-        
+
         const msg = `¿Estás de enviar la justificación?`;
         if (!await boxAlert.confirm({ h: msg })) return;
 
@@ -210,7 +209,7 @@ $(document).ready(function () {
             return fMananger.formModalLoding('modalJustificar', 'hide');
         }
         let mensaje = utf8ToBase64(contenidoHTML);
-            const archivos_data = Object.keys(quilleditorJustificar.mediaMap || {});
+        const archivos_data = Object.keys(quilleditorJustificar.mediaMap || {});
 
         try {
             const body = JSON.stringify({
@@ -222,7 +221,7 @@ $(document).ready(function () {
                 archivos: archivos_data,
                 estatus: 1
             });
-            
+
             const response = await fetch(__url + '/justificacion/justificar', {
                 method: 'POST',
                 headers: {

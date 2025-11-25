@@ -21,7 +21,8 @@ class JustificacionController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'fecha' => 'required|date',
-                'tipo_asistencia' => 'required|in:1,4',
+                'hora' => 'nullable|date_format:H:i:s',
+                'tipo_asistencia' => 'required|in:0,1,4',
                 'asunto' => 'required|string|max:255',
                 'contenido' => 'required|string',
                 'archivos' => 'nullable'
@@ -32,7 +33,9 @@ class JustificacionController extends Controller
             }
 
             $user_id = $request->has('user_id') ? $request->user_id : session('user_id');
-            $estatus = $request->has('estatus') ? $request->estatus : 0;
+            $tipo_asistencia = $request->tipo_asistencia == 0 ? 2 : $request->tipo_asistencia;
+            $estatus = $request->has('estatus') ? $request->estatus : ($tipo_asistencia == 2 ? 1 : 0);
+
 
             // Verifica si ya existe una justificación para esa fecha
             $yaJustificada = DB::table('justificaciones')->where('user_id', $user_id)
@@ -46,7 +49,7 @@ class JustificacionController extends Controller
             DB::beginTransaction();
             // Crear contenido HTML
             $contenido = $this->createBodyMessage(
-                $request->tipo_asistencia,
+                $tipo_asistencia,
                 $request->contenido,
                 '',
                 now()->format('Y-m-d H:i:s')
@@ -56,12 +59,12 @@ class JustificacionController extends Controller
             DB::table('justificaciones')->insert([
                 'user_id' => $user_id,
                 'fecha' => $request->fecha,
-                'tipo_asistencia' => $request->tipo_asistencia,
+                'tipo_asistencia' => $tipo_asistencia,
                 'asunto' => $request->asunto,
                 'contenido_html' => $contenido,
                 'created_by' => session('user_id'),
                 'created_at' => now()->format('Y-m-d H:i:s'),
-                'estatus' => $estatus, // pendiente
+                'estatus' => $tipo_asistencia == 2 ? 1 : $estatus, // pendiente
             ]);
 
             $asistencias = DB::table('asistencias')->where([
@@ -72,8 +75,13 @@ class JustificacionController extends Controller
             // Procesar asistencia solo cuando corresponde
             if ($asistencias) {
                 if ($estatus == 1) {
+                    $hora = $request->hora;
+                    $limitePuntual = strtotime(date("Y-m-d " . $this->horaLimitePuntual));
                     DB::table('asistencias')->where('id', $asistencias->id)->update([
-                        'tipo_asistencia' => 3,
+                        'tipo_asistencia' => $hora
+                            ? ((strtotime(date("Y-m-d " . $hora)) > $limitePuntual) ? 4 : 2)
+                            : 3,
+                        'hora' => $hora ?? null
                     ]);
                 }
 
@@ -95,6 +103,7 @@ class JustificacionController extends Controller
     {
         $validaciones = [
             'id_justificacion' => 'required|integer',
+            'hora' => 'nullable|date_format:H:i:s',
             'mensaje' => 'required|string',
             'archivos' => 'nullable',
         ];
@@ -165,9 +174,14 @@ class JustificacionController extends Controller
 
             // Procesar asistencia solo cuando corresponde
             if ($asistencias) {
+                if($estatusOriginal == 10) {
+                    DB::table('asistencias')->where('id', $asistencias->id)->update([
+                        'hora' => $request->hora ?? $now->format('H:i:s')
+                    ]);
+                }
+
                 // Procesar asistencia solo cuando corresponde
                 if (in_array($estatus, [1, 2]) && $estatusOriginal != 10) {
-
                     // Decidir tipo de asistencia de forma clara
                     $tipoAsistencia = match (true) {
                         $estatus == 1 && $justificacion->tipo_asistencia == 7 => 7,
@@ -176,7 +190,6 @@ class JustificacionController extends Controller
                     };
 
                     DB::table('asistencias')->where('id', $asistencias->id)->update([
-                        'hora' => $tipoAsistencia == 7 ? $now->format('H:i:s') : null,
                         'tipo_asistencia' => $tipoAsistencia,
                     ]);
                 }
@@ -365,7 +378,7 @@ class JustificacionController extends Controller
                     <span class="badge rounded-pill ms-auto" style="border: 2px solid var(--mdb-body-color) !important;color: var(--mdb-body-color) !important;font-size: .7rem;">' . $config->acceso . '</span>
                 </div>
                 <p>📅 <small class="fw-bold">Fecha de creación:</small> ' . $fechaCompleta . '</p>
-                <p class="mt-1">✉️ Justificación de <span class="fw-bold" style="color: ' . $tasistencia->color . ';">' . $tasistencia->descripcion . '</span></p>
+                <p class="mt-1">✉️ Justificación de <span class="fw-bold" style="color: ' . $tasistencia->color . ';">' . ($id_tasistencia == 2 ? 'Asistencia' : $tasistencia->descripcion) . '</span></p>
                 ' . $mensaje_decodificado . '
                 <hr class="mb-0">
             </div>'

@@ -1,10 +1,10 @@
 $(document).ready(function () {
     const quillJustificarDerivado = new EditorJustificacion('#editor-justificarDerivado', {
-        botones: ['link', 'pdf', 'camera']
+        botones: ['link', 'camera']
     });
     
     const quilleditorJustificar = new EditorJustificacion('#editor-justificar', {
-        botones: ['link', 'pdf', 'camera']
+        botones: ['link', 'camera']
     });
 
     $('.modal').on('hidden.bs.modal', function () {
@@ -86,7 +86,7 @@ $(document).ready(function () {
             if (!esCelular()) {
                 return boxAlert.box({
                     i: 'info',
-                    h: 'Esta función está limitada solo a celulares.'
+                    h: 'Función solo disponible en dispositivos móviles.'
                 });
             }
             $('#modalJustificarDerivado').modal('show');
@@ -206,6 +206,11 @@ $(document).ready(function () {
             return;
         }
 
+        if (quilleditorJustificar.isEmptyImg()) {
+            boxAlert.box({ i: 'warning', h: 'Tiene que subir minimo una foto.' });
+            return;
+        }
+
         const msg = `¿Estás de enviar la justificación?`;
         if (!await boxAlert.confirm({ h: msg })) return;
 
@@ -220,10 +225,11 @@ $(document).ready(function () {
         }
         let mensaje = utf8ToBase64(contenidoHTML);
         const archivos_data = Object.keys(quilleditorJustificar.mediaMap || {});
-
+        const hora_justificacion = quilleditorJustificar.fileMap[0]?.lastModified || null;
         try {
             const body = JSON.stringify({
                 fecha: window.fecha,
+                hora: hora_justificacion,
                 tipo_asistencia: window.tipo_asistencia,
                 asunto: $('#asunto_justificar').val(),
                 contenido: mensaje,

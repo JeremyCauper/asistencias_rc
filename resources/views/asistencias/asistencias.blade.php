@@ -2,18 +2,18 @@
 @section('title', 'Asistencias del personal')
 
 @section('cabecera')
-    <link href="{{secure_asset('front/vendor/quill/quill.snow.css')}}" rel="stylesheet">
+    <link href="{{ secure_asset('front/vendor/quill/quill.snow.css') }}" rel="stylesheet">
 
-    <script type="text/javascript" src="{{secure_asset('front/vendor/daterangepicker/moment.min.js')}}"></script>
-    <script type="text/javascript" src="{{secure_asset('front/vendor/daterangepicker/daterangepicker.min.js')}}"></script>
-    <link rel="stylesheet" type="text/css" href="{{secure_asset('front/vendor/daterangepicker/daterangepicker.css')}}">
+    <script type="text/javascript" src="{{ secure_asset('front/vendor/daterangepicker/moment.min.js') }}"></script>
+    <script type="text/javascript" src="{{ secure_asset('front/vendor/daterangepicker/daterangepicker.min.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ secure_asset('front/vendor/daterangepicker/daterangepicker.css') }}">
 
-    <script src="{{secure_asset('front/vendor/multiselect/bootstrap.bundle.min.js')}}"></script>
-    <script src="{{secure_asset('front/vendor/multiselect/bootstrap_multiselect.js')}}"></script>
-    <script src="{{secure_asset('front/vendor/multiselect/form_multiselect.js')}}"></script>
+    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap_multiselect.js') }}"></script>
+    <script src="{{ secure_asset('front/vendor/multiselect/form_multiselect.js') }}"></script>
 
-    <script src="{{secure_asset('front/vendor/echartjs/echarts.min.js')}}"></script>
-    <script src="{{secure_asset('front/js/app/ChartMananger.js')}}"></script>
+    <script src="{{ secure_asset('front/vendor/echartjs/echarts.min.js') }}"></script>
+    <script src="{{ secure_asset('front/js/app/ChartMananger.js') }}"></script>
     <script>
         const tipoAsistencia = @json($tipoAsistencia);
         const tipoPersonal = @json($tipoPersonal);
@@ -22,8 +22,8 @@
     </script>
     <style>
         /* #modalJustificacion [aria-item="contenido_html"] {
-                                                        height: 450px;
-                                                    } */
+                                                                height: 450px;
+                                                            } */
     </style>
 @endsection
 
@@ -61,47 +61,47 @@
         };
 
         let incidencia_estados = [{
-            name: "estado-total",
-            text: "Total",
-            color: "purple",
-            searchTable: 0,
-            chart: false,
-        },
-        {
-            name: "estado-asistencias",
-            text: "ASISTENCIAS",
-            color: "success",
-            searchTable: 2,
-            chart: true,
-        },
-        {
-            name: "estado-faltas",
-            text: "FALTAS",
-            color: "danger",
-            searchTable: 1,
-            chart: true,
-        },
-        {
-            name: "estado-tardanzas",
-            text: "TARDANZAS",
-            color: "warning",
-            searchTable: 4,
-            chart: true,
-        },
-        {
-            name: "estado-justificados",
-            text: "JUSTIFICADOS",
-            color: "info",
-            searchTable: 3,
-            chart: true,
-        },
-        {
-            name: "estado-noaplica",
-            text: "NO APLICA",
-            color: "dark",
-            searchTable: 6,
-            chart: true,
-        },
+                name: "estado-total",
+                text: "Total",
+                color: "purple",
+                searchTable: 0,
+                chart: false,
+            },
+            {
+                name: "estado-asistencias",
+                text: "ASISTENCIAS",
+                color: "success",
+                searchTable: 2,
+                chart: true,
+            },
+            {
+                name: "estado-faltas",
+                text: "FALTAS",
+                color: "danger",
+                searchTable: 1,
+                chart: true,
+            },
+            {
+                name: "estado-tardanzas",
+                text: "TARDANZAS",
+                color: "warning",
+                searchTable: 4,
+                chart: true,
+            },
+            {
+                name: "estado-justificados",
+                text: "JUSTIFICADOS",
+                color: "info",
+                searchTable: 3,
+                chart: true,
+            },
+            {
+                name: "estado-noaplica",
+                text: "NO APLICA",
+                color: "dark",
+                searchTable: 6,
+                chart: true,
+            },
         ];
 
         let list_estado = $('#list-estado');
@@ -250,7 +250,8 @@
                         <label class="form-label-filter" for="areas">Areas</label>
                         <select id="areas" name="areas" multiple="multiple" class="multiselect-select-all">
                             @foreach ($areas as $v)
-                                <option {{Auth::user()->area_id == $v->id ? 'selected' : ''}} value="{{ $v->id }}">
+                                <option {{ Auth::user()->area_id == $v->id ? 'selected' : '' }}
+                                    value="{{ $v->id }}">
                                     {{ $v->descripcion }}
                                 </option>
                             @endforeach
@@ -330,102 +331,103 @@
                             tipoPersonal: $('#tipoPersonal').val(),
                             tipoArea: $('#areas').val()
                         }),
-                        dataSrc: function (json) {
+                        dataSrc: function(json) {
                             let feriado = json.data?.feriado || {};
-                            $('#feriado-text').html(Object.keys(feriado).length ? `<b>${feriado.tipo}:</b> ${feriado.nombre}` : '');
+                            $('#feriado-text').html(Object.keys(feriado).length ?
+                                `<b>${feriado.tipo}:</b> ${feriado.nombre}` : '');
 
                             let lista = json.data?.listado || [];
                             cargarNotificaciones(lista)
                             let estadosAsistencias = [{
-                                name: "estado-faltas",
-                                value: lista.filter(a => a.tipo_asistencia === 1).length
-                            },
-                            {
-                                name: "estado-asistencias",
-                                value: lista.filter(a => a.tipo_asistencia === 2).length
-                            },
-                            {
-                                name: "estado-justificados",
-                                value: lista.filter(a => a.tipo_asistencia === 3).length
-                            },
-                            {
-                                name: "estado-tardanzas",
-                                value: lista.filter(a => a.tipo_asistencia === 4).length
-                            },
-                            {
-                                name: "estado-noaplica",
-                                value: lista.filter(a => a.tipo_asistencia === 6).length
-                            },
+                                    name: "estado-faltas",
+                                    value: lista.filter(a => a.tipo_asistencia === 1).length
+                                },
+                                {
+                                    name: "estado-asistencias",
+                                    value: lista.filter(a => a.tipo_asistencia === 2).length
+                                },
+                                {
+                                    name: "estado-justificados",
+                                    value: lista.filter(a => a.tipo_asistencia === 3).length
+                                },
+                                {
+                                    name: "estado-tardanzas",
+                                    value: lista.filter(a => a.tipo_asistencia === 4).length
+                                },
+                                {
+                                    name: "estado-noaplica",
+                                    value: lista.filter(a => a.tipo_asistencia === 6).length
+                                },
                             ];
                             setEstados(estadosAsistencias);
                             return lista;
                         },
-                        error: function (xhr, error, thrown) {
+                        error: function(xhr, error, thrown) {
                             boxAlert.table();
                             console.log('Respuesta del servidor:', xhr);
                         }
                     },
                     columns: [{
-                        data: 'personal'
-                    },
-                    {
-                        data: 'area',
-                        render: function (data, type, row) {
-                            let area = areas.find(tp => tp.id == data) || {
-                                descripcion: 'Sin Area',
-                                color: '#9fa6b2'
-                            };
-                            return `<label class="badge" style="font-size: 0.75rem;background-color: ${area.color};">${area.descripcion}</label>`;
+                            data: 'personal'
+                        },
+                        {
+                            data: 'area',
+                            render: function(data, type, row) {
+                                let area = areas.find(tp => tp.id == data) || {
+                                    descripcion: 'Sin Area',
+                                    color: '#9fa6b2'
+                                };
+                                return `<label class="badge" style="font-size: 0.75rem;background-color: ${area.color};">${area.descripcion}</label>`;
+                            }
+                        },
+                        {
+                            data: 'tipo_personal',
+                            render: function(data, type, row) {
+                                let tpersonal = tipoPersonal.find(tp => tp.id == data) || {
+                                    descripcion: 'Sin Tipo',
+                                    color: '#9fa6b2'
+                                };
+                                return `<label style="font-size: 0.75rem;">${tpersonal.descripcion}</label>`;
+                            }
+                        },
+                        {
+                            data: 'tipo_modalidad',
+                            render: function(data, type, row) {
+                                let tmodalidad = tipoModalidad.find(tp => tp.id == data) || {
+                                    descripcion: 'Sin Tipo',
+                                    color: '#9fa6b2'
+                                };
+                                return `<label class="badge" style="font-size: 0.75rem; background-color: ${tmodalidad.color};"><i class="${tmodalidad.icono} fa-1x me-1"></i>${tmodalidad.descripcion}</label>`;
+                            }
+                        },
+                        {
+                            data: 'tipo_asistencia',
+                            render: function(data, type, row) {
+                                let tasistencia = tipoAsistencia.find(s => s.id == data) || {
+                                    descripcion: 'Pendiente',
+                                    color: '#9fa6b2'
+                                };
+                                return `<label class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</label>`;
+                            }
+                        },
+                        {
+                            data: 'hora',
+                            render: function(data, type, row) {
+                                return data || '-';
+                            }
+                        },
+                        {
+                            data: 'descuento',
+                            render: function(data, type, row) {
+                                let tasistencia = row.tipo_asistencia;
+                                return data || (tasistencia == 1 ? 'Día Comp.' : '-');
+                            }
+                        },
+                        {
+                            data: 'acciones'
                         }
-                    },
-                    {
-                        data: 'tipo_personal',
-                        render: function (data, type, row) {
-                            let tpersonal = tipoPersonal.find(tp => tp.id == data) || {
-                                descripcion: 'Sin Tipo',
-                                color: '#9fa6b2'
-                            };
-                            return `<label style="font-size: 0.75rem;">${tpersonal.descripcion}</label>`;
-                        }
-                    },
-                    {
-                        data: 'tipo_modalidad',
-                        render: function (data, type, row) {
-                            let tmodalidad = tipoModalidad.find(tp => tp.id == data) || {
-                                descripcion: 'Sin Tipo',
-                                color: '#9fa6b2'
-                            };
-                            return `<label class="badge" style="font-size: 0.75rem; background-color: ${tmodalidad.color};"><i class="${tmodalidad.icono} fa-1x me-1"></i>${tmodalidad.descripcion}</label>`;
-                        }
-                    },
-                    {
-                        data: 'tipo_asistencia',
-                        render: function (data, type, row) {
-                            let tasistencia = tipoAsistencia.find(s => s.id == data) || {
-                                descripcion: 'Pendiente',
-                                color: '#9fa6b2'
-                            };
-                            return `<label class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</label>`;
-                        }
-                    },
-                    {
-                        data: 'hora',
-                        render: function (data, type, row) {
-                            return data || '-';
-                        }
-                    },
-                    {
-                        data: 'descuento',
-                        render: function (data, type, row) {
-                            let tasistencia = row.tipo_asistencia;
-                            return data || (tasistencia == 1 ? 'Día Comp.' : '-');
-                        }
-                    },
-                    {
-                        data: 'acciones'
-                    }
                     ],
-                    createdRow: function (row, data, dataIndex) {
+                    createdRow: function(row, data, dataIndex) {
                         if (data.justificado == 0) {
                             $(row).attr({
                                 'title': 'Tiene una Justificacion pendiente.'
@@ -474,8 +476,8 @@
             <form class="modal-content" id="form-descuento">
                 <div class="modal-header bg-primary text-white">
                     <h6 class="modal-title" id="modalDescuentoLabel">Aplicar / Modificar Descuento</h6>
-                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init
+                        data-mdb-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body">
@@ -515,7 +517,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" data-mdb-ripple-init data-mdb-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init
+                        data-mdb-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Guardar</button>
                 </div>
             </form>
@@ -575,14 +578,15 @@
     </div>
 
     <!-- Modal de Justificación -->
-    <div class="modal fade" id="modalJustificar" tabindex="-1" aria-labelledby="modalJustificarLabel" aria-hidden="true">
+    <div class="modal fade" id="modalJustificar" tabindex="-1" aria-labelledby="modalJustificarLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <form id="formJustificar" class="modal-content">
 
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="modalJustificarLabel">Justificar asistencia</h5>
-                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init
+                        data-mdb-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="col-md-12 col-sm-12 col-xs-12">
@@ -630,8 +634,8 @@
                 <!-- CABECERA -->
                 <div class="modal-header bg-primary text-white">
                     <h6 class="modal-title" id="modalExportLabel">EXPORTAR MENSUAL</h6>
-                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init
+                        data-mdb-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <!-- CUERPO -->
@@ -670,16 +674,16 @@
 
 @section('scripts')
     <!-- Librería Browser Image Compression -->
-    <script src="{{secure_asset('front/vendor/browser-image-compression/browser-image-compression.js')}}"></script>
+    <script src="{{ secure_asset('front/vendor/compression/compressor.min.js') }}"></script>
     <!-- Incluye ExcelJS desde CDN -->
-    <script src="{{secure_asset('front/vendor/quill/quill.min.js')}}"></script>
+    <script src="{{ secure_asset('front/vendor/quill/quill.min.js') }}"></script>
 
-    <script src="{{secure_asset('front/js/editorQuill.js')}}"></script>
-    <script src="{{secure_asset('front/js/asistencias/asistencias.js')}}"></script>
+    <script src="{{ secure_asset('front/js/editorQuill.js') }}"></script>
+    <script src="{{ secure_asset('front/js/asistencias/asistencias.js') }}"></script>
     @if (!in_array(session('tipo_usuario'), [1, 5, 6]) || session('tipo_sistema'))
-        <script src="{{secure_asset('front/vendor/exceljs/exceljs.min.js')}}"></script>
-        <script src="{{secure_asset('front/vendor/exceljs/FileSaver.min.js')}}"></script>
-        <script src="{{secure_asset('front/js/asistencias/export-excel-asistencias.js')}}"></script>
+        <script src="{{ secure_asset('front/vendor/exceljs/exceljs.min.js') }}"></script>
+        <script src="{{ secure_asset('front/vendor/exceljs/FileSaver.min.js') }}"></script>
+        <script src="{{ secure_asset('front/js/asistencias/export-excel-asistencias.js') }}"></script>
     @endif
-    <script src="{{secure_asset('front/js/asistencias/asistencias-justificaciones.js')}}"></script>
+    <script src="{{ secure_asset('front/js/asistencias/asistencias-justificaciones.js') }}"></script>
 @endsection

@@ -2,12 +2,12 @@
 @section('title', 'Mis asistencias')
 
 @section('cabecera')
-    <link href="{{secure_asset('front/vendor/quill/quill.snow.css')}}" rel="stylesheet">
-    <script src="{{secure_asset('front/vendor/multiselect/bootstrap.bundle.min.js')}}"></script>
-    <script src="{{secure_asset('front/vendor/multiselect/bootstrap_multiselect.js')}}"></script>
-    <script src="{{secure_asset('front/vendor/multiselect/form_multiselect.js')}}"></script>
-    <script src="{{secure_asset('front/vendor/echartjs/echarts.min.js')}}"></script>
-    <script src="{{secure_asset('front/js/app/ChartMananger.js')}}"></script>
+    <link href="{{ secure_asset('front/vendor/quill/quill.snow.css') }}" rel="stylesheet">
+    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap_multiselect.js') }}"></script>
+    <script src="{{ secure_asset('front/vendor/multiselect/form_multiselect.js') }}"></script>
+    <script src="{{ secure_asset('front/vendor/echartjs/echarts.min.js') }}"></script>
+    <script src="{{ secure_asset('front/js/app/ChartMananger.js') }}"></script>
     <script>
         const empresas = @json($empresas);
         const tipoModalidad = @json($tipoModalidad);
@@ -35,47 +35,47 @@
         };
 
         let incidencia_estados = [{
-            name: "estado-total",
-            text: "Total",
-            color: "purple",
-            searchTable: 0,
-            chart: false,
-        },
-        {
-            name: "estado-asistencias",
-            text: "ASISTENCIAS",
-            color: "success",
-            searchTable: 2,
-            chart: true,
-        },
-        {
-            name: "estado-faltas",
-            text: "FALTAS",
-            color: "danger",
-            searchTable: 1,
-            chart: true,
-        },
-        {
-            name: "estado-tardanzas",
-            text: "TARDANZAS",
-            color: "warning",
-            searchTable: 4,
-            chart: true,
-        },
-        {
-            name: "estado-justificados",
-            text: "JUSTIFICADOS",
-            color: "info",
-            searchTable: 3,
-            chart: true,
-        },
-        {
-            name: "estado-noaplica",
-            text: "NO APLICA",
-            color: "dark",
-            searchTable: 6,
-            chart: true,
-        },
+                name: "estado-total",
+                text: "Total",
+                color: "purple",
+                searchTable: 0,
+                chart: false,
+            },
+            {
+                name: "estado-asistencias",
+                text: "ASISTENCIAS",
+                color: "success",
+                searchTable: 2,
+                chart: true,
+            },
+            {
+                name: "estado-faltas",
+                text: "FALTAS",
+                color: "danger",
+                searchTable: 1,
+                chart: true,
+            },
+            {
+                name: "estado-tardanzas",
+                text: "TARDANZAS",
+                color: "warning",
+                searchTable: 4,
+                chart: true,
+            },
+            {
+                name: "estado-justificados",
+                text: "JUSTIFICADOS",
+                color: "info",
+                searchTable: 3,
+                chart: true,
+            },
+            {
+                name: "estado-noaplica",
+                text: "NO APLICA",
+                color: "dark",
+                searchTable: 6,
+                chart: true,
+            },
         ];
 
         let list_estado = $('#list-estado');
@@ -154,20 +154,20 @@
         <div class="card-body">
             <h6 class="fw-bold">📅 Mis asistencias diarias</h6>
             <!-- <div class="row mb-2">
-                                        <div class="col-4 my-1">
-                                            <small class="form-label mb-0" for="fecha">Fecha</small>
-                                            <div class="input-group">
-                                                <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
-                                                    <i class="fas fa-angle-left"></i>
-                                                </button>
-                                                <input type="month" id="filtro_fecha" class="form-control" value="{{ date('Y-m') }}">
-                                                <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
-                                                    <i class="fas fa-angle-right"></i>
-                                                </button>
+                                            <div class="col-4 my-1">
+                                                <small class="form-label mb-0" for="fecha">Fecha</small>
+                                                <div class="input-group">
+                                                    <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
+                                                        <i class="fas fa-angle-left"></i>
+                                                    </button>
+                                                    <input type="month" id="filtro_fecha" class="form-control" value="{{ date('Y-m') }}">
+                                                    <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
+                                                        <i class="fas fa-angle-right"></i>
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-1 my-1 text-end mt-auto"><button class="btn btn-primary" onclick="filtroBusqueda()" data-mdb-ripple-init>Filtrar</button></div>
-                                    </div> -->
+                                            <div class="col-1 my-1 text-end mt-auto"><button class="btn btn-primary" onclick="filtroBusqueda()" data-mdb-ripple-init>Filtrar</button></div>
+                                        </div> -->
             <table id="tablaMisAsistencias" class="table table-hover text-nowrap w-100">
                 <thead>
                     <tr class="text-bg-primary text-center">
@@ -187,76 +187,79 @@
                     scrollY: 400,
                     ajax: {
                         url: __url + `/asistencias/listar`,
-                        dataSrc: function (json) {
+                        dataSrc: function(json) {
                             let lista = json.data?.listado || [];
                             let estadosAsistencias = [{
-                                name: "estado-faltas",
-                                value: lista.filter(a => a.tipo_asistencia === 1).length
-                            },
-                            {
-                                name: "estado-asistencias",
-                                value: lista.filter(a => a.tipo_asistencia === 2).length
-                            },
-                            {
-                                name: "estado-justificados",
-                                value: lista.filter(a => a.tipo_asistencia === 3).length
-                            },
-                            {
-                                name: "estado-tardanzas",
-                                value: lista.filter(a => a.tipo_asistencia === 4).length
-                            },
-                            {
-                                name: "estado-noaplica",
-                                value: lista.filter(a => a.tipo_asistencia === 6).length
-                            },
+                                    name: "estado-faltas",
+                                    value: lista.filter(a => a.tipo_asistencia === 1).length
+                                },
+                                {
+                                    name: "estado-asistencias",
+                                    value: lista.filter(a => a.tipo_asistencia === 2).length
+                                },
+                                {
+                                    name: "estado-justificados",
+                                    value: lista.filter(a => a.tipo_asistencia === 3).length
+                                },
+                                {
+                                    name: "estado-tardanzas",
+                                    value: lista.filter(a => a.tipo_asistencia === 4).length
+                                },
+                                {
+                                    name: "estado-noaplica",
+                                    value: lista.filter(a => a.tipo_asistencia === 6).length
+                                },
                             ];
                             setEstados(estadosAsistencias);
                             return lista;
                         },
-                        error: function (xhr, error, thrown) {
+                        error: function(xhr, error, thrown) {
                             boxAlert.table();
                             console.log('Respuesta del servidor:', xhr);
                         }
                     },
                     columns: [{
-                        data: 'jornada'
-                    },
-                    {
-                        data: 'fecha'
-                    },
-                    {
-                        data: 'hora',
-                        render: function (data, type, row) {
-                            return data || '-';
+                            data: 'jornada'
+                        },
+                        {
+                            data: 'fecha'
+                        },
+                        {
+                            data: 'hora',
+                            render: function(data, type, row) {
+                                return data || '-';
+                            }
+                        },
+                        {
+                            data: 'tipo_modalidad',
+                            render: function(data, type, row) {
+                                let tmodalidad = tipoModalidad[data];
+                                return `<label class="badge" style="font-size: 0.75rem; background-color: ${tmodalidad?.color};"><i class="${tmodalidad?.icono} fa-1x me-1"></i>${tmodalidad?.descripcion}</label>`;
+                            }
+                        },
+                        {
+                            data: 'tipo_asistencia',
+                            render: function(data, type, row) {
+                                let tasistencia = tipoAsistencia.find(s => s.id == data) ||
+                                    {
+                                        descripcion: 'Pendiente',
+                                        color: '#9fa6b2'
+                                    };
+                                return `<label class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</label>`;
+                            }
+                        },
+                        {
+                            data: 'descuento',
+                            render: function(data, type, row) {
+                                let tasistencia = row.tipo_asistencia;
+                                return data || (tasistencia == 1 ? 'Día Comp.' : '-');
+                            }
+                        },
+                        {
+                            data: 'acciones'
                         }
-                    },
-                    {
-                        data: 'tipo_modalidad',
-                        render: function (data, type, row) {
-                            let tmodalidad = tipoModalidad[data];
-                            return `<label class="badge" style="font-size: 0.75rem; background-color: ${tmodalidad?.color};"><i class="${tmodalidad?.icono} fa-1x me-1"></i>${tmodalidad?.descripcion}</label>`;
-                        }
-                    },
-                    {
-                        data: 'tipo_asistencia',
-                        render: function (data, type, row) {
-                            let tasistencia = tipoAsistencia.find(s => s.id == data)
-                                || { descripcion: 'Pendiente', color: '#9fa6b2' };
-                            return `<label class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</label>`;
-                        }
-                    },
-                    {
-                        data: 'descuento',
-                        render: function (data, type, row) {
-                            let tasistencia = row.tipo_asistencia;
-                            return data || (tasistencia == 1 ? 'Día Comp.' : '-');
-                        }
-                    },
-                    {
-                        data: 'acciones'
-                    }
                     ],
-                    createdRow: function (row, data, dataIndex) {
+                    createdRow: function(row, data, dataIndex) {
                         $(row).addClass('text-center');
                         $(row).find('td:eq(6)').addClass(`td-acciones`);
                     },
@@ -280,8 +283,11 @@
                 }
 
                 function searchTable(search) {
-                    let tasistencia = tipoAsistencia.find(s => s.id == search)
-                        || { descripcion: 'Pendiente', color: '#9fa6b2' };
+                    let tasistencia = tipoAsistencia.find(s => s.id == search) ||
+                        {
+                            descripcion: 'Pendiente',
+                            color: '#9fa6b2'
+                        };
                     tablaMisAsistencias.column([4]).search(tasistencia?.descripcion || '').draw();
                 }
             </script>
@@ -401,8 +407,8 @@
                         Detalle de Justificación
                         <span aria-item="ver_estatus">--</span>
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init
+                        data-mdb-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <!-- Asunto -->
@@ -430,8 +436,8 @@
 
 @section('scripts')
     <!-- Librería Browser Image Compression -->
-    <script src="{{secure_asset('front/vendor/browser-image-compression/browser-image-compression.js')}}"></script>
-    <script src="{{secure_asset('front/vendor/quill/quill.min.js')}}"></script>
-    <script src="{{secure_asset('front/js/editorQuill.js')}}"></script>
-    <script src="{{secure_asset('front/js/misasistencias/misasistencias.js')}}"></script>
+    <script src="{{ secure_asset('front/vendor/compression/compressor.min.js') }}"></script>
+    <script src="{{ secure_asset('front/vendor/quill/quill.min.js') }}"></script>
+    <script src="{{ secure_asset('front/js/editorQuill.js') }}"></script>
+    <script src="{{ secure_asset('front/js/misasistencias/misasistencias.js') }}"></script>
 @endsection

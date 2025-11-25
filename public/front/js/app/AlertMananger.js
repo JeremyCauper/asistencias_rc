@@ -3,21 +3,27 @@ class AlertMananger {
         //this.Swal = new Swal();
     }
 
-    loading(msg = null) {
-        Swal.fire({
+    loading(msg = false) {
+        const objeto = {
             title: '<div class="my-3"><div style="display:flex; justify-content:center;"><div class="loader loader-lg"></div></div></div>',
-            html: `<span class="text-primary"><b>${msg || 'Por favor espere...'}</b></span>`,
-            width: 250,
             allowOutsideClick: false,
             showConfirmButton: false,
+            width: 'auto',         // o un valor fijo como '400px'
             showClass: {
                 popup: `
-                  animate__animated
-                  animate__fadeIn
-                  animate__faster
+                    animate__animated
+                    animate__fadeIn
+                    animate__faster
                 `
-            },
-        });
+            }
+        };
+        if (msg === false) {
+            objeto.background = 'transparent';
+        } else {
+            objeto.html = `<span class="text-primary"><b>${msg || 'Por favor espere...'}</b></span>`;
+        }
+
+        Swal.fire(objeto);
     }
 
     async confirm(op = {}) {
