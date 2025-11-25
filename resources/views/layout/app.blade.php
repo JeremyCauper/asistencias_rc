@@ -5,31 +5,46 @@
     @if (env('APP_ENV') == 'produccion')
         <script>
             const url_base_logeo = '{{ secure_url('') }}';
+
             if (0 == {{ session('tipo_sistema') }}) {
                 (async function() {
                     let abierto = false;
+                    let consultando = false;
+
                     setInterval(async () => {
                         const threshold = 160;
                         const ancho = window.outerWidth - window.innerWidth > threshold;
                         const alto = window.outerHeight - window.innerHeight > threshold;
 
-                        if ((ancho || alto) && !abierto) {
+                        if ((ancho || alto) && !abierto && !consultando) {
                             console.warn('Para que quieres abrir, papu? 👀');
                             abierto = true;
-                            const response = await fetch(url_base_logeo + '/logout', {
-                                method: 'GET'
-                            });
 
-                            if (!response.ok) {
-                                throw new Error(data.message ||
-                                    'No se pudo obtener la información solicitada.');
+                            try {
+                                consultando = true;
+                                const response = await fetch(url_base_logeo + '/logout', {
+                                    method: 'GET'
+                                });
+
+                                if (!response.ok) {
+                                    throw new Error('Respuesta no OK del servidor');
+                                    location.reload();
+                                }
+
+                                // location.href = url_base_logeo + '/inicio';
+                                location.reload();
+
+                            } catch (error) {
+                                console.error('Error en fetch:', error);
+                                console.warn('Probable Mixed Content o redirect no seguro.');
+                                location.reload();
+                                // Aquí decides si quieres recargar igual o dejarlo pasar.
                             }
 
-                            location.href = url_base_logeo + '/inicio';
-                            location.reload();
                         } else if (!ancho && !alto && abierto) {
                             abierto = false;
                         }
+
                     }, 1000);
                 })();
             }
