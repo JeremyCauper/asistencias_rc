@@ -153,21 +153,22 @@
     <div class="card">
         <div class="card-body">
             <h6 class="fw-bold">📅 Mis asistencias diarias</h6>
-            <!-- <div class="row mb-2">
-                                            <div class="col-4 my-1">
-                                                <small class="form-label mb-0" for="fecha">Fecha</small>
-                                                <div class="input-group">
-                                                    <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
-                                                        <i class="fas fa-angle-left"></i>
-                                                    </button>
-                                                    <input type="month" id="filtro_fecha" class="form-control" value="{{ date('Y-m') }}">
-                                                    <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
-                                                        <i class="fas fa-angle-right"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div class="col-1 my-1 text-end mt-auto"><button class="btn btn-primary" onclick="filtroBusqueda()" data-mdb-ripple-init>Filtrar</button></div>
-                                        </div> -->
+            <div class="row mb-2">
+                <div class="col-4 my-1">
+                    <small class="form-label mb-0" for="fecha">Fecha</small>
+                    <div class="input-group">
+                        <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
+                            <i class="fas fa-angle-left"></i>
+                        </button>
+                        <input type="month" id="filtro_fecha" class="form-control" value="{{ date('Y-m') }}">
+                        <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
+                            <i class="fas fa-angle-right"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-1 my-1 text-end mt-auto"><button class="btn btn-primary" onclick="filtroBusqueda()"
+                        data-mdb-ripple-init>Filtrar</button></div>
+            </div>
             <table id="tablaMisAsistencias" class="table table-hover text-nowrap w-100">
                 <thead>
                     <tr class="text-bg-primary text-center">
@@ -240,11 +241,10 @@
                         {
                             data: 'tipo_asistencia',
                             render: function(data, type, row) {
-                                let tasistencia = tipoAsistencia.find(s => s.id == data) ||
-                                    {
-                                        descripcion: 'Pendiente',
-                                        color: '#9fa6b2'
-                                    };
+                                let tasistencia = tipoAsistencia.find(s => s.id == data) || {
+                                    descripcion: 'Pendiente',
+                                    color: '#9fa6b2'
+                                };
                                 return `<label class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</label>`;
                             }
                         },
@@ -277,18 +277,20 @@
                 function filtroBusqueda() {
                     var filtroFecha = $('#filtro_fecha').val();
 
-                    var nuevoUrl = `${__url}/asistencias/listarMisAsistencias?fecha=${filtroFecha}`;
+                    var nuevoUrl = __url + `/asistencias/listar?fecha=${filtroFecha}`;
                     tablaMisAsistencias.ajax.url(nuevoUrl).load();
-                    // tablaMisAsistencias.column([4]).search('').draw();
+                    tablaMisAsistencias.column([4]).search('').draw();
                 }
 
                 function searchTable(search) {
-                    let tasistencia = tipoAsistencia.find(s => s.id == search) ||
-                        {
-                            descripcion: 'Pendiente',
-                            color: '#9fa6b2'
-                        };
-                    tablaMisAsistencias.column([4]).search(tasistencia?.descripcion || '').draw();
+                    let tasistencia = tipoAsistencia.find(s => s.id == search)?.descripcion || '';
+                    tablaMisAsistencias.column([4]).search(tasistencia).draw();
+
+                    const contenedor = document.querySelector('.content-wrapper');
+                    contenedor.scrollTo({
+                        top: contenedor.scrollHeight,
+                        behavior: 'smooth'
+                    });
                 }
             </script>
         </div>
