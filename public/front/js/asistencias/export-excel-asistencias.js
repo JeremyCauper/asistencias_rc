@@ -5,7 +5,7 @@ $(document).ready(function () {
             "data-mdb-ripple-init": '',
             id: 'btn-exportar-reporte'
         })
-            .html('<i class="fas fa-file-excel me-2"></i>Exportar Reporte')
+            .html('<i class="fas fa-file-excel me-2"></i>Reportes')
             .on('click', function () {
                 $('#modalExport').modal('show');
             })

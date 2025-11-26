@@ -247,7 +247,8 @@
                         <label class="form-label-filter" for="areas">Areas</label>
                         <select id="areas" name="areas" multiple="multiple" class="multiselect-select-all">
                             @foreach ($areas as $v)
-                                <option {{ session('tipo_usuario') == 2 ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
+                                <option
+                                    {{ session('tipo_usuario') == 2 ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
                                     value="{{ $v->id }}">
                                     {{ $v->descripcion }}
                                 </option>
@@ -461,6 +462,12 @@
                 function searchTable(search) {
                     let tasistencia = tipoAsistencia.find(s => s.id == search)?.descripcion || '';
                     tablaAsistencias.column([4]).search(tasistencia).draw();
+
+                    const contenedor = document.querySelector('.content-wrapper');
+                    contenedor.scrollTo({
+                        top: contenedor.scrollHeight,
+                        behavior: 'smooth'
+                    });
                 }
             </script>
         </div>
