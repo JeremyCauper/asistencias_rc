@@ -21,9 +21,6 @@
         const areas = @json($areas);
     </script>
     <style>
-        /* #modalJustificacion [aria-item="contenido_html"] {
-                                                                height: 450px;
-                                                            } */
     </style>
 @endsection
 
@@ -337,7 +334,7 @@
                                 `<b>${feriado.tipo}:</b> ${feriado.nombre}` : '');
 
                             let lista = json.data?.listado || [];
-                            cargarNotificaciones(lista)
+                            // cargarNotificaciones(lista)
                             let estadosAsistencias = [{
                                     name: "estado-faltas",
                                     value: lista.filter(a => a.tipo_asistencia === 1).length

@@ -50,28 +50,25 @@
             }
         </script>
     @endif
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    {{-- <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-
+    <meta http-equiv="Expires" content="0"> --}}
     <link rel="shortcut icon" href="{{ secure_asset('front/images/app/LogoRC.png') }}" />
     <title>@yield('title')</title>
     <!-- Font Awesome -->
     <link href="{{ secure_asset('front/vendor/mdboostrap/css/all.min6.0.0.css') }}" rel="stylesheet">
     <!-- MDB -->
     <link href="{{ secure_asset('front/vendor/mdboostrap/css/mdb.min7.2.0.css') }}" rel="stylesheet">
-    <!-- Iconos -->
-    <link href="{{ secure_asset('front/vendor/select/select2.min.css') }}" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ secure_asset('front/vendor/sweetalert/animate.min.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('front/vendor/sweetalert/default.css') }}">
     <!-- Google Fonts -->
     <link rel="stylesheet" href="{{ secure_asset('front/vendor/fontGoogle/fonts.css') }}" />
     <!-- Home -->
-    <link rel="stylesheet" href="{{ secure_asset('front/css/app.css') }}">
+    <link href="{{ secure_asset('front/layout/layout.css') }}" rel="stylesheet">
+    <link href="{{ secure_asset('front/css/app.css') }}" rel="stylesheet">
     <script>
         const tipoSistema = {{ session('tipo_sistema') }};
         const nomUsuario = '{{ session()->get('config')->nombre_perfil }}';
@@ -85,204 +82,184 @@
     </script>
     <!-- JQuery -->
     <script src="{{ secure_asset('front/vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ secure_asset('front/vendor/sweetalert/sweetalert2@11.js') }}"></script>
     @if (session('cambio') && env('APP_ENV') == 'produccion')
         <script id="cambioPass" src="{{ secure_asset('front/js/actualizarPassword.js') }}"></script>
     @endif
+    <script src="{{ secure_asset('front/vendor/sweetalert/sweetalert2@11.js') }}"></script>
+    <link href="{{ secure_asset('front/vendor/select/select2.min.css') }}" rel="stylesheet">
     <script src="{{ secure_asset('front/vendor/select/select2.min.js') }}"></script>
     <script src="{{ secure_asset('front/vendor/select/form_select2.js') }}"></script>
     <script src="{{ secure_asset('front/js/app/AlertMananger.js') }}"></script>
     <script src="{{ secure_asset('front/vendor/dataTable/jquery.dataTables.min.js') }}"></script>
     <script src="{{ secure_asset('front/js/app.js') }}"></script>
 
-    <link rel="stylesheet" href="{{ secure_asset('front/css/tema.css') }}">
-    <script src="{{ secure_asset('front/js/app/ToggleTema.js') }}"></script>
-
     @yield('cabecera')
 </head>
-<style>
 
-</style>
+<body>
+    <div class="layout-container">
+        <script>
+            const layout_Container = document.querySelector('.layout-container');
+            if (eval(localStorage.sidebarIconOnly_asistencias) && window.innerWidth > 767) {
+                layout_Container.classList.add('sidebar-only-icon');
+            } else {
+                layout_Container.classList.remove('sidebar-only-icon');
+            }
+        </script>
+        <div class="sidevar__overlay"></div>
 
-<body class="with-welcome-text"> <!-- sidebar-icon-only -->
-    <div class="container-scroller">
-        <!-- partial:partials/_navbar.html -->
-        <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top">
-            <a class="navbar-brand" href="#">
-                <div class="logo_rci"></div>
-            </a>
-            <div class="navbar-menu-wrapper d-flex align-items-top">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <span id="tiempo_restante_head" class="me-3" style="font-size: small;"></span>
+        <!-- SIDEBAR sidebar-only-icon-->
+        <aside class="sidebar">
+
+            <!-- Header -->
+            <nav class="sidebar__header sidebar__header-only-icon">
+                <button class="sidebar-close hover-layout" type="button" aria-label="Cerrar barra lateral">
+                    <i class="fas fa-bars" style="color: #8f8f8f;"></i>
+                </button>
+
+                <a class="sidebar-icon-logo hover-layout" href="/">
+                    <div></div>
+                </a>
+            </nav>
+
+            <!-- Body -->
+            <div class="sidebar__body">
+
+                @foreach (session('customModulos') as $menu)
+                    <div class="sidebar__item" {{ !empty($menu->submenu) ? 'data-collapse="false"' : '' }}>
+                        <a class="sidebar__link{{ !empty($menu->submenu) ? ' sidebar__link-menu' : '' }}"
+                            {{ empty($menu->submenu) ? 'data-mdb-ripple-init' : '' }}
+                            href="{{ !empty($menu->submenu) ? 'javascript:void(0)' : url($menu->ruta) }}"
+                            @if (!empty($menu->submenu)) data-menu="{{ $menu->ruta }}" @endif>
+                            <div class="sidebar__link-icon">
+                                <i class="{{ $menu->icon }}"></i>
+                            </div>
+                            <div class="sidebar__link-text">
+                                <div class="truncate">{{ $menu->descripcion }}</div>
+                            </div>
+                        </a>
+
+                        @if (!empty($menu->submenu))
+                            <ul class="sidebar__submenu">
+                                @foreach ($menu->submenu as $categoria => $submenus)
+                                    @if ($categoria !== 'sin_categoria' || count($menu->submenu) > 1)
+                                        <li class="sidebar__submenu-title">
+                                            {{ $categoria === 'sin_categoria' ? 'Otros' : $categoria }}
+                                        </li>
+                                    @endif
+                                    @foreach ($submenus as $submenu)
+                                        <li class="sidebar__submenu-item">
+                                            <a class="sidebar__submenu-link" data-mdb-ripple-init
+                                                href="{{ url($submenu->ruta) }}" data-ruta="{{ $menu->ruta }}">
+                                                {{ $submenu->descripcion }}
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
+                @endforeach
+
+                {{-- <div class="sidebar__item">
+                    <a class="sidebar__link" data-mdb-ripple-init href="javascript:void(0)">
+                        <div class="sidebar__link-icon">
+                            <i class="fas fa-magnifying-glass"></i>
+                        </div>
+                        <div class="sidebar__link-text">
+                            <div class="truncate">Buscar chats</div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="sidebar__item" data-collapse="false">
+                    <a class="sidebar__link sidebar__link-menu is-active" href="javascript:void(0)">
+                        <div class="sidebar__link-icon">
+                            <i class="far fa-images"></i>
+                        </div>
+                        <div class="sidebar__link-text">
+                            <div class="truncate">Biblioteca</div>
+                        </div>
+                    </a>
+                    <ul class="sidebar__submenu">
+                        <li class="sidebar__submenu-title">Biblioteca Titulo</li>
+                        <li class="sidebar__submenu-item"><a class="sidebar__submenu-link is-active"
+                                data-mdb-ripple-init>Biblioteca 1</a>
+                        </li>
+                        <li class="sidebar__submenu-item"><a class="sidebar__submenu-link"
+                                data-mdb-ripple-init>Biblioteca 2</a></li>
+                    </ul>
+                </div> --}}
+
+            </div>
+
+            <!-- Footer -->
+            <div class="sidebar__footer dropup">
+                <button class="sidebar__footer-user hover-layout" data-mdb-dropdown-init data-mdb-ripple-init
+                    aria-expanded="false" data-mdb-dropdown-animation="off">
+                    <div class="sidebar__footer-user-sigla"
+                        style="background-color: {{ session()->get('config')->siglaBg }};">
+                        {{ session()->get('config')->sigla }}
+                    </div>
+                    <div class="sidebar__footer-user-text">
+                        <h5>{{ session()->get('config')->nombre_perfil }}</h5>
+                        <h6>{{ session()->get('config')->acceso }}</h6>
+                    </div>
+                </button>
+                <ul class="dropdown-menu py-2 px-1">
+                    <li>
+                        <div class="dropdown-header align-items-center d-flex" style="user-select: none">
+                            <div class="align-items-center d-flex justify-content-center rounded-circle text-white"
+                                style="width: 2rem; height: 2rem; background-color: {{ session()->get('config')->siglaBg }};">
+                                {{ session()->get('config')->sigla }}
+                            </div>
+                            <div class="dropdown-header__text ms-2">
+                                <span>{{ session()->get('config')->nombre_perfil }}</span>
+                                <p class="fw-bold mb-0 mt-2 text-secondary">{{ session()->get('config')->acceso }}</p>
+                            </div>
+                        </div>
+                        <hr class="mx-2 mt-0 mb-1">
                     </li>
-                    <div class="me-2">
+                    <li><a class="dropdown-item rounded" href="{{ secure_url('/logout') }}">
+                            <i class="fas fa-arrow-right-from-bracket me-2"></i> Cerrar sesión
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+        <!-- MAIN CONTENT -->
+        <main class="flex-grow-1">
+            <!-- Navbar -->
+            <nav class="navbar pe-3 ps-1">
+                <div class="navbar-brand mb-0 p-0">
+                    <div class="logo_rci"></div>
+                </div>
+                <div class="navbar-brand mb-0 p-0">
+                    <div>
+                        <link href="{{ secure_asset('front/layout/swicth_layout.css') }}" rel="stylesheet">
                         <input id="check" type="checkbox">
                         <label for="check" class="check-trail">
                             <span class="check-handler"></span>
                         </label>
-                        <script>
-                            if (!localStorage.hasOwnProperty('data_mdb_theme') || !localStorage.data_mdb_theme) {
-                                localStorage.setItem('data_mdb_theme', 'light');
-                            }
-                            $('html').attr('data-mdb-theme', localStorage.data_mdb_theme);
-
-                            $('#check').prop('checked', localStorage.data_mdb_theme == 'light' ? true : false);
-                            if (!esCelularTema()) {
-                                $('.check-trail').append(`<span class="badge badge-secondary toltip-theme">
-                                    <b class="fw-bold">Shift</b><i class="fas fa-plus fa-2xs text-white"></i> <b class="fw-bold">D</b>
-                                </span>`);
-                            }
-                        </script>
+                        <script src="{{ secure_asset('front/js/layout/swicth_layout.js') }}"></script>
                     </div>
-                    @yield('navbar')
-                    <!-- Avatar -->
-                    <div class="dropdown">
-                        <a data-mdb-dropdown-init
-                            class="dropdown-toggle d-flex align-items-center hidden-arrow rounded-circle" href="#"
-                            id="navbarDropdownMenuAvatar" role="button" aria-expanded="false" data-mdb-ripple-init>
-                            <span class="img-xs rounded-circle text-white acronimo"
-                                style="background-color: {{ session()->get('config')->siglaBg }};">{{ session()->get('config')->sigla }}</span>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuAvatar"
-                            style="width: 22rem; min-width: 10rem;">
-                            <li class="p-3">
-                                <span class="border dropdown-header px-4 py-2 rounded text-center">
-                                    <span class="img-md m-auto rounded-circle text-white acronimo fs-3"
-                                        style="width: 65px;height: 65px;background-color: {{ session()->get('config')->siglaBg }}">{{ session()->get('config')->sigla }}</span>
-                                    <p class="mb-1 mt-1 fw-semibold">
-                                        {{ session()->get('config')->nombre_perfil }}
-                                    </p>
-                                    <p class="mb-0">{{ session()->get('config')->acceso }}</p>
-                                </span>
-                            </li>
-                            <li>
-                                <a class="dropdown-item py-3" href="{{ secure_url('/logout') }}">
-                                    <i class="dropdown-item-icon fas fa-power-off text-primary me-2"></i>
-                                    Cerrar sesión
-                                </a>
-                            </li>
-                        </ul>
+                    <div>
+                        <button class="sidebar-close__navbar hover-layout ms-2" type="button"
+                            aria-label="Cerrar barra lateral">
+                            <i class="fas fa-bars" style="color: #8f8f8f;"></i>
+                        </button>
                     </div>
-                </ul>
-                <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
-                    data-bs-toggle="offcanvas">
-                    <span class="fas fa-bars"></span>
-                </button>
-            </div>
-            <script>
-                var body = $('body');
-                if (eval(localStorage.sidebarIconOnly) && window.innerWidth > 992) {
-                    body.addClass('sidebar-icon-only');
-                }
-
-                $(document).ready(function() {
-                    $('#expandir-menu i').on("click", function() {
-                        localStorage.sidebarIconOnly = false;
-                        if (window.innerWidth > 992) {
-                            body.toggleClass('sidebar-icon-only');
-                            localStorage.sidebarIconOnly = body.hasClass('sidebar-icon-only') ? true : false;
-                        }
-                    });
-                })
-            </script>
-        </nav>
-        <!-- partial -->
-        <div class="container-fluid page-body-wrapper">
-            <div class="sidebar-content" role="button"></div>
-            <nav class="sidebar sidebar-offcanvas" id="sidebar">
-                <ul class="nav">
-                    <li class="nav-item menu-item text-center pb-1 menu-bar" tittle-menu>
-                        <a class="nav-link menu-lateral py-0" href="javascript:void(0)" role="button"
-                            id="expandir-menu">
-                            <i class="fas fa-bars"></i>
-                            <span class="ms-2 menu-title">Menu</span>
-                        </a>
-                    </li>
-                    <li class="nav-item menu-item text-center" tittle-menu>
-                        <div class="nav-link menu-perfil pt-0">
-                            <span class="acronimo rounded-circle text-white"
-                                style="background-color: <?= session()->get('config')->siglaBg ?>;">{{ session()->get('config')->sigla }}</span>
-                            <span class="ms-2 menu-title">
-                                <p class="fw-bold mb-1 nombre-personal">
-                                    {{ session()->get('config')->nombre_perfil }}
-                                </p>
-                                <p class="text-muted mb-0 tipo-personal">{{ session()->get('config')->acceso }}
-                                </p>
-                            </span>
-                        </div>
-                    </li>
-                    @foreach (session('customModulos') as $menu)
-                        <li class="nav-item menu-item">
-                            <a class="nav-link menu-link"
-                                {{ !empty($menu->submenu) ? (string) 'data-mdb-collapse-init role=button aria-expanded=false aria-controls=' . $menu->ruta : '' }}
-                                data-mdb-ripple-init
-                                href={{ !empty($menu->submenu) ? "#$menu->ruta" : url($menu->ruta) }}>
-                                <i class="{{ $menu->icon }} menu-icon"></i>
-                                <span class="menu-title">{{ $menu->descripcion }}</span>
-                                @if (!empty($menu->submenu))
-                                    <i class="menu-arrow"></i>
-                                @endif
-                            </a>
-                            @if (!empty($menu->submenu))
-                                <div class="collapse" id="{{ $menu->ruta }}">
-                                    <ul class="nav flex-column sub-menu">
-                                        @foreach ($menu->submenu as $categoria => $submenus)
-                                            @if ($categoria !== 'sin_categoria' || count($menu->submenu) > 1)
-                                                <li class="nav-category-item">
-                                                    {{ $categoria === 'sin_categoria' ? 'Otros' : $categoria }}
-                                                </li>
-                                            @endif
-                                            @foreach ($submenus as $submenu)
-                                                <li class="nav-item">
-                                                    <a class="nav-link"
-                                                        href="{{ url($submenu->ruta) }}">{{ $submenu->descripcion }}</a>
-                                                </li>
-                                            @endforeach
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
-                        </li>
-                    @endforeach
-                </ul>
+                </div>
             </nav>
 
-            <!-- partial -->
-            <div class="main-panel">
-                <div class="content-wrapper">
-                    @yield('content')
-                </div>
-                <!-- content-wrapper ends -->
-
-                <div class="modal fade" id="modal_pdf" aria-labelledby="modal_pdf" aria-hidden="true">
-                    <div class="modal-dialog modal-fullscreen">
-                        <div class="modal-content">
-                            <div class="modal-header bg-primary text-white">
-                                <h6 class="modal-title">Visualización de PDF
-                                    <span class="badge badge-success badge-lg" aria-item="codigo"></span>
-                                    <span class="badge badge-info badge-lg" aria-item="codigo_orden"></span>
-                                </h6>
-                                <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init
-                                    data-mdb-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body p-0 position-relative">
-                                <iframe id="contenedor_doc" class="w-100" frameborder="0"></iframe>
-                            </div>
-                            <div class="modal-footer border-top-0 pt-0 pb-1">
-                                <button type="button" class="btn btn-link " data-mdb-ripple-init
-                                    data-mdb-dismiss="modal">Cerrar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <!-- Content Wrapper -->
+            <div class="content-wrapper p-3">
+                @yield('content')
             </div>
-            <!-- main-panel ends -->
-        </div>
-        <!-- page-body-wrapper ends -->
-    </div>
-    <!-- container-scroller -->
 
+        </main>
+        <script src="{{ secure_asset('front/js/layout/toggle_template.js') }}"></script>
+    </div>
 
     <script>
         const intervalToken = setInterval(() => {
@@ -295,16 +272,11 @@
     <!-- MDB -->
     <script type="text/javascript" src="{{ secure_asset('front/vendor/mdboostrap/js/mdb.umd.min7.2.0.js') }}"></script>
     <script src="{{ secure_asset('front/js/layout/template.js') }}"></script>
-    <script src="{{ secure_asset('front/js/layout/hoverable-collapse.js') }}"></script>
-    <script src="{{ secure_asset('front/js/layout/off-canvas.js') }}"></script>
-    <!-- <script src="{{ secure_asset('front/vendor/inputmask/jquery.inputmask.bundle.min.js') }}"></script> -->
-    <!-- <script src="{{ secure_asset('front/vendor/flatpickr/flatpickr.js') }}"></script> -->
-    <!-- <script src="{{ secure_asset('front/js/app/TableManeger.js') }}"></script> -->
+    {{-- <script src="{{ secure_asset('front/js/layout/hoverable-collapse.js') }}"></script> --}}
+    {{-- <script src="{{ secure_asset('front/js/layout/off-canvas.js') }}"></script> --}}
     <script src="{{ secure_asset('front/js/app/FormMananger.js') }}"></script>
     <!-- plugins:js -->
     @yield('scripts')
-
-
 </body>
 
 </html>

@@ -1,15 +1,17 @@
 :root,
 [data-mdb-theme=light] {
-    --bg-trail: #bed9ff;
-    --bg-handler: #ddebff;
+    --bg-trail: #ffffff;
+    --bg-handler: #e2e2e2;
     --color-before: #e4a11b;
     --transition: all .2s ease;
+    --root-border-check-color: rgb(79, 79, 79, .25);
 }
 
 [data-mdb-theme=dark] {
     --bg-trail: #303030;
     --bg-handler: #424242;
     --color-before: #ffffff;
+    --root-border-check-color: rgb(255, 255, 255, .35);
 }
 
 /* Hide the input */
@@ -25,7 +27,7 @@
     align-items: center;
     width: 3rem;
     height: 1.76rem;
-    padding: .13rem .18rem;
+    padding: .14rem .16rem .12rem .16rem;
     background: var(--bg-trail);
     border-radius: 2rem;
     transition: var(--transition);
@@ -36,11 +38,19 @@
 .check-trail .toltip-theme {
     position: absolute;
     display: none;
-    top: 190%;
-    left: 50%;
-    font-size: 1rem !important;
+    top: 220%;
+    font-size: .85rem !important;
     transform: translate(-50%, -50%);
-    box-shadow: 0px 0px 2px rgba(var(--mdb-surface-color-rgb), 1), 0px 0px 2px rgba(var(--mdb-surface-color-rgb), 1);
+    border: 1px solid var(--root-border-check-color);
+    background-color: var(--bg-trail);
+    color: var(--mdb-surface-color);
+    z-index: 100;
+}
+
+.check-trail .toltip-theme i {
+    color: var(--mdb-surface-color);
+    font-size: .6rem;
+    margin: 0 .2rem;
 }
 
 .check-trail:hover .toltip-theme {
@@ -59,8 +69,6 @@
     border-radius: 50%;
     margin-left: 4%;
     transition: var(--transition);
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
-    /* border: var(--mdb-border-width) solid var(--mdb-border-color); */
 
     &::before {
         content: "\f186";
