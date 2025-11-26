@@ -5,18 +5,16 @@
     <!-- Requiredd meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="shortcut icon" href="{{secure_asset('front/images/app/LogoRC.png')}}" />
+    <link rel="shortcut icon" href="{{ secure_asset('front/images/app/LogoRC.png') }}" />
     <title>RC Asistencias | Inicio</title>
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="{{secure_asset('front/vendor/mdboostrap/css/all.min6.0.0.css')}}">
-    <link rel="stylesheet" href="{{secure_asset('front/vendor/mdboostrap/css/mdb.min7.2.0.css')}}">
-    <link rel="stylesheet" href="{{secure_asset('front/vendor/sweetalert/default.css')}}">
-    <link rel="stylesheet" href="{{secure_asset('front/css/app/auth.css')}}">
+    <link rel="stylesheet" href="{{ secure_asset('front/vendor/mdboostrap/css/all.min6.0.0.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('front/vendor/mdboostrap/css/mdb.min7.2.0.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('front/vendor/sweetalert/default.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('front/css/app/auth.css') }}">
 
-    <script src="{{secure_asset('front/vendor/jquery/jquery.min.js')}}"></script>
+    <script src="{{ secure_asset('front/vendor/jquery/jquery.min.js') }}"></script>
 
-    <link rel="stylesheet" href="{{secure_asset('front/css/tema.css')}}">
-    <script src="{{secure_asset('front/js/app/ToggleTema.js')}}"></script>
     <script>
         const intervalToken = setInterval(() => {
             if (!document.cookie.includes('XSRF-TOKEN')) {
@@ -31,7 +29,7 @@
 
     <nav class="navbar bg-dark-subtle fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand me-0 p-0" href="{{secure_url('/soporte')}}">
+            <a class="navbar-brand me-0 p-0" href="{{ secure_url('/') }}">
                 <div class="logo_rci"></div>
             </a>
             <div class="navbar-brand">
@@ -39,23 +37,12 @@
                     ASISTENCIAS - RCI
                 </span>
                 <div class="ms-2">
+                    <link href="{{ secure_asset('front/layout/swicth_layout.css') }}" rel="stylesheet">
                     <input id="check" type="checkbox">
                     <label for="check" class="check-trail">
                         <span class="check-handler"></span>
                     </label>
-                    <script>
-                        if (!localStorage.hasOwnProperty('data_mdb_theme') || !localStorage.data_mdb_theme) {
-                            localStorage.setItem('data_mdb_theme', 'light');
-                        }
-                        $('html').attr('data-mdb-theme', localStorage.data_mdb_theme);
-
-                        $('#check').prop('checked', localStorage.data_mdb_theme == 'light' ? true : false);
-                        if (!esCelularTema()) {
-                            $('.check-trail').append(`<span class="badge badge-secondary toltip-theme">
-                                <b class="fw-bold">Shift</b><i class="fas fa-plus fa-2xs text-white"></i> <b class="fw-bold">D</b>
-                            </span>`);
-                        }
-                    </script>
+                    <script src="{{ secure_asset('front/js/layout/swicth_layout.js') }}"></script>
                 </div>
             </div>
         </div>
@@ -73,12 +60,13 @@
                         </div>
                         <!-- Usuario input -->
                         <div class="form-icon icon-usuario my-4">
-                            <input type="text" name="login_asist_usuario" id="login_asist_usuario" class="form-control"
-                                placeholder="Usuario" autofocus autocomplete="username asistencias" require="usuario">
+                            <input type="text" name="login_asist_usuario" id="login_asist_usuario"
+                                class="form-control" placeholder="Usuario" autofocus autocomplete="username asistencias"
+                                require="usuario">
                         </div>
 
                         <!-- Password input -->
-                        
+
                         <div class="form-icon icon-contrasena my-4">
                             <input type="password" name="login_asist_password" id="login_asist_password"
                                 class="form-control" placeholder="Contraseña" autofocus
@@ -93,7 +81,8 @@
                         </div>
                     </form>
                     <div class="text-center border-top mt-2 pt-2">
-                        <p class="text-secondary" style="font-size: small;">©{{date("Y")}} Derechos Reservados. Ricardo
+                        <p class="text-secondary" style="font-size: small;">©{{ date('Y') }} Derechos Reservados.
+                            Ricardo
                             Calderon
                             Ingenieros!</p>
                     </div>
@@ -102,14 +91,14 @@
         </div>
     </div>
 
-    <script src="{{secure_asset('front/vendor/mdboostrap/js/mdb.umd.min7.2.0.js')}}"></script>
-    <script src="{{secure_asset('front/vendor/sweetalert/sweetalert2@11.js')}}"></script>
-    <script src="{{secure_asset('front/js/app/AlertMananger.js')}}"></script>
+    <script src="{{ secure_asset('front/vendor/mdboostrap/js/mdb.umd.min7.2.0.js') }}"></script>
+    <script src="{{ secure_asset('front/vendor/sweetalert/sweetalert2@11.js') }}"></script>
+    <script src="{{ secure_asset('front/js/app/AlertMananger.js') }}"></script>
     <script>
-        const __url = "{{secure_url('')}}";
+        const __url = "{{ secure_url('') }}";
         const __token = "{{ csrf_token() }}";
     </script>
-    <script src="{{secure_asset('front/js/auth/auth.js')}}"></script>
+    <script src="{{ secure_asset('front/js/auth/auth.js') }}"></script>
 </body>
 
 </html>

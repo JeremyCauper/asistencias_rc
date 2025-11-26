@@ -118,7 +118,7 @@
     --mdb-border-width: 1px;
     --mdb-border-style: solid;
     --mdb-border-color: #dcdcdc;
-    --mdb-border-color-translucent: rgba(0, 0, 0, 0.175);
+    --mdb-border-color-translucent: rgba(79, 79, 79, .25);
     --mdb-border-radius: .5rem;
     --mdb-border-radius-sm: 0.25rem;
     --mdb-border-radius-lg: 0.75rem;
@@ -188,7 +188,7 @@
     --mdb-highlight-color: #fff;
     --mdb-highlight-bg: #f9a825;
     --mdb-border-color: rgba(255, 255, 255, 0.12);
-    --mdb-border-color-translucent: rgba(255, 255, 255, 0.15);
+    --mdb-border-color-translucent: rgba(255, 255, 255, .35);
     --mdb-form-valid-color: #81c784;
     --mdb-form-valid-border-color: #81c784;
     --mdb-form-invalid-color: #e57373;
@@ -4063,7 +4063,6 @@ fieldset:disabled .btn {
     --mdb-dropdown-font-size: 0.875rem;
     --mdb-dropdown-color: var(--mdb-surface-color);
     --mdb-dropdown-bg: var(--mdb-surface-bg);
-    --mdb-dropdown-border-color: var(--mdb-border-color-translucent);
     --mdb-dropdown-border-radius: 0.5rem;
     --mdb-dropdown-border-width: var(--mdb-border-width);
     --mdb-dropdown-inner-border-radius: calc(0.5rem - var(--mdb-border-width));
@@ -4093,7 +4092,7 @@ fieldset:disabled .btn {
     list-style: none;
     background-color: var(--mdb-dropdown-bg);
     background-clip: padding-box;
-    border: var(--mdb-dropdown-border-width) solid var(--mdb-dropdown-border-color);
+    border: var(--mdb-border-width) solid var(--mdb-border-color-translucent);
     border-radius: var(--mdb-dropdown-border-radius);
     box-shadow: var(--mdb-dropdown-box-shadow)
 }
@@ -20600,8 +20599,8 @@ hr.divider-vertical-blurry {
     margin: 0;
     padding-top: 0;
     padding-bottom: 0;
-    border: 0;
-    box-shadow: var(--mdb-dropdown-box-shadow);
+    border: var(--mdb-border-width) solid var(--mdb-border-color-translucent);
+    box-shadow: none;
     font-size: var(--mdb-dropdown-font-size);
     top: 100%;
     left: 0;

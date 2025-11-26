@@ -189,7 +189,7 @@ class AsistenciaController extends Controller
                         $notificacion = $justificacion->estatus == 0;
                     }
 
-                    if (!$justificacion && in_array($tipo_asistencia, [1, 4]) && $horaActual > $limitePuntual && $mesActual) { // && $isAdmin
+                    if (!$justificacion && in_array($tipo_asistencia, [1, 4]) && $mesActual && $isAdmin) {
                         $tipoAsistencia = $tipoAsistencias->get($tipo_asistencia);
                         $acciones[] = [
                             'funcion' => "justificarAsistencia({$p->user_id}, '{$fecha}', '{$hora}', {$tipo_asistencia})",
