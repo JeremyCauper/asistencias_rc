@@ -319,7 +319,7 @@ body * .hover-layout:hover {
     height: calc(100vh - var(--root-height-navbar));
     background: var(--root-container-bg);
     overflow: auto;
-    border-radius: .75rem 0 0 0;
+    border-radius: 1.5rem 0 0 0;
     border-top: var(--border-wrapper);
     border-left: var(--border-wrapper);
 }

@@ -254,20 +254,24 @@
                             <ul class="dropdown-menu dropdown-menu-right py-2 px-1"
                                 aria-labelledby="navbarDropdownMenuLink" id="contenedor-notificaciones">
                                 <li>
-                                    <div class="d-flex align-items-center">
-                                        <span class="img-xs rounded-circle text-white acronimo"
-                                            style="background-color:#7367F0;">
-                                            JB
-                                        </span>
+                                    <div class="dropdown-item rounded" role="button">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="d-flex align-items-center">
+                                                <span class="img-xs rounded-circle text-white acronimo"
+                                                    style="background-color:#7367F0;">
+                                                    JB
+                                                </span>
 
-                                        <div class="mx-3">
-                                            <p class="fw-bold mb-1">Justificación de derivación pendiente.</p>
-                                            <p class="text-muted mb-0">Jair Buitron C.</p>
+                                                <div class="mx-2">
+                                                    <p class="fw-bold mb-1">Justificación de derivación pendiente.</p>
+                                                    <p class="text-muted mb-0">Jair Buitron C.</p>
+                                                </div>
+                                            </div>
+
+                                            <span class="badge rounded-pill" style="background-color:#7367F0;">
+                                                Técnico
+                                            </span>
                                         </div>
-
-                                        <span class="badge rounded-pill" style="background-color:#7367F0;">
-                                            Técnico
-                                        </span>
                                     </div>
                                 </li>
                             </ul>

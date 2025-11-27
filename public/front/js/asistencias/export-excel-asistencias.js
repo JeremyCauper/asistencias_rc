@@ -137,13 +137,19 @@ async function exportar_Asistencias(tiempo) {
             nombreExport = tiempo.join(" a ");
         }
 
+        if (!$('#tipoArea').val().length) {
+            boxAlert.box({ i: 'warning', t: 'Atentión', h: 'Seleccione minimo un tipo de area.' });
+            return;
+        }
+        parametros.tipoArea = $('#tipoArea').val();
+
         const params = new URLSearchParams(parametros);
         const response = await fetch(`${__url}/api/asistencias/exportar-mensual?${params}`);
         if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
         const data = await response.json();
 
         if (data.length === 0) {
-            alert("No hay datos para el mes seleccionado");
+            boxAlert.box({ i: 'error', t: 'Algo salió mal...', h: 'No se encontraron registros.' });
             return;
         }
 

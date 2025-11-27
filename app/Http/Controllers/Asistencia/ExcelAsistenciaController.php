@@ -14,6 +14,9 @@ class ExcelAsistenciaController extends Controller
         $mes = $request->query('mes');
         $fechaIni = $request->query('fechaIni');
         $fechaFin = $request->query('fechaFin');
+        $tipoArea = $request->query('tipoArea', null)
+            ? explode(',', $request->query('tipoArea'))
+            : null;
 
         if ($mes && !$fechaIni && !$fechaFin) {
             $fechaIni = date('Y-m-01', strtotime($mes));
@@ -57,6 +60,7 @@ class ExcelAsistenciaController extends Controller
                 ->select('id', 'user_id', 'dni', 'nombre', 'apellido')
                 ->where('estatus', 1)
                 ->whereIn('estado_sync', [1, 2, 3])
+                ->whereIn('area_id', $tipoArea)
                 ->orderBy('apellido', 'asc')
                 ->get()
                 ->keyBy('user_id');
@@ -161,12 +165,18 @@ class ExcelAsistenciaController extends Controller
                     }
 
                     // Calcular totales
-                    if ($tipo_asistencia == 1) $totalFaltas++;
-                    if ($tipo_asistencia == 2) $totalAsistencias++;
-                    if ($tipo_asistencia == 3) $totalJustificados++;
-                    if ($tipo_asistencia == 4) $totalTardanzas++;
-                    if ($tipo_asistencia == 7) $totalDerivados++;
-                    if ($descuentoDia) $totalDescuento += floatval($descuentoDia->monto_descuento);
+                    if ($tipo_asistencia == 1)
+                        $totalFaltas++;
+                    if ($tipo_asistencia == 2)
+                        $totalAsistencias++;
+                    if ($tipo_asistencia == 3)
+                        $totalJustificados++;
+                    if ($tipo_asistencia == 4)
+                        $totalTardanzas++;
+                    if ($tipo_asistencia == 7)
+                        $totalDerivados++;
+                    if ($descuentoDia)
+                        $totalDescuento += floatval($descuentoDia->monto_descuento);
 
                     $registro[$fecha] = [
                         'hora' => $hora,

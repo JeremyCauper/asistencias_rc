@@ -1422,4 +1422,33 @@ tr .active-acciones {
         transform: none !important;
         left: 0 !important;
     }
+
+    #contenedor-notificaciones .dropdown-item div {
+        min-width: 0 !important;
+        height: 2.5rem;
+    }
+
+    #contenedor-notificaciones .dropdown-item div div span {
+        width: 2.5rem;
+        min-width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    #contenedor-notificaciones .dropdown-item div div div .nombre_usuario {
+        user-select: none;
+        font-size: .825rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        line-height: 1.2;
+    }
+
+    #contenedor-notificaciones .dropdown-item div div div .descripcion {
+        user-select: none;
+        font-size: .7rem;
+        overflow: hidden;
+        /* text-overflow: ellipsis; */
+        white-space: nomal;
+        line-height: 1.2;
+    }
 }
