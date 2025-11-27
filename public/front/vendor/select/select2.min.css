@@ -22,7 +22,7 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    transition: background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    /* transition: background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out; */
     border-radius: .5rem;
     border: var(--mdb-border-width) solid rgb(var(--mdb-surface-color-rgb), .2);
 }

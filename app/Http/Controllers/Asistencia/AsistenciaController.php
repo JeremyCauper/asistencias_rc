@@ -154,11 +154,12 @@ class AsistenciaController extends Controller
                         $tipo_asistencia = 7;
                     }
                     $isAdmin = in_array(Auth::user()->rol_system, [2, 4, 5, 7]);
+                    $isSystem = Auth::user()->sistema == 1;
 
                     // Acciones dinámicas
                     $acciones = [];
                     // Solo si tine id de asistencia y permisos adecuados por tipo de usuario o sistema y mes actual
-                    if ($asistencia_id && $isAdmin || Auth::user()->sistema == 1 && $mesActual) {
+                    if ($asistencia_id && $isAdmin || $isSystem && $mesActual) {
                         $acciones[] = [
                             'funcion' => "modificarDescuento($asistencia_id)",
                             'texto' => '<i class="fas fa-file-invoice-dollar me-2 text-secondary"></i> ' .
@@ -189,7 +190,7 @@ class AsistenciaController extends Controller
                         $notificacion = $justificacion->estatus == 0;
                     }
 
-                    if (!$justificacion && in_array($tipo_asistencia, [1, 4]) && $mesActual && $isAdmin) {
+                    if (!$justificacion && in_array($tipo_asistencia, [1, 4]) && $mesActual && ($isAdmin || $isSystem)) {
                         $tipoAsistencia = $tipoAsistencias->get($tipo_asistencia);
                         $acciones[] = [
                             'funcion' => "justificarAsistencia({$p->user_id}, '{$fecha}', '{$hora}', {$tipo_asistencia})",

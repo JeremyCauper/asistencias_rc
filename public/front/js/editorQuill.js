@@ -4,10 +4,12 @@ class EditorJustificacion {
         this.mediaMap = {};
         this.fileMap = [];
         this.botones = op.botones || ['link', 'image', 'video', 'pdf'];
-        const altura = op.altura || '400';
+        this.noPasteImg = op.noPasteImg || false;
+        this.altura = op.altura || '400';
 
-        $(selector).css({ height: altura });
+        $(selector).css({ height: this.altura });
 
+        this._events = [];              // aquí guardamos listeners para limpiarlos después
         this.init();
     }
 
@@ -46,7 +48,6 @@ class EditorJustificacion {
             }
         });
 
-
         this.customizeToolbarIcons({
             link: 'link',
             image: 'file-image',
@@ -55,10 +56,112 @@ class EditorJustificacion {
             camera: 'camera'
         });
 
-        this.quill.on('text-change', () => {
-            this.detectDeletedMedia();
-        });
+        const handler = () => this.detectDeletedMedia();
+        this.quill.on('text-change', handler);
 
+        // Guardamos el listener para futuro "destroy"
+        this._events.push({ type: 'text-change', handler });
+
+        /* CONTROL DE PEGADO IMÁGENES */
+        const handler_paste = (e) => {
+            const dt = e.clipboardData || e.originalEvent?.clipboardData;
+            if (!dt) return;
+
+            for (const item of dt.items) {
+                if (item.type.startsWith("image/")) {
+
+                    if (!this.noPasteImg) {
+                        const file = item.getAsFile(); // ← Aquí recibes la imagen como File
+
+                        const reader = new FileReader();
+                        reader.onload = async () => {
+                            const base64 = reader.result; // ← Aquí está el base64 completo
+
+                            // Si no es base64, dejarlo tal cual
+                            if (!base64.startsWith("data:image/")) return delta;
+
+                            // Convertir base64 → File
+                            const file = this.base64ToFile(base64);
+
+                            // Subir mediante tu método de la clase
+                            await this.uploadFile(file, "image");
+                        };
+
+                        reader.readAsDataURL(file);
+                    }
+
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }
+        };
+
+        this.quill.root.addEventListener("paste", handler_paste);
+        this._events.push({ type: "paste", handler_paste });
+
+        this.quill.root.addEventListener("click", e => {
+            const el = e.target;
+
+            if (el.tagName === "IMG") {
+                mediaViewer.openImage(el.src);
+            }
+        });
+    }
+
+    /** ============================
+     *  🔻 MÉTODO DESTROY
+     * ============================ */
+    destroy() {
+        if (!this.quill) return;
+
+        // 1. Remover eventos registrados
+        this._events.forEach(ev => {
+            this.quill.off(ev.type, ev.handler);
+        });
+        this._events = [];
+
+        // 2. Destruir Quill
+        this.quill = null;
+
+        // 3. Remover toolbar
+        const quill_toolbar = document.querySelector(`[data-quill-toolbar="${this.selector.replace('#', '')}"]`);
+        if (quill_toolbar) quill_toolbar.remove();
+
+        // 4. Limpieza del DOM (dejar vacío o restaurar)
+        $(this.selector).html("");
+
+        // 5. Limpiar referencias
+        this.mediaMap = {};
+        this.fileMap = [];
+        this.botones = ['link', 'image', 'video', 'pdf'];
+        this.nopasteImg = false;
+        $(this.selector).css({ height: 0 });
+        this._events = [];
+    }
+
+    /** ============================
+     *  🔄 ACTUALIZAR OPCIONES
+     * ============================
+     *  Permite hacer:
+     *      editor.updateOptions({ altura: 500, noPasteImg: true })
+     *
+     *  Reinicia Quill automáticamente.
+     */
+    updateOptions(newOptions = {}) {
+        // Destruir Quill
+        this.destroy();
+
+        // Actualizar propiedades relevantes
+        this.botones = newOptions.botones || this.botones;
+        this.noPasteImg = newOptions.noPasteImg || false;
+        this.altura = newOptions.altura || this.altura;
+
+        // Actualizar altura si vino en opciones
+        $(this.selector).css('height', this.altura || '400');
+
+        // Reiniciar editor completamente
+        this.init();
     }
 
     /** ============================
@@ -79,7 +182,7 @@ class EditorJustificacion {
      * ============================ */
     handleCamera() {
         if (!esCelular()) {
-            return boxAlert.box({ i: "warning", h: "Función solo disponible en dispositivos móviles." });
+            return boxAlert.box({ i: "warning", h: "Acción disponible solo en dispositivos móviles." });
         }
 
         const input = document.createElement('input');
@@ -241,23 +344,17 @@ class EditorJustificacion {
     insertFile(tipo, url, filename, id, index) {
         this.mediaMap = this.mediaMap || {};
         this.mediaMap[id] = { tipo, id };
-
+        
         const acc = {
-            image: () =>
-                this.quill.clipboard.dangerouslyPasteHTML(
-                    index,
-                    `<img src="${url}" data-id="${id}" style="max-width:100%;">`
-                ),
-            video: () =>
-                this.quill.clipboard.dangerouslyPasteHTML(
-                    index,
-                    `<video src="${url}" controls data-id="${id}" style="max-width:100%"></video>`
-                ),
-            pdf: () =>
-                this.quill.clipboard.dangerouslyPasteHTML(
-                    index,
-                    `<a href="${url}" data-id="${id}" target="_blank">📄 ${filename}</a>`
-                )
+            image: () => this.quill.insertEmbed(index, 'image', url),
+            video: () => this.quill.insertEmbed(index, 'video', url),
+            pdf: () => {
+                this.quill.insertEmbed(index, 'text', '')
+                this.quill.clipboard.dangerouslyPasteHTML(index,
+                    `<a href="${url}" target="_blank" style="color:blue; text-decoration:underline;">
+                    📄 Ver PDF
+                </a>`)
+            }
         };
 
         acc[tipo]?.();
@@ -287,7 +384,17 @@ class EditorJustificacion {
         }
     }
 
+    base64ToFile(base64) {
+        const arr = base64.split(",");
+        const mime = arr[0].match(/:(.*?);/)[1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
 
+        while (n--) u8arr[n] = bstr.charCodeAt(n);
+
+        return new File([u8arr], "pasted-image.webp", { type: mime });
+    }
 
     /** ============================
      *  🔹 OBTENER HTML SIN URLS
@@ -299,8 +406,9 @@ class EditorJustificacion {
             el.removeAttribute('src'); // quitar URL
         });
 
-        clone.querySelectorAll('video').forEach(el => {
+        clone.querySelectorAll('iframe').forEach(el => {
             el.removeAttribute('src');
+            el.innerHTML = '';
         });
 
         clone.querySelectorAll('a').forEach(el => {
@@ -313,7 +421,7 @@ class EditorJustificacion {
     isEmpty() {
         return this.quill.getText().trim().length === 0 &&
             !this.quill.root.innerHTML.includes('<img') &&
-            !this.quill.root.innerHTML.includes('<video') &&
+            !this.quill.root.innerHTML.includes('<iframe') &&
             !this.quill.root.innerHTML.includes('<a');
     }
 

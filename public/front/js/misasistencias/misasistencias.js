@@ -1,11 +1,18 @@
 $(document).ready(function () {
     const quillJustificarDerivado = new EditorJustificacion('#editor-justificarDerivado', {
+        noPasteImg: true,
         botones: ['link', 'camera']
     });
-    
-    const quilleditorJustificar = new EditorJustificacion('#editor-justificar', {
-        botones: ['link', 'camera']
+    const quilleditorJustificar = new EditorJustificacion('#editor-justificar');
+
+    fObservador('.content-wrapper', () => {
+        tablaMisAsistencias.columns.adjust().draw();
+
+        incidencia_estados.forEach((e, i) => {
+            if (e.chart) e.chart.resize();
+        });
     });
+
 
     $('.modal').on('hidden.bs.modal', function () {
         llenarInfoModal('modalVerJustificacion');
@@ -81,30 +88,50 @@ $(document).ready(function () {
         }).html('<i class="fas fa-rotate"></i>').on('click', updateTable)
     );
 
-    window.justificarDerivado = (id, fecha, hora, tipo_asistencia) => {
+    window.justificarDerivado = async (id) => {
         try {
             if (!esCelular()) {
                 return boxAlert.box({
                     i: 'info',
-                    h: 'Función solo disponible en dispositivos móviles.'
+                    h: 'Acción disponible solo en dispositivos móviles.'
                 });
             }
+
             $('#modalJustificarDerivado').modal('show');
             fMananger.formModalLoding('modalJustificarDerivado', 'show');
 
-            let tasistencia = tipoAsistencia.find(s => s.id == tipo_asistencia)
+            const res = await $.getJSON(`${__url}/asistencias-diarias/mostrar/${id}`);
+            fMananger.formModalLoding('modalJustificarDerivado', 'hide');
+
+            if (!res?.data) {
+                return boxAlert.box({
+                    i: 'error',
+                    t: 'No se pudo obtener la información',
+                    h: res.message || 'No se encontraron datos de la asistencia seleccionada.'
+                });
+            }
+
+            const data = res.data;
+
+            let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
                 || { descripcion: 'Pendiente', color: '#9fa6b2' };
-            window.tasistencia = tasistencia;
 
             llenarInfoModal('modalJustificarDerivado', {
-                fecha: `${fecha} ${(hora || '')}`,
+                fecha: `${data.fecha} ${(data.hora || '')}`,
                 estado: `<span class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>`,
             });
 
             $('#id_justificacion').val(id);
+            $('#asunto').val('Justificación de Asistencia Derivada');
             fMananger.formModalLoding('modalJustificarDerivado', 'hide');
-        } catch (e) {
-            console.log(e);
+        } catch (error) {
+            fMananger.formModalLoding('modalJustificarDerivado', 'hide');
+            console.error(error);
+            boxAlert.box({
+                i: 'error',
+                t: 'Error en la solicitud',
+                h: 'No se pudo recuperar la información del servidor.'
+            });
         }
     }
 
@@ -174,26 +201,56 @@ $(document).ready(function () {
         }
     });
 
-    window.justificarAsistencia = (fecha, hora, tipo_asistencia) => {
+    window.justificarAsistencia = async (id) => {
         try {
+            boxAlert.loading();
+            const res = await $.getJSON(`${__url}/asistencias-diarias/mostrar/${id}`);
+            const data = res.data;
+
+            if (!res?.data) {
+                return boxAlert.box({
+                    i: 'error',
+                    t: 'No se pudo obtener la información',
+                    h: res.message || 'No se encontraron datos de la asistencia seleccionada.'
+                });
+            }
+
+            if (!esCelular() && [0].includes(data.tipo_asistencia) && [2].includes(data.tipo_modalidad)) {
+                return boxAlert.box({
+                    i: 'info',
+                    h: 'Acción disponible solo en dispositivos móviles.'
+                });
+            }
+
             $('#modalJustificar').modal('show');
             fMananger.formModalLoding('modalJustificar', 'show');
 
-            let tasistencia = tipoAsistencia.find(s => s.id == tipo_asistencia)
+            let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
                 || { descripcion: 'Pendiente', color: '#9fa6b2' };
             window.tasistencia = tasistencia;
 
             llenarInfoModal('modalJustificar', {
-                fecha: `${fecha} ${(hora || '')}`,
+                fecha: `${data.fecha} ${(data.hora || '')}`,
                 estado: `<span class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>`,
             });
             window.tasistencia = tasistencia;
 
-            window.fecha = fecha;
-            window.tipo_asistencia = tipo_asistencia;
+            window.fecha = data.fecha;
+            window.tipo_asistencia = data.tipo_asistencia;
+
+            if ([0].includes(data.tipo_asistencia) && [2].includes(data.tipo_modalidad)) {
+                quilleditorJustificar.updateOptions({
+                    noPasteImg: true,
+                    botones: ['link', 'camera']
+                });
+                $('#asunto_justificar').val('Justificación de Asistencia Remota');
+            } else {
+                quilleditorJustificar.updateOptions();
+            }
+
             fMananger.formModalLoding('modalJustificar', 'hide');
         } catch (e) {
-            console.log(e);
+            console.error(e);
         }
     }
 

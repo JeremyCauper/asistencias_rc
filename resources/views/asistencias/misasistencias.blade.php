@@ -154,7 +154,7 @@
         <div class="card-body">
             <h6 class="fw-bold">📅 Mis asistencias diarias</h6>
             <div class="row mb-2">
-                <div class="col-4 my-1">
+                <div class="col-md-4 my-1">
                     <small class="form-label mb-0" for="fecha">Fecha</small>
                     <div class="input-group">
                         <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
@@ -166,7 +166,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="col-1 my-1 text-end mt-auto"><button class="btn btn-primary" onclick="filtroBusqueda()"
+                <div class="col-md-1 my-1 text-end mt-auto"><button class="btn btn-primary" onclick="filtroBusqueda()"
                         data-mdb-ripple-init>Filtrar</button></div>
             </div>
             <table id="tablaMisAsistencias" class="table table-hover text-nowrap w-100">
@@ -438,6 +438,8 @@
 
 @section('scripts')
     <!-- Librería Browser Image Compression -->
+    {{-- <script src="{{ secure_asset('front/js/Notificaciones.js') }}"></script> --}}
+    <script src="{{ secure_asset('front/js/MediaViewer.js') }}"></script>
     <script src="{{ secure_asset('front/vendor/compression/compressor.min.js') }}"></script>
     <script src="{{ secure_asset('front/vendor/quill/quill.min.js') }}"></script>
     <script src="{{ secure_asset('front/js/editorQuill.js') }}"></script>

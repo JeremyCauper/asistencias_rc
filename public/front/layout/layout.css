@@ -450,7 +450,7 @@ body * .hover-layout:hover {
 
     .layout-container .sidebar {
         position: fixed;
-        z-index: 999;
+        z-index: 99999;
         height: 100%;
         top: 0;
         right: -260px;
@@ -506,7 +506,7 @@ body * .hover-layout:hover {
         bottom: 0;
         overflow: auto;
         width: 100%;
-        z-index: 9;
+        z-index: 99998;
         background: #000000;
         opacity: .35;
         cursor: pointer;

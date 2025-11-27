@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Justificacion;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\NotificacionController;
 use App\Services\JsonDB;
 use DateTime;
 use Exception;
@@ -38,34 +39,47 @@ class JustificacionController extends Controller
 
 
             // Verifica si ya existe una justificación para esa fecha
-            $yaJustificada = DB::table('justificaciones')->where('user_id', $user_id)
+            $justificacion = DB::table('justificaciones')->where('user_id', $user_id)
                 ->where('fecha', $request->fecha)
-                ->exists();
+                ->first();
+            $justificacionEstatus = $justificacion?->estatus ?? null;
 
-            if ($yaJustificada) {
+            if ($justificacion && in_array($justificacionEstatus, [0, 1, 2])) {
                 return ApiResponse::success('Ya existe una justificación para esa fecha.');
             }
+            $tipo_asistencia = $justificacionEstatus == 10 ? 1 : $tipo_asistencia;
 
             DB::beginTransaction();
             // Crear contenido HTML
             $contenido = $this->createBodyMessage(
                 $tipo_asistencia,
                 $request->contenido,
-                '',
-                now()->format('Y-m-d H:i:s')
+                $justificacion?->contenido_html ?? '',
+                now()->format('Y-m-d H:i:s'),
+                $justificacionEstatus == 10 ? 'Justificación de Fala por no justificar derivado a tiempo.' : ''
             );
 
-            // Crea la justificación
-            DB::table('justificaciones')->insert([
-                'user_id' => $user_id,
-                'fecha' => $request->fecha,
-                'tipo_asistencia' => $tipo_asistencia,
-                'asunto' => $request->asunto,
-                'contenido_html' => $contenido,
-                'created_by' => session('user_id'),
-                'created_at' => now()->format('Y-m-d H:i:s'),
-                'estatus' => $tipo_asistencia == 2 ? 1 : $estatus, // pendiente
-            ]);
+            if ($justificacion) {
+                DB::table('justificaciones')->where(['user_id' => $user_id, 'fecha' => $request->fecha])
+                    ->update([
+                        'tipo_asistencia' => $tipo_asistencia,
+                        'asunto' => $request->asunto,
+                        'contenido_html' => $contenido,
+                        'estatus' => $tipo_asistencia == 2 ? 1 : $estatus, // pendiente
+                    ]);
+            } else {
+                // Crea la justificación
+                DB::table('justificaciones')->insert([
+                    'user_id' => $user_id,
+                    'fecha' => $request->fecha,
+                    'tipo_asistencia' => $tipo_asistencia,
+                    'asunto' => $request->asunto,
+                    'contenido_html' => $contenido,
+                    'created_by' => session('user_id'),
+                    'created_at' => now()->format('Y-m-d H:i:s'),
+                    'estatus' => $tipo_asistencia == 2 ? 1 : $estatus, // pendiente
+                ]);
+            }
 
             $asistencias = DB::table('asistencias')->where([
                 'user_id' => $user_id,
@@ -174,7 +188,7 @@ class JustificacionController extends Controller
 
             // Procesar asistencia solo cuando corresponde
             if ($asistencias) {
-                if($estatusOriginal == 10) {
+                if ($estatusOriginal == 10) {
                     DB::table('asistencias')->where('id', $asistencias->id)->update([
                         'hora' => $request->hora ?? $now->format('H:i:s')
                     ]);
@@ -249,7 +263,7 @@ class JustificacionController extends Controller
     public function marcarDerivado(int $id)
     {
         try {
-            $limiteDerivado = strtotime(date("Y-m-d 10:00:00"));
+            $limiteDerivado = strtotime(date("Y-m-d " . $this->horaLimiteDerivado));
             $horaActual = time();
 
             if ($horaActual > $limiteDerivado) {
@@ -287,6 +301,15 @@ class JustificacionController extends Controller
                 'created_by' => session('user_id'),
                 'created_at' => $fecha,
                 'estatus' => 10, // pendiente
+            ]);
+
+            NotificacionController::store((object)[
+                'user_id' => $asistencia->user_id,
+                'descripcion' => 'Justificación de derivación pendiente.',
+                'accion' => "justificarDerivado({$asistencia->id})",
+                'destinatario' => 1,
+                'limite_show' => date("Y-m-d " . $this->horaLimiteDerivado),
+                'user_destino' => $asistencia->user_id,
             ]);
             DB::commit();
 
@@ -357,12 +380,18 @@ class JustificacionController extends Controller
         }
     }
 
-    private function createBodyMessage($id_tasistencia, $mensaje = '', $contenido = '', $timestamp)
+    private function createBodyMessage($id_tasistencia, $mensaje = '', $contenido = '', $timestamp, $title = '')
     {
         $config = session()->get('config');
         $mensaje_decodificado = $mensaje ? "<hr><div>{$this->base64ToUtf8($mensaje)}</div>" : '';
         $contenido_decodificado = $contenido ? $this->base64ToUtf8($contenido) : '';
-        $tasistencia = JsonDB::table('tipo_asistencia')->where('id', $id_tasistencia)->first();
+
+        if ($title) {
+            $titulo = $title;
+        } else {
+            $tasistencia = JsonDB::table('tipo_asistencia')->where('id', $id_tasistencia)->first();
+            $titulo = 'Justificación de <span class="fw-bold" style="color: ' . $tasistencia->color . ';">' . ($id_tasistencia == 2 ? 'Asistencia' : $tasistencia->descripcion) . '</span>';
+        }
 
         $fecha = $this->fecha_espanol();
         $hora = date('h:i a', strtotime($timestamp));
@@ -378,7 +407,7 @@ class JustificacionController extends Controller
                     <span class="badge rounded-pill ms-auto" style="border: 2px solid var(--mdb-body-color) !important;color: var(--mdb-body-color) !important;font-size: .7rem;">' . $config->acceso . '</span>
                 </div>
                 <p>📅 <small class="fw-bold">Fecha de creación:</small> ' . $fechaCompleta . '</p>
-                <p class="mt-1">✉️ Justificación de <span class="fw-bold" style="color: ' . $tasistencia->color . ';">' . ($id_tasistencia == 2 ? 'Asistencia' : $tasistencia->descripcion) . '</span></p>
+                <p class="mt-1">✉️ ' . $titulo . '</p>
                 ' . $mensaje_decodificado . '
                 <hr class="mb-0">
             </div>'

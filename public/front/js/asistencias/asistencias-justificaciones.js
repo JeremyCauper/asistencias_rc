@@ -59,6 +59,8 @@ $(document).ready(function () {
             const tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
                 || { descripcion: 'Pendiente', color: '#9fa6b2' };
 
+            console.log(tasistencia);
+
             const estado = ESTADOS_JUSTIFICACION[just.estatus || 0];
             const contenidoHTML = base64ToUtf8(just.contenido_html);
 

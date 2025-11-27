@@ -91,10 +91,11 @@ class MisAsistenciaController extends Controller
                     'sunday' => 'Domingo',
                 ][$diaSemana] ?? null;
                 $tipo_asistencia = $a?->tipo_asistencia ?? 0;
+                $tipo_modalidad = $a?->tipo_modalidad;
                 $fechaActual = date('Y-m-d') == $a->fecha;
 
                 // Si aún no tiene registro pero debería asistir
-                if (!$a->hora && in_array($a->tipo_modalidad, [1, 2]) && $tipo_asistencia == 1 && $horaActual < $limitePuntual && $fechaActual) {
+                if (!$a->hora && in_array($tipo_modalidad, [1, 2]) && $tipo_asistencia == 1 && $horaActual < $limitePuntual && $fechaActual) {
                     $tipo_asistencia = 0;
                 }
 
@@ -107,26 +108,26 @@ class MisAsistenciaController extends Controller
                 // Si es un tipo de asistencia que puede ser justificado, no tiene justificación aún y es el día actual
                 if ($justificacion && $justificacion?->estatus == 10 && $tipo_asistencia == 7 && $fechaActual) {
                     $acciones[] = [
-                        'funcion' => "justificarDerivado({$justificacion->id}, '{$a->fecha}', '{$a->hora}', {$tipo_asistencia})",
+                        'funcion' => "justificarDerivado({$a->id})",
                         'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencias->get(7)->color . ';"></i>Justificar Derivado'
                     ];
                     $notificacion = $tipo_asistencia == 7; // notificar solo si es tipo 7 (derivado)
                 }
 
                 // Si es un tipo de asistencia que puede ser justificado, no tiene justificación aún y es el día actual
-                if (!$justificacion && in_array($tipo_asistencia, [1, 4]) && $horaActual > $limitePuntual && $fechaActual) {
+                if ((!$justificacion && in_array($tipo_asistencia, [1, 4]) || $justificacion && $justificacion?->estatus == 10) && $horaActual > $limitePuntual && $fechaActual) {
                     $tipoAsistencia = $tipoAsistencias->get($a->tipo_asistencia);
                     $acciones[] = [
-                        'funcion' => "justificarAsistencia('{$a->fecha}', '{$a->hora}', {$tipo_asistencia})",
+                        'funcion' => "justificarAsistencia('{$a->id})",
                         'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencia->color . ';"></i>Justificar ' . $tipoAsistencia->descripcion
                     ];
                 }
 
                 // Si es un tipo de asistencia que puede ser justificado, no tiene justificación aún y es el día actual
-                if (!$justificacion && $tipo_asistencia == 0 && $a->tipo_modalidad == 2 && $horaActual < $limitePuntual && $fechaActual) {
-                    $tipoModalidad = $tipoModalidades->get($a->tipo_modalidad);
+                if (!$justificacion && $tipo_asistencia == 0 && $tipo_modalidad == 2 && $horaActual < $limitePuntual && $fechaActual) {
+                    $tipoModalidad = $tipoModalidades->get($tipo_modalidad);
                     $acciones[] = [
-                        'funcion' => "justificarAsistencia('{$a->fecha}', '{$a->hora}', {$tipo_asistencia})",
+                        'funcion' => "justificarAsistencia('{$a->id})",
                         'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoModalidad->color . ';"></i>Justificar ' . $tipoModalidad->descripcion
                     ];
                 }
@@ -149,7 +150,7 @@ class MisAsistenciaController extends Controller
                     'jornada' => $campoDia,
                     'fecha' => $a->fecha,
                     'hora' => $a->hora,
-                    'tipo_modalidad' => $a->tipo_modalidad,
+                    'tipo_modalidad' => $tipo_modalidad,
                     'tipo_asistencia' => $tipo_asistencia,
                     'descuento' => $descuento?->monto_descuento ?? null,
                     'acciones' => $this->DropdownAcciones(['button' => $acciones], $notificacion)
