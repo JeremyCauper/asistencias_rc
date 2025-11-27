@@ -222,6 +222,7 @@ $(document).ready(function () {
                 });
             }
 
+            Swal.close();
             $('#modalJustificar').modal('show');
             fMananger.formModalLoding('modalJustificar', 'show');
 

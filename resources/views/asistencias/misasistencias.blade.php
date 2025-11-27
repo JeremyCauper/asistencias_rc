@@ -438,7 +438,6 @@
 
 @section('scripts')
     <!-- Librería Browser Image Compression -->
-    {{-- <script src="{{ secure_asset('front/js/Notificaciones.js') }}"></script> --}}
     <script src="{{ secure_asset('front/js/MediaViewer.js') }}"></script>
     <script src="{{ secure_asset('front/vendor/compression/compressor.min.js') }}"></script>
     <script src="{{ secure_asset('front/vendor/quill/quill.min.js') }}"></script>

@@ -38,7 +38,7 @@ class Notificaciones {
 <li class="dropdown-item p-3" role="button" onclick="${n.accion_js}">
     <div class="d-flex align-items-center">
 
-        <span class="img-xs rounded-circle text-white sigla"
+        <span class="img-xs rounded-circle text-white acronimo"
             style="background-color:${color};">
             ${sigla}
         </span>
@@ -84,3 +84,10 @@ class Notificaciones {
         return tipo == 0 ? "Admin" : "Técnico";
     }
 }
+
+const notificaciones = new Notificaciones(
+    __url + "/notificaciones/listar",       // tu endpoint Laravel
+    "#contenedor-notificaciones" // el UL o DIV donde van los <li>
+);
+
+// notificaciones.cargar();
