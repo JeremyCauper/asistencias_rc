@@ -2661,7 +2661,7 @@ progress {
     border: var(--mdb-border-width) solid var(--mdb-border-color);
     border-radius: var(--mdb-border-radius);
     box-shadow: var(--mdb-box-shadow-inset);
-    transition: all .2s linear
+    /* transition: all .2s linear */
 }
 
 @media(prefers-reduced-motion: reduce) {
@@ -2724,7 +2724,7 @@ progress {
     border-width: 0;
     border-inline-end-width: var(--mdb-border-width);
     border-radius: 0;
-    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out
+    /* transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out */
 }
 
 @media(prefers-reduced-motion: reduce) {
@@ -2843,7 +2843,7 @@ textarea.form-control-lg {
     border: var(--mdb-border-width) solid var(--mdb-border-color);
     border-radius: var(--mdb-border-radius);
     box-shadow: var(--mdb-box-shadow-inset);
-    transition: all .2s linear
+    /* transition: all .2s linear */
 }
 
 @media(prefers-reduced-motion: reduce) {
@@ -3072,7 +3072,7 @@ textarea.form-control-lg {
     border: 0;
     border-radius: 1rem;
     box-shadow: 0 .1rem .25rem rgba(0, 0, 0, .1);
-    transition: background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out
+    /* transition: background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out */
 }
 
 @media(prefers-reduced-motion: reduce) {
@@ -3104,7 +3104,7 @@ textarea.form-control-lg {
     border: 0;
     border-radius: 1rem;
     box-shadow: 0 .1rem .25rem rgba(0, 0, 0, .1);
-    transition: background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out
+    /* transition: background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out */
 }
 
 @media(prefers-reduced-motion: reduce) {
@@ -3593,7 +3593,7 @@ textarea.form-control.is-invalid {
     border-radius: var(--mdb-btn-border-radius);
     background-color: var(--mdb-btn-bg);
     box-shadow: var(--mdb-btn-box-shadow);
-    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out
+    /* transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out */
 }
 
 @media(prefers-reduced-motion: reduce) {
@@ -4529,7 +4529,7 @@ fieldset:disabled .btn {
     color: var(--mdb-nav-link-color);
     background: none;
     border: 0;
-    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out
+    /* transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out */
 }
 
 @media(prefers-reduced-motion: reduce) {
@@ -4765,7 +4765,7 @@ fieldset:disabled .btn {
     background-color: rgba(0, 0, 0, 0);
     border: var(--mdb-border-width) solid var(--mdb-navbar-toggler-border-color);
     border-radius: var(--mdb-navbar-toggler-border-radius);
-    transition: var(--mdb-navbar-toggler-transition)
+    /* transition: var(--mdb-navbar-toggler-transition) */
 }
 
 @media(prefers-reduced-motion: reduce) {
@@ -5371,7 +5371,7 @@ fieldset:disabled .btn {
 .accordion {
     --mdb-accordion-color: var(--mdb-surface-color);
     --mdb-accordion-bg: var(--mdb-body-bg);
-    --mdb-accordion-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, border-radius 0.15s ease;
+    --mdb-accordion-transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, border-radius 0.15s ease;
     --mdb-accordion-border-color: var(--mdb-border-color);
     --mdb-accordion-border-width: var(--mdb-border-width);
     --mdb-accordion-border-radius: 0.5rem;
@@ -17750,16 +17750,14 @@ i.flag-zimbabwe:before {
 }
 
 .form-control {
-    /* min-height: auto;
-    padding: 4.5px 12px 3.68px 12px; */
-    transition: all .1s linear;
+    /* transition: border 2s linear; */
     box-shadow: none
 }
 
 .form-control:focus {
     box-shadow: none;
-    transition: all .1s linear;
     border-color: #3b71ca;
+    /* transition: border 2s linear; */
     box-shadow: inset 0px 0px 0px 1px #3b71ca
 }
 
@@ -18324,11 +18322,11 @@ i.flag-zimbabwe:before {
     height: calc(2.08rem + 2px);
     padding-top: .27rem;
     padding-bottom: .27rem;
-    transition: all .2s linear
+    /* transition: all .2s linear */
 }
 
 .input-group>.form-control:focus {
-    transition: all .2s linear;
+    /* transition: all .2s linear; */
     border-color: #3b71ca;
     outline: 0;
     box-shadow: inset 0 0 0 1px #3b71ca

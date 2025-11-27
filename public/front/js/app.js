@@ -349,7 +349,7 @@ function setMediaUrls(contenedorId, archivos, baseUrl = '') {
         // Asignar según tipo de elemento
         if ($el.is("img")) {
             $el.attr("src", fullUrl);
-        } else if ($el.is("video")) {
+        } else if ($el.is("iframe")) {
             $el.attr("src", fullUrl);
         } else if ($el.is("a")) {
             $el.attr("href", fullUrl);
@@ -358,6 +358,14 @@ function setMediaUrls(contenedorId, archivos, baseUrl = '') {
         // Opcional: manejar estatus (ejemplo)
         if (file.estatus === 2) {
             $el.css("opacity", 0.6);
+        }
+    });
+
+    $contenedor[0].addEventListener("click", e => {
+        const el = e.target;
+
+        if (el.tagName === "IMG") {
+            mediaViewer.openImage(el.src);
         }
     });
 }

@@ -181,9 +181,9 @@
 
             if (notificaciones.length === 0) {
                 notiList.innerHTML += `
-                                                            <li class="dropdown-item-text text-center text-muted py-2">
-                                                                Sin notificaciones
-                                                            </li>`;
+                    <li class="dropdown-item-text text-center text-muted py-2">
+                        Sin notificaciones
+                    </li>`;
                 $(notiCount).fadeOut();
                 return;
             }
@@ -200,16 +200,16 @@
                 };
 
                 const item = `
-                                                                            <li class="dropdown-item p-3" role="button" onclick="verJustificacion(${noti.user_id})">
-                                                                                <div class="d-flex align-items-center">
-                                                                                <span class="img-xs rounded-circle text-white acronimo" style="background-color: ${colores(iniciales)};">${iniciales}</span>
-                                                                                <div class="mx-3">
-                                                                                    <p class="fw-bold mb-1">Justificación pendiente</p>
-                                                                                    <p class="text-muted mb-0">${noti.personal}</p>
-                                                                                </div>
-                                                                                <span class="badge rounded-pill" style="background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>
-                                                                                </div>
-                                                                            </li>`;
+                    <li class="dropdown-item p-3" role="button" onclick="verJustificacion(${noti.user_id})">
+                        <div class="d-flex align-items-center">
+                        <span class="img-xs rounded-circle text-white acronimo" style="background-color: ${colores(iniciales)};">${iniciales}</span>
+                        <div class="mx-3">
+                            <p class="fw-bold mb-1">Justificación pendiente</p>
+                            <p class="text-muted mb-0">${noti.personal}</p>
+                        </div>
+                        <span class="badge rounded-pill" style="background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>
+                        </div>
+                    </li>`;
                 notiList.innerHTML += item;
                 $(notiCount).fadeIn();
             });
@@ -677,6 +677,7 @@
 @endsection
 
 @section('scripts')
+    <script src="{{ secure_asset('front/js/MediaViewer.js') }}"></script>
     <!-- Librería Browser Image Compression -->
     <script src="{{ secure_asset('front/vendor/compression/compressor.min.js') }}"></script>
     <!-- Incluye ExcelJS desde CDN -->

@@ -713,9 +713,14 @@
   display: table;
 }
 
+.ql-snow .ql-formats button[type="button"] i {
+  color: #949494;
+}
+
 .ql-snow .ql-stroke {
   fill: none;
-  stroke: var(--mdb-body-color);
+  stroke: #949494;
+  /* stroke: var(--mdb-body-color); */
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 2;
@@ -723,14 +728,16 @@
 
 .ql-snow .ql-stroke-miter {
   fill: none;
-  stroke: var(--mdb-body-color);
+  stroke: #949494;
+  /* stroke: var(--mdb-body-color); */
   stroke-miterlimit: 10;
   stroke-width: 2;
 }
 
 .ql-snow .ql-fill,
 .ql-snow .ql-stroke.ql-fill {
-  fill: var(--mdb-body-color);
+  fill: #949494;
+  /* fill: var(--mdb-body-color); */
 }
 
 .ql-snow .ql-empty {
@@ -828,7 +835,8 @@
 }
 
 .ql-snow .ql-picker {
-  color: var(--mdb-body-color);
+  color: #949494;
+  /* color: var(--mdb-body-color); */
   display: inline-block;
   float: left;
   font-size: 14px;
@@ -1202,14 +1210,23 @@
 
 .ql-editor img,
 .ql-editor .ql-video {
-    width: 55%;
+    width: 50%;
     height: auto;
+    cursor: zoom-in;
+    border-radius: .25rem;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.ql-editor img:hover,
+.ql-editor .ql-video:hover {
+    opacity: .75;
 }
 
 @media (max-width: 520px) {
-    .ql-editor img,
-    .ql-editor .ql-video {
-        width: 70%;
-        height: auto;
-    }
+  .ql-editor img,
+  .ql-editor .ql-video {
+    width: 60%;
+    height: auto;
+  }
 }
