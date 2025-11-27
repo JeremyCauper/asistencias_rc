@@ -36,16 +36,17 @@ class Notificaciones {
 
         return `
 <li class="dropdown-item p-3" role="button" onclick="${n.accion_js}">
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+            <span class="img-xs rounded-circle text-white acronimo"
+                style="background-color:${color};">
+                ${sigla}
+            </span>
 
-        <span class="img-xs rounded-circle text-white acronimo"
-            style="background-color:${color};">
-            ${sigla}
-        </span>
-
-        <div class="mx-3">
-            <p class="fw-bold mb-1">${n.descripcion}</p>
-            <p class="text-muted mb-0">${n.nombre_usuario}</p>
+            <div class="mx-2">
+                <p class="fw-bold mb-1 nombre_usuario">${n.nombre_usuario}</p>
+                <p class="text-muted mb-0 descripcion">${n.descripcion}</p>
+            </div>
         </div>
 
         <span class="badge rounded-pill"
@@ -90,4 +91,4 @@ const notificaciones = new Notificaciones(
     "#contenedor-notificaciones" // el UL o DIV donde van los <li>
 );
 
-// notificaciones.cargar();
+notificaciones.cargar();

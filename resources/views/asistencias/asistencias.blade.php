@@ -645,6 +645,20 @@
                 <!-- CUERPO -->
                 <div class="modal-body">
                     <div class="row text-center">
+                        <!-- INPUT AREAS -->
+                        <div class="col-12 py-2 text-start">
+                            <label class="form-label-filter" for="tipoArea">Areas</label>
+                            <select id="tipoArea" name="tipoArea" multiple="multiple" class="multiselect-select-all">
+                                @foreach ($areas as $v)
+                                    <option
+                                        {{ session('tipo_usuario') == 2 ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
+                                        value="{{ $v->id }}">
+                                        {{ $v->descripcion }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <!-- BOTONES DE MODO -->
                         <div class="col-12 py-1">
                             <div class="btn-group" role="group">

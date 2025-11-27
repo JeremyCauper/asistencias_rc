@@ -57,12 +57,16 @@ class AsistenciaController extends Controller
                 : null;
             $listado = [];
 
+            $isAdmin = in_array(Auth::user()->rol_system, [2, 4, 7]);
+            $isJefatura = in_array(Auth::user()->rol_system, [5]);
+            $isSystem = Auth::user()->sistema == 1;
+
             $wherePersonal = ['estatus' => 1];
             if ($empresas) {
                 $wherePersonal['empresa_ruc'] = $empresas;
             }
 
-            if (Auth::user()->sistema === 0 && in_array(Auth::user()->rol_system, [5, 6])) {
+            if (!$isSystem && in_array(Auth::user()->rol_system, [5, 6])) {
                 $wherePersonal['area_id'] = Auth::user()->area_id;
             }
 
@@ -127,6 +131,10 @@ class AsistenciaController extends Controller
                 $mesActual = date('Y-m') == date('Y-m', $strtoTime);
 
                 foreach ($personal as $p) {
+                    if (!$isAdmin && $p->user_id == Auth::user()->user_id) {
+                        continue;
+                    }
+                    
                     $asistencia = $asistencias->get($p->user_id);
                     $modalidad = $modalidades->get($p->user_id);
                     $tipo_modalidad = $asistencia?->tipo_modalidad
@@ -153,8 +161,6 @@ class AsistenciaController extends Controller
                     if ($justificacion && $justificacion->estatus == 10) {
                         $tipo_asistencia = 7;
                     }
-                    $isAdmin = in_array(Auth::user()->rol_system, [2, 4, 5, 7]);
-                    $isSystem = Auth::user()->sistema == 1;
 
                     // Acciones dinámicas
                     $acciones = [];
@@ -190,7 +196,7 @@ class AsistenciaController extends Controller
                         $notificacion = $justificacion->estatus == 0;
                     }
 
-                    if (!$justificacion && in_array($tipo_asistencia, [1, 4]) && $mesActual && ($isAdmin || $isSystem)) {
+                    if (!$justificacion && in_array($tipo_asistencia, [1, 4]) && $mesActual && ($isAdmin || $isJefatura || $isSystem)) {
                         $tipoAsistencia = $tipoAsistencias->get($tipo_asistencia);
                         $acciones[] = [
                             'funcion' => "justificarAsistencia({$p->user_id}, '{$fecha}', '{$hora}', {$tipo_asistencia})",
