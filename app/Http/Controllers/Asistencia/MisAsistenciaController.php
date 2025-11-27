@@ -118,7 +118,7 @@ class MisAsistenciaController extends Controller
                 if ((!$justificacion && in_array($tipo_asistencia, [1, 4]) || $justificacion && $justificacion?->estatus == 10) && $horaActual > $limitePuntual && $fechaActual) {
                     $tipoAsistencia = $tipoAsistencias->get($a->tipo_asistencia);
                     $acciones[] = [
-                        'funcion' => "justificarAsistencia('{$a->id})",
+                        'funcion' => "justificarAsistencia({$a->id})",
                         'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencia->color . ';"></i>Justificar ' . $tipoAsistencia->descripcion
                     ];
                 }
@@ -127,7 +127,7 @@ class MisAsistenciaController extends Controller
                 if (!$justificacion && $tipo_asistencia == 0 && $tipo_modalidad == 2 && $horaActual < $limitePuntual && $fechaActual) {
                     $tipoModalidad = $tipoModalidades->get($tipo_modalidad);
                     $acciones[] = [
-                        'funcion' => "justificarAsistencia('{$a->id})",
+                        'funcion' => "justificarAsistencia({$a->id})",
                         'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoModalidad->color . ';"></i>Justificar ' . $tipoModalidad->descripcion
                     ];
                 }

@@ -18,6 +18,7 @@ use App\Http\Controllers\MantenimientosDeveloper\Menu\SubMenuController;
 use App\Http\Controllers\MantenimientosDeveloper\TipoAsistencia\TipoAsistenciaController;
 use App\Http\Controllers\MantenimientosDeveloper\TipoModalidad\TipoModalidadController;
 use App\Http\Controllers\MediaArchivo\MediaArchivoController;
+use App\Http\Controllers\NotificacionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -158,13 +159,13 @@ Route::middleware('auth')->group(function () {
             Route::post('/cambiar-estado', 'changeStatus')->name('changeStatus');
             Route::post('/eliminar', 'delete')->name('delete');
         });
+
+    Route::get('/notificaciones/listar', [NotificacionController::class, 'listar']);
+
 });
 
 Route::get('/obtener_modulos/{tipo}/{accesso}', [Controller::class, 'obtenerModulos']);
 Route::get('/obtener_modulos2/{tipo}/{accesso}', [Controller::class, 'obtenerModulos2']);
 Route::get('/foto', function () {
     return view('welcome');
-});
-Route::get('/layout', function () {
-    return view('layout');
 });

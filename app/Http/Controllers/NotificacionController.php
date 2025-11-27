@@ -12,34 +12,50 @@ class NotificacionController extends Controller
 {
     public function listar()
     {
-        $user = auth()->user();
-        $tipo = (int) $user->tipo;   // 0 admin, 1 técnico
-        $userId = $user->user_id;    // código tipo 000123
+        // $user = auth()->user();
+        // $tipo = (int) $user->tipo;   // 0 admin, 1 técnico
+        // $userId = $user->user_id;    // código tipo 000123
 
-        $notificaciones = DB::table('notificaciones')
-            ->join('users', 'users.user_id', '=', 'notificaciones.user_id')
-            ->where('notificaciones.estado', 0)
-            ->where(function ($q) use ($tipo) {
-                $q->where('notificaciones.tipo_destinatario', $tipo)
-                    ->orWhere('notificaciones.tipo_destinatario', 2); // ambos
-            })
-            ->where(function ($q) use ($tipo, $userId) {
-                // Si es técnico, puede recibir notificaciones dirigidas a él
-                if ($tipo == 1) {
-                    $q->whereNull('notificaciones.user_id_destino')
-                        ->orWhere('notificaciones.user_id_destino', $userId);
-                }
-            })
-            ->select(
-                'notificaciones.id',
-                'notificaciones.descripcion',
-                'notificaciones.accion_js',
-                'users.nombre as nombre_usuario',
-                'users.tipo as tipo_usuario',
-                'notificaciones.created_at'
-            )
-            ->orderBy('notificaciones.created_at', 'desc')
-            ->get();
+        // $notificaciones = DB::table('notificaciones')
+        //     ->join('personal', 'personal.user_id', '=', 'notificaciones.user_id')
+        //     ->where('notificaciones.estado', 0)
+        //     ->where(function ($q) use ($tipo) {
+        //         $q->where('notificaciones.tipo_destinatario', $tipo)
+        //             ->orWhere('notificaciones.tipo_destinatario', 2); // ambos
+        //     })
+        //     ->where(function ($q) use ($tipo, $userId) {
+        //         // Si es técnico, puede recibir notificaciones dirigidas a él
+        //         if ($tipo == 1) {
+        //             $q->whereNull('notificaciones.user_id_destino')
+        //                 ->orWhere('notificaciones.user_id_destino', $userId);
+        //         }
+        //     })
+        //     ->select(
+        //         'notificaciones.id',
+        //         'notificaciones.descripcion',
+        //         'notificaciones.accion_js',
+        //         'personal.nombre as nombre_usuario',
+        //         'personal.rol_system as tipo_usuario',
+        //         'notificaciones.created_at'
+        //     )
+        //     ->orderBy('notificaciones.created_at', 'desc')
+        //     ->get();
+
+        $personales = DB::table('personal')->get()->keyBy('user_id');
+        $notificaciones = DB::table('notificaciones')->where('estatus', 0)
+            ->get()
+            ->map(function ($noti) use ($personales) {
+                $personal = $personales[$noti->user_id];
+                $noti->user = User::find($noti->user_id);
+                return [
+                    "id" => $noti->id,
+                    "descripcion" => $noti->descripcion,
+                    "accion_js" => $noti->accion_js,
+                    "nombre_usuario" => $this->formatearNombre($personal->nombre, $personal->apellido),
+                    "tipo_usuario" => $personal->rol_system,
+                    "created_at" => $noti->created_at
+                ];
+            });
 
         return response()->json([
             'notificaciones' => $notificaciones

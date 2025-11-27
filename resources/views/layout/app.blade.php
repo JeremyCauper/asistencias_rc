@@ -244,6 +244,37 @@
                         <script src="{{ secure_asset('front/js/layout/swicth_layout.js') }}"></script>
                     </div>
                     <div>
+                        <!-- Notifications -->
+                        {{-- <div class="dropdown">
+                            <a data-mdb-dropdown-init class="text-reset ms-3 dropdown-toggle hidden-arrow"
+                                href="#" id="navbarDropdownMenuLink" role="button" aria-expanded="false">
+                                <i class="fas fa-bell"></i>
+                                <span class="badge rounded-pill badge-notification bg-danger">1</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-right py-2 px-1"
+                                aria-labelledby="navbarDropdownMenuLink" id="contenedor-notificaciones">
+                                <li>
+                                    <div class="d-flex align-items-center">
+                                        <span class="img-xs rounded-circle text-white acronimo"
+                                            style="background-color:#7367F0;">
+                                            JB
+                                        </span>
+
+                                        <div class="mx-3">
+                                            <p class="fw-bold mb-1">Justificación de derivación pendiente.</p>
+                                            <p class="text-muted mb-0">Jair Buitron C.</p>
+                                        </div>
+
+                                        <span class="badge rounded-pill" style="background-color:#7367F0;">
+                                            Técnico
+                                        </span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <script src="{{ secure_asset('front/js/Notificaciones.js') }}"></script> --}}
+                    </div>
+                    <div>
                         <button class="sidebar-close__navbar hover-layout ms-2" type="button"
                             aria-label="Cerrar barra lateral">
                             <i class="fas fa-bars" style="color: #8f8f8f;"></i>
