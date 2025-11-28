@@ -93,6 +93,10 @@ body {
     border-radius: inherit;
 }
 
+.multiselect:active:after {
+    background-color: #424141;
+}
+
 .multiselect:not([class*=font-weight-]) {
     font-weight: 400
 }

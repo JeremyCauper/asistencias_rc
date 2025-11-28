@@ -131,10 +131,10 @@ class AsistenciaController extends Controller
                 $mesActual = date('Y-m') == date('Y-m', $strtoTime);
 
                 foreach ($personal as $p) {
-                    if (!$isAdmin && $p->user_id == Auth::user()->user_id) {
+                    if (!$isAdmin && $p->user_id == Auth::user()->user_id && !$isSystem) {
                         continue;
                     }
-                    
+
                     $asistencia = $asistencias->get($p->user_id);
                     $modalidad = $modalidades->get($p->user_id);
                     $tipo_modalidad = $asistencia?->tipo_modalidad
@@ -268,6 +268,25 @@ class AsistenciaController extends Controller
                 ->where('asistencia_id', $asistencia->id)
                 ->get();
 
+            $limitePuntual = strtotime(date("Y-m-d " . $this->horaLimitePuntual));
+            $horaActual = time();
+            $tipo_asistencia = $asistencia?->tipo_asistencia;
+            $fechaActual = date('Y-m-d') == $asistencia->fecha;
+
+            if (
+                !$asistencia->hora &&
+                in_array($asistencia->tipo_modalidad, [1, 2]) &&
+                $tipo_asistencia == 1 &&
+                $horaActual < $limitePuntual &&
+                $fechaActual
+            ) {
+                $tipo_asistencia = 0;
+            }
+
+            if ($justificacion && $justificacion->estatus == 10) {
+                $tipo_asistencia = 7;
+            }
+
             // Agregar los datos adicionales a la respuesta
             $detalle = [
                 'id' => $asistencia->id,
@@ -275,7 +294,7 @@ class AsistenciaController extends Controller
                 'fecha' => $asistencia->fecha,
                 'hora' => $asistencia->hora,
                 'tipo_modalidad' => $asistencia->tipo_modalidad,
-                'tipo_asistencia' => $asistencia->tipo_asistencia,
+                'tipo_asistencia' => $tipo_asistencia,
                 'personal' => $personal,
                 'descuento' => $descuento,
                 'justificacion' => $justificacion,
