@@ -99,14 +99,15 @@ class MisAsistenciaController extends Controller
                     $tipo_asistencia = 0;
                 }
 
-                if ($justificacion && $justificacion->estatus == 10 && $horaActual < $limiteDerivado && $fechaActual) {
+                if ($justificacion && in_array($justificacion->estatus, [0, 10]) && $horaActual < $limiteDerivado && $fechaActual) {
                     $tipo_asistencia = 7;
                 }
 
                 // Acciones dinámicas
                 $acciones = [];
+
                 // Si es un tipo de asistencia que puede ser justificado, no tiene justificación aún y es el día actual
-                if ($justificacion && $justificacion?->estatus == 10 && $tipo_asistencia == 7 && $fechaActual) {
+                if ($justificacion && $justificacion?->estatus == 10 && $horaActual < $limiteDerivado && $fechaActual) {
                     $acciones[] = [
                         'funcion' => "justificarDerivado({$a->id})",
                         'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencias->get(7)->color . ';"></i>Justificar Derivado'
@@ -115,20 +116,17 @@ class MisAsistenciaController extends Controller
                 }
 
                 // Si es un tipo de asistencia que puede ser justificado, no tiene justificación aún y es el día actual
-                if ((!$justificacion && in_array($tipo_asistencia, [1, 4]) || $justificacion && $justificacion?->estatus == 10) && $horaActual > $limitePuntual && $fechaActual) {
+                if (
+                    (
+                        !$justificacion && in_array($tipo_asistencia, [1, 4]) && $horaActual > $limitePuntual ||
+                        $justificacion && $justificacion?->estatus == 10 && $horaActual > $limiteDerivado
+                    ) &&
+                    $fechaActual
+                ) {
                     $tipoAsistencia = $tipoAsistencias->get($a->tipo_asistencia);
                     $acciones[] = [
                         'funcion' => "justificarAsistencia({$a->id})",
                         'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencia->color . ';"></i>Justificar ' . $tipoAsistencia->descripcion
-                    ];
-                }
-
-                // Si es un tipo de asistencia que puede ser justificado, no tiene justificación aún y es el día actual
-                if (!$justificacion && $tipo_asistencia == 0 && $tipo_modalidad == 2 && $horaActual < $limitePuntual && $fechaActual) {
-                    $tipoModalidad = $tipoModalidades->get($tipo_modalidad);
-                    $acciones[] = [
-                        'funcion' => "justificarAsistencia({$a->id})",
-                        'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoModalidad->color . ';"></i>Justificar ' . $tipoModalidad->descripcion
                     ];
                 }
 

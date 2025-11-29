@@ -56,7 +56,23 @@ class EditorJustificacion {
             camera: 'camera'
         });
 
-        const handler = () => this.detectDeletedMedia();
+        const handler = () => {
+            this.detectDeletedMedia();
+
+            ($(this.selector)[0]).querySelectorAll('p[date-file]').forEach(p => {
+                const hijos = Array.from(p.childNodes).filter(n => n.nodeType !== 3 || n.textContent.trim() !== '');
+                if (hijos.length === 1 && hijos[0].nodeName === 'BR') {
+                    p.removeAttribute('date-file');
+                }
+            });
+            
+            ($(this.selector)[0]).querySelectorAll('li[date-file]').forEach(p => {
+                const hijos = Array.from(p.childNodes).filter(n => n.nodeType !== 3 || n.textContent.trim() !== '');
+                if (hijos.length === 1 && hijos[0].nodeName === 'BR') {
+                    p.removeAttribute('date-file');
+                }
+            });
+        };
         this.quill.on('text-change', handler);
 
         // Guardamos el listener para futuro "destroy"
@@ -202,17 +218,18 @@ class EditorJustificacion {
             const delta = ahora - file.lastModified;
             const deltaDesdeApertura = ahora - tiempoApertura;
 
-            const fecha = new Date(file.lastModified);
-            const horas = fecha.getHours();        // 0–23
-            const minutos = fecha.getMinutes();    // 0–59
-            const segundos = fecha.getSeconds();   // 0–59
-            const pad = n => String(n).padStart(2, '0');
+            // const fecha = new Date(file.lastModified);
+            // const horas = fecha.getHours();        // 0–23
+            // const minutos = fecha.getMinutes();    // 0–59
+            // const segundos = fecha.getSeconds();   // 0–59
+            // const pad = n => String(n).padStart(2, '0');
+            let fechaStr = date('H:i:s', file.lastModified);
 
             this.fileMap.push({
                 name: file.name,
                 size: file.size,
                 type: file.type,
-                lastModified: `${pad(horas)}:${pad(minutos)}:${pad(segundos)}`
+                lastModified: fechaStr
             });
             /*
                 ✔ Condición real:
@@ -289,6 +306,7 @@ class EditorJustificacion {
     async uploadFile(file, tipo) {
         try {
 
+            let last_Modified = file.lastModified;
             let fileToUpload = file;
 
             /** ============================
@@ -327,7 +345,7 @@ class EditorJustificacion {
             const url = `${__url.replaceAll('/public', '')}/${data.data.url}`;
 
             const range = this.quill.getSelection(true);
-            this.insertFile(tipo, url, fileToUpload.name, id, range.index);
+            this.insertFile(tipo, url, last_Modified, id, range.index);
         } catch (error) {
             console.log(error);
             boxAlert.box({
@@ -341,10 +359,10 @@ class EditorJustificacion {
     /** ============================
      *  🔹 INSERTAR CON ID
      * ============================ */
-    insertFile(tipo, url, filename, id, index) {
+    insertFile(tipo, url, lastModified, id, index) {
         this.mediaMap = this.mediaMap || {};
         this.mediaMap[id] = { tipo, id };
-        
+
         const acc = {
             image: () => this.quill.insertEmbed(index, 'image', url),
             video: () => this.quill.insertEmbed(index, 'video', url),
@@ -358,6 +376,14 @@ class EditorJustificacion {
         };
 
         acc[tipo]?.();
+
+        setTimeout(() => {
+            if (tipo == "pdf") return;
+
+            let archivo = $(this.selector).find(`img[data-id="${id}"]`)[0];
+            const p = archivo.parentElement;
+            p.setAttribute('date-file', date('Y-m-d H:i:s', lastModified));
+        }, 300);
     }
 
     detectDeletedMedia() {
@@ -371,14 +397,6 @@ class EditorJustificacion {
         // Detectar eliminados
         for (const id in this.mediaMap) {
             if (!currentIds.includes(id)) {
-                // console.log("Eliminado:", this.mediaMap[id]);
-
-                // Aquí haces lo que quieras:
-                // - eliminar de una lista
-                // - mandar al backend
-                // - mostrar alerta
-                // - etc
-
                 delete this.mediaMap[id]; // limpiar registro
             }
         }

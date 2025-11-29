@@ -100,18 +100,22 @@ $(document).ready(function () {
             $('#modalJustificarDerivado').modal('show');
             fMananger.formModalLoding('modalJustificarDerivado', 'show');
 
-            const res = await $.getJSON(`${__url}/asistencias-diarias/mostrar/${id}`);
-            fMananger.formModalLoding('modalJustificarDerivado', 'hide');
+            const endpoint = await fetch(`${__url}/asistencias-diarias/mostrar/${id}`);
+            const response = await endpoint.json();
+            const data = response.data;
+            const just = data.justificacion;
 
-            if (!res?.data) {
+            if (!response?.data) {
                 return boxAlert.box({
                     i: 'error',
                     t: 'No se pudo obtener la información',
-                    h: res.message || 'No se encontraron datos de la asistencia seleccionada.'
+                    h: response.message || 'No se encontraron datos de la asistencia seleccionada.'
                 });
             }
 
-            const data = res.data;
+            if (!data.is_derivado) {
+                return justificarAsistencia(id);
+            }
 
             let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
                 || { descripcion: 'Pendiente', color: '#9fa6b2' };
@@ -121,7 +125,7 @@ $(document).ready(function () {
                 estado: `<span class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>`,
             });
 
-            $('#id_justificacion').val(id);
+            $('#id_justificacion').val(just.id);
             $('#asunto').val('Justificación de Asistencia Derivada');
             fMananger.formModalLoding('modalJustificarDerivado', 'hide');
         } catch (error) {
@@ -204,18 +208,21 @@ $(document).ready(function () {
     window.justificarAsistencia = async (id) => {
         try {
             boxAlert.loading();
-            const res = await $.getJSON(`${__url}/asistencias-diarias/mostrar/${id}`);
-            const data = res.data;
+            setTimeout(() => $('#modalJustificarDerivado').modal('hide'), 600);
+            const endpoint = await fetch(`${__url}/asistencias-diarias/mostrar/${id}`);
+            const response = await endpoint.json();
+            const data = response.data;
+            const just = data.justificacion;
 
-            if (!res?.data) {
+            if (!response?.data) {
                 return boxAlert.box({
                     i: 'error',
                     t: 'No se pudo obtener la información',
-                    h: res.message || 'No se encontraron datos de la asistencia seleccionada.'
+                    h: response.message || 'No se encontraron datos de la asistencia seleccionada.'
                 });
             }
 
-            if (!esCelular() && [0].includes(data.tipo_asistencia) && [2].includes(data.tipo_modalidad)) {
+            if (!esCelular() && [0, 1].includes(data.tipo_asistencia) && ([2].includes(data.tipo_modalidad) || [10].includes(just?.estatus))) {
                 return boxAlert.box({
                     i: 'info',
                     h: 'Acción disponible solo en dispositivos móviles.'
@@ -239,18 +246,19 @@ $(document).ready(function () {
             window.fecha = data.fecha;
             window.tipo_asistencia = data.tipo_asistencia;
 
-            if ([0].includes(data.tipo_asistencia) && [2].includes(data.tipo_modalidad)) {
+            if ([0, 1].includes(data.tipo_asistencia) && ([2].includes(data.tipo_modalidad) || [10].includes(just?.estatus))) {
                 quilleditorJustificar.updateOptions({
                     noPasteImg: true,
                     botones: ['link', 'camera']
                 });
-                $('#asunto_justificar').val('Justificación de Asistencia Remota');
+                $('#asunto_justificar').val(data.tipo_modalidad == 2 && data.tipo_asistencia == 0 ? 'Justificación de Asistencia Remota' : '');
             } else {
                 quilleditorJustificar.updateOptions();
             }
 
             fMananger.formModalLoding('modalJustificar', 'hide');
         } catch (e) {
+            Swal.close();
             console.error(e);
         }
     }

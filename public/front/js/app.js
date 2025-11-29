@@ -209,8 +209,8 @@ function formatUnique(data) {
     return `<ul style="font-size:.75rem;">${result}</ul>`;
 }
 
-function date(format) {
-    const now = new Date();
+function date(format, strtime = null) {
+    const now = strtime ? new Date(strtime) : new Date();
 
     const map = {
         'Y': now.getFullYear(),                // Año completo (2024)
