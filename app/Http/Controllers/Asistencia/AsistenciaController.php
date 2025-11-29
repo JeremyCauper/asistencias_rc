@@ -158,7 +158,7 @@ class AsistenciaController extends Controller
                         $tipo_asistencia = 0;
                     }
 
-                    if ($justificacion && $justificacion->estatus == 10) {
+                    if ($justificacion && $justificacion->estatus == 10 && $horaActual < $limiteDerivado) {
                         $tipo_asistencia = 7;
                     }
 
@@ -196,7 +196,14 @@ class AsistenciaController extends Controller
                         $notificacion = $justificacion->estatus == 0;
                     }
 
-                    if (!$justificacion && in_array($tipo_asistencia, [1, 4]) && $mesActual && ($isAdmin || $isJefatura || $isSystem)) {
+                    if (
+                        (
+                            !$justificacion && in_array($tipo_asistencia, [1, 4]) ||
+                            $justificacion && $justificacion->estatus == 10 && $horaActual > $limiteDerivado
+                        ) &&
+                        $mesActual &&
+                        ($isAdmin || $isJefatura || $isSystem)
+                    ) {
                         $tipoAsistencia = $tipoAsistencias->get($tipo_asistencia);
                         $acciones[] = [
                             'funcion' => "justificarAsistencia({$p->user_id}, '{$fecha}', '{$hora}', {$tipo_asistencia})",
@@ -269,6 +276,7 @@ class AsistenciaController extends Controller
                 ->get();
 
             $limitePuntual = strtotime(date("Y-m-d " . $this->horaLimitePuntual));
+            $limiteDerivado = strtotime(date("Y-m-d " . $this->horaLimiteDerivado));
             $horaActual = time();
             $tipo_asistencia = $asistencia?->tipo_asistencia;
             $fechaActual = date('Y-m-d') == $asistencia->fecha;
@@ -283,7 +291,7 @@ class AsistenciaController extends Controller
                 $tipo_asistencia = 0;
             }
 
-            if ($justificacion && $justificacion->estatus == 10) {
+            if ($justificacion && $justificacion->estatus == 10 && $horaActual < $limiteDerivado) {
                 $tipo_asistencia = 7;
             }
 
@@ -298,7 +306,8 @@ class AsistenciaController extends Controller
                 'personal' => $personal,
                 'descuento' => $descuento,
                 'justificacion' => $justificacion,
-                'archivos' => $archivos
+                'archivos' => $archivos,
+                'is_derivado' => $horaActual < $limiteDerivado
             ];
 
             return ApiResponse::success('Consulta exitosa.', $detalle);

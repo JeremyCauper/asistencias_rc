@@ -244,7 +244,7 @@
                         <script src="{{ secure_asset('front/js/layout/swicth_layout.js') }}"></script>
                     </div>
                     <!-- Notifications -->
-                    {{-- <div> 
+                    <div> 
                         <div class="dropdown">
                             <a data-mdb-dropdown-init class="text-reset ms-3 dropdown-toggle hidden-arrow"
                                 href="#" id="navbarDropdownMenuLink" role="button" aria-expanded="false">
@@ -277,7 +277,7 @@
                             </ul>
                         </div>
                         <script src="{{ secure_asset('front/js/Notificaciones.js') }}"></script>
-                    </div> --}}
+                    </div>
                     <div>
                         <button class="sidebar-close__navbar hover-layout ms-2" type="button"
                             aria-label="Cerrar barra lateral">

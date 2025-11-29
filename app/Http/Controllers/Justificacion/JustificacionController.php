@@ -303,13 +303,13 @@ class JustificacionController extends Controller
                 'estatus' => 10, // pendiente
             ]);
 
-            NotificacionController::store((object)[
+            NotificacionController::crear([
                 'user_id' => $asistencia->user_id,
-                'descripcion' => 'Justificación de derivación pendiente.',
-                'accion' => "justificarDerivado({$asistencia->id})",
-                'destinatario' => 1,
-                'limite_show' => date("Y-m-d " . $this->horaLimiteDerivado),
-                'user_destino' => $asistencia->user_id,
+                'tipo_notificacion' => 1,
+                'descripcion_id' => 1,
+                'ruta_id' => 2, // 1 -> mis asistencias (donde el técnico sube foto)
+                'accion_id' => 1, // 1 -> justificarDerivado
+                'payload_accion' => $asistencia->id,
             ]);
             DB::commit();
 

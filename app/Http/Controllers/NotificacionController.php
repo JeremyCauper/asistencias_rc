@@ -1,77 +1,62 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use PhpParser\Node\Expr\Cast\Object_;
 
 class NotificacionController extends Controller
 {
     public function listar()
     {
-        // $user = auth()->user();
-        // $tipo = (int) $user->tipo;   // 0 admin, 1 técnico
-        // $userId = $user->user_id;    // código tipo 000123
+        $descripcion = [
+            1 => ':personal debes registrar tu llegada y subir evidencia.',
+            2 => ':personal registró una justificación de falta y requiere revisión.',
+            3 => ':personal registró una justificación de tardanza y requiere revisión.',
+            4 => ':personal registró una justificación de derivación y requiere revisión.',
+        ];
 
-        // $notificaciones = DB::table('notificaciones')
-        //     ->join('personal', 'personal.user_id', '=', 'notificaciones.user_id')
-        //     ->where('notificaciones.estado', 0)
-        //     ->where(function ($q) use ($tipo) {
-        //         $q->where('notificaciones.tipo_destinatario', $tipo)
-        //             ->orWhere('notificaciones.tipo_destinatario', 2); // ambos
-        //     })
-        //     ->where(function ($q) use ($tipo, $userId) {
-        //         // Si es técnico, puede recibir notificaciones dirigidas a él
-        //         if ($tipo == 1) {
-        //             $q->whereNull('notificaciones.user_id_destino')
-        //                 ->orWhere('notificaciones.user_id_destino', $userId);
-        //         }
-        //     })
-        //     ->select(
-        //         'notificaciones.id',
-        //         'notificaciones.descripcion',
-        //         'notificaciones.accion_js',
-        //         'personal.nombre as nombre_usuario',
-        //         'personal.rol_system as tipo_usuario',
-        //         'notificaciones.created_at'
-        //     )
-        //     ->orderBy('notificaciones.created_at', 'desc')
-        //     ->get();
+        $userId = auth()->id();
+        $rows = DB::table('notificaciones')
+            ->where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->limit(100)
+            ->get();
 
-        $personales = DB::table('personal')->get()->keyBy('user_id');
-        $notificaciones = DB::table('notificaciones')->where('estatus', 0)
-            ->get()
-            ->map(function ($noti) use ($personales) {
-                $personal = $personales[$noti->user_id];
-                $noti->user = User::find($noti->user_id);
-                return [
-                    "id" => $noti->id,
-                    "descripcion" => $noti->descripcion,
-                    "accion_js" => $noti->accion_js,
-                    "nombre_usuario" => $this->formatearNombre($personal->nombre, $personal->apellido),
-                    "tipo_usuario" => $personal->rol_system,
-                    "created_at" => $noti->created_at
-                ];
-            });
+        return response()->json($rows);
+    }
 
-        return response()->json([
-            'notificaciones' => $notificaciones
+    public static function crear(array $data)
+    {
+        // ['user_id','tipo_notificacion','ruta_id','accion_id','payload_ruta','payload_accion','descripcion']
+
+        // sanitiza y valida según convenga
+        DB::table('notificaciones')->insert([
+            'user_id' => $data['user_id'],
+            'tipo_notificacion' => $data['tipo_notificacion'],
+            'descripcion_id' => $data['descripcion_id'],
+            'ruta_id' => $data['ruta_id'],
+            'accion_id' => $data['accion_id'] ?? null,
+            'payload_accion' => isset($data['payload_accion']) ? json_encode($data['payload_accion']) : null,
+            'created_at' => now()->format('Y-m-d H:i:s')
         ]);
     }
 
-    public static function store(object $noti)
+    public function marcarLeido($id)
     {
-        DB::table('notificaciones')->insert([
-            'user_id' => $noti->user_id,
-            'descripcion' => $noti->descripcion,
-            'accion_js' => $noti->accion,
-            'tipo_destinatario' => $noti->destinatario ?? 0,
-            'user_id_destino' => $noti->user_destino ?? null,
-            'limite_show' => $noti->limite_show,
-            'user_id_origen' => Auth::user()->id,
-        ]);
+        DB::table('notificaciones')->where('id', $id)->update(['leido' => 1]);
+        return response()->json(['ok'=>true]);
+    }
+
+    public function borrar($id)
+    {
+        DB::table('notificaciones')->where('id', $id)->delete();
+        return response()->json(['ok'=>true]);
+    }
+
+    public function contarNoLeidas()
+    {
+        $userId = auth()->id();
+        $count = DB::table('notificaciones')->where('user_id', $userId)->where('leido',0)->count();
+        return response()->json(['unread'=>$count]);
     }
 }

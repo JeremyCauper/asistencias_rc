@@ -42,6 +42,16 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::post('/personal/actualizar-password', [LoginController::class, 'actualizarPassword']);
 
+    Route::controller(NotificacionController::class)
+        ->prefix('notificaciones')
+        ->as('notificaciones.')
+        ->group(function () {
+            Route::get('/listar', 'listar')->name('listar');
+            Route::get('/marcar/{id}', 'marcarLeido')->name('marcarLeido');
+            Route::get('/borrar/{id}', 'borrar')->name('borrar');
+        });
+
+
     Route::get('/personal/personal', [SyncPersonalController::class, 'view']);
     Route::get('/personal/listar', [SyncPersonalController::class, 'listar']);
     Route::get('/personal/{id}', [SyncPersonalController::class, 'show']);
