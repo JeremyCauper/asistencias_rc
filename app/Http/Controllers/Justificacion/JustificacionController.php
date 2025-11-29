@@ -267,7 +267,7 @@ class JustificacionController extends Controller
             $horaActual = time();
 
             if ($horaActual > $limiteDerivado) {
-                return ApiResponse::error('Solo se puede deribar hasta las 10:00:00 am');
+                return ApiResponse::error('Solo se puede deribar hasta las 10:30:00 am');
             }
 
             $asistencia = DB::table('asistencias')->where('id', $id)->first();
@@ -303,20 +303,20 @@ class JustificacionController extends Controller
                 'estatus' => 10, // pendiente
             ]);
 
-            NotificacionController::crear([
-                'user_id' => $asistencia->user_id,
-                'tipo_notificacion' => 1,
-                'descripcion_id' => 1,
-                'ruta_id' => 2, // 1 -> mis asistencias (donde el técnico sube foto)
-                'accion_id' => 1, // 1 -> justificarDerivado
-                'payload_accion' => $asistencia->id,
-            ]);
+            // NotificacionController::crear([
+            //     'user_id' => $asistencia->user_id,
+            //     'tipo_notificacion' => 1,
+            //     'descripcion_id' => 1,
+            //     'ruta_id' => 2, // 1 -> mis asistencias (donde el técnico sube foto)
+            //     'accion_id' => 1, // 1 -> justificarDerivado
+            //     'payload_accion' => $asistencia->id,
+            // ]);
             DB::commit();
 
             return ApiResponse::success('Se Derivó con exito, falta respuesta por parte del tecnico.');
         } catch (Exception $e) {
             Log::error('[AsistenciaController@marcarDerivado] ' . $e->getMessage());
-            return ApiResponse::error('Error al cambiar el estado.');
+            return ApiResponse::error('Error al cambiar el estado.', $e->getMessage());
         }
     }
 
