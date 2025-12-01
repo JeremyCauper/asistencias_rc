@@ -256,6 +256,9 @@
                                     <button class="btn btn-light btn-sm px-2" noti-btn="reload"><i class="fas fa-rotate"></i></button>
                                 </div>
                                 <div class="dropdown-body">
+                                    <div class="dropdown-text text-center text-muted py-3">
+                                        Sin notificaciones
+                                    </div>
                                     {{-- <div class="dropdown-item p-2 my-1 rounded" role="button">
                                         <small class="noti-hora">2025-11-12 12:00:00</small>
                                         <div class="noti-contenido d-flex align-items-center mt-2">

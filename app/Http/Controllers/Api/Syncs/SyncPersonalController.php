@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Api\Syncs;
 
+use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Personal;
 use App\Services\JsonDB;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class SyncPersonalController extends Controller
@@ -58,6 +61,7 @@ class SyncPersonalController extends Controller
                     'acciones' => $this->DropdownAcciones([
                         'button' => [
                             ['clase' => 'btnEditar', 'attr' => 'data-id="' . $p->user_id . '"', 'texto' => '<i class="fa fa-edit me-2 text-info"></i> Editar'],
+                            ['clase' => 'btnVacaciones', 'attr' => 'data-id="' . $p->user_id . '"', 'texto' => '<i class="fa fa-house-chimney-user me-2 text-primary"></i> Programar Vacaciones'],
                             ['clase' => 'btnEliminar', 'attr' => 'data-id="' . $p->user_id . '"', 'texto' => '<i class="fa fa-trash me-2 text-danger"></i> Eliminar'],
                             ['clase' => 'btnEstado', 'attr' => 'data-id="' . $p->user_id . '" data-estatus="' . $p->estatus . '"', 'texto' => '<i class="fas fa-rotate-right me-2 text-' . $colorEstado . '"></i> ' . ($p->estatus ? 'Desactivar' : 'Activar')],
                         ],
@@ -304,6 +308,58 @@ class SyncPersonalController extends Controller
             DB::rollBack();
 
             return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function cargarVacaciones($id)
+    {
+        try {
+            $asistencias = DB::table('asistencias')->select('fecha')->where(['user_id' => $id, 'tipo_asistencia' => 8])->pluck('fecha');
+            return ApiResponse::success('Consulta exitosa.', $asistencias);
+        } catch (ModelNotFoundException $e) {
+            return ApiResponse::notFound('No se encontró el registro solicitado.');
+        } catch (Exception $e) {
+            Log::error('[AsistenciaController@showAsistencia] ' . $e->getMessage());
+            return ApiResponse::error('Error al obtener el registro.');
+        }
+    }
+
+    public function crearVacaciones(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'required|integer',
+                'nuevas' => 'required|array',
+                'nuevas.*' => 'required|date_format:Y-m-d',
+                'eliminadas' => 'nullable|array',
+                'eliminadas.*' => 'nullable|date_format:Y-m-d',
+            ]);
+
+            if ($validator->fails()) {
+                return ApiResponse::validation($validator->errors()->toArray(), 'Los datos proporcionados no son válidos.');
+            }
+
+            DB::beginTransaction();
+            if (!empty($request->eliminadas)) {
+                DB::table('asistencias')->where('user_id', $request->user_id)
+                    ->whereIn('fecha', $request->eliminadas)
+                    ->where('tipo_asistencia', 8)
+                    ->delete();
+            }
+            foreach ($request->nuevas as $nueva) {
+                DB::table('asistencias')->updateOrInsert(
+                    ['user_id' => $request->user_id, 'fecha' => $nueva],
+                    [
+                        'tipo_asistencia' => 8,
+                        'tipo_modalidad' => 5,
+                    ]
+                );
+            }
+            DB::commit();
+            return ApiResponse::success('Exito al guardar las vacaciones.');
+        } catch (Exception $e) {
+            Log::error('[AsistenciaController@crearVacaciones] ' . $e->getMessage());
+            return ApiResponse::error('Error al guardar las vacaciones.');
         }
     }
 

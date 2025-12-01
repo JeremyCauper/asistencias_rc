@@ -9,6 +9,7 @@
         const tipoModalidad = @json($tipoModalidad);
         const tipoPersonal = @json($tipoPersonal);
     </script>
+    <script src="{{ secure_asset('front/vendor/full-calendar/index.global.min.js') }}"></script>
 @endsection
 
 @section('content')
@@ -356,6 +357,27 @@
             </form>
         </div>
     </div>
+
+    <!-- 🔹 Modal -->
+    <div class="modal fade" id="modalVacaciones" tabindex="-1" aria-labelledby="modalVacacionesLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalVacacionesLabel">Programar Vacaciones</h5>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="calendar"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-mdb-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnVerDatos">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}"></script>
 
 
     <!-- 🔹 Scripts -->
