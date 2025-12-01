@@ -81,16 +81,6 @@ class ExcelAsistenciaController extends Controller
                 ->get()
                 ->keyBy('user_id');
 
-            // Mapeo de días
-            $mapDias = [
-                'monday' => 'lunes',
-                'tuesday' => 'martes',
-                'wednesday' => 'miercoles',
-                'thursday' => 'jueves',
-                'friday' => 'viernes',
-                'saturday' => 'sabado',
-            ];
-
             $horaLimiteTardanza = strtotime('08:30:59');
             $resultado = [];
 
@@ -116,8 +106,7 @@ class ExcelAsistenciaController extends Controller
                     $strAFecha = strtotime($fecha);
                     $asistenciaDia = $asistenciasUsuario->firstWhere('fecha', $fecha);
                     $descuentoDia = $descuentosUsuario->firstWhere('fecha', $fecha);
-                    $diaSemana = strtolower(date('l', $strAFecha));
-                    $campoDia = $mapDias[$diaSemana] ?? null;
+                    $campoDia = $this->getDay($fecha);
                     $feriado = $feriados->get(date('m-d', $strAFecha));
 
                     // Si la fecha es feriado (y no domingo), marcamos tipo_asistencia = 6 (feriado)

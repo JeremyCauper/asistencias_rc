@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Contracts\Filesystem\Filesystem;
 
 class JustificacionController extends Controller
 {
@@ -21,12 +20,14 @@ class JustificacionController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
+                'id_asistencia' => 'required|integer',
                 'fecha' => 'required|date',
                 'hora' => 'nullable|date_format:H:i:s',
                 'tipo_asistencia' => 'required|in:0,1,4',
                 'asunto' => 'required|string|max:255',
                 'contenido' => 'required|string',
-                'archivos' => 'nullable'
+                'archivos' => 'nullable',
+                'by_admin' => 'boolean'
             ]);
 
             if ($validator->fails()) {
@@ -36,10 +37,11 @@ class JustificacionController extends Controller
             $user_id = $request->has('user_id') ? $request->user_id : session('user_id');
             $tipo_asistencia = $request->tipo_asistencia == 0 ? 2 : $request->tipo_asistencia;
             $estatus = $request->has('estatus') ? $request->estatus : ($tipo_asistencia == 2 ? 1 : 0);
-
+            $id_asistencia = $request->id_asistencia;
 
             // Verifica si ya existe una justificación para esa fecha
-            $justificacion = DB::table('justificaciones')->where('user_id', $user_id)
+            $justificacion = DB::table('justificaciones')
+                ->where('user_id', $user_id)
                 ->where('fecha', $request->fecha)
                 ->first();
             $justificacionEstatus = $justificacion?->estatus ?? null;
@@ -48,6 +50,12 @@ class JustificacionController extends Controller
                 return ApiResponse::success('Ya existe una justificación para esa fecha.');
             }
             $tipo_asistencia = $justificacionEstatus == 10 ? 1 : $tipo_asistencia;
+
+            $asistencia = DB::table('asistencias')->where('id', $id_asistencia)->exists();
+            // Verificar si la asistencia existe
+            if (!$asistencia) {
+                return ApiResponse::error('No se encontró la asistencia.');
+            }
 
             DB::beginTransaction();
             // Crear contenido HTML
@@ -81,31 +89,45 @@ class JustificacionController extends Controller
                 ]);
             }
 
-            $asistencias = DB::table('asistencias')->where([
-                'user_id' => $user_id,
-                'fecha' => $request->fecha,
-            ])->first();
-
             // Procesar asistencia solo cuando corresponde
-            if ($asistencias) {
-                if ($estatus == 1) {
-                    $hora = $request->hora;
-                    $limitePuntual = strtotime(date("Y-m-d " . $this->horaLimitePuntual));
-                    DB::table('asistencias')->where('id', $asistencias->id)->update([
-                        'tipo_asistencia' => $hora
-                            ? ((strtotime(date("Y-m-d " . $hora)) > $limitePuntual) ? 4 : 2)
-                            : 3,
-                        'hora' => $hora ?? null
-                    ]);
-                }
+            if ($estatus == 1) {
+                $hora = $request->hora ?? null;
+                $tipoAsistencia = match (true) {
+                    !$hora => 3,  // sin hora -> asistencia normal/otro estado
+                    strtotime(date("Y-m-d " . $hora)) > $this->limitePuntual => 4, // tiene hora y es tarde
+                    default => 2  // tiene hora y es puntual
+                };
 
-                if (!empty($request->archivos)) {
-                    $this->procesarArchivosJustificacion($request->archivos, $asistencias->id);
-                }
+                DB::table('asistencias')->where('id', $id_asistencia)->update([
+                    'tipo_asistencia' => $tipoAsistencia,
+                    'hora' => $hora
+                ]);
             }
+
+            if (!empty($request->archivos)) {
+                $this->procesarArchivosJustificacion($request->archivos, $id_asistencia);
+            }
+
+            if (!$request->by_admin) {
+                $configuraciones = match($tipo_asistencia) {
+                    1 => [3, 2],
+                    4 => [4, 3]
+                };
+
+                NotificacionController::crear([
+                    'user_id' => $user_id,
+                    'is_admin' => 1,
+                    'tipo_notificacion' => $configuraciones[0],
+                    'descripcion_id' => $configuraciones[1],
+                    'ruta_id' => 1,
+                    'accion_id' => 2,
+                    'payload_accion' => $id_asistencia,
+                ]);
+            }
+
             DB::commit();
 
-            return ApiResponse::success('Justificación registrada correctamente.');
+            return ApiResponse::success('Justificación creada correctamente.');
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('[JustificacionController@storeJustificacion] ' . $e->getMessage());
@@ -113,51 +135,137 @@ class JustificacionController extends Controller
         }
     }
 
-    public function responseJustificacion(Request $request)
+    public function responseJustificacionByAdmin(Request $request)
     {
-        $validaciones = [
-            'id_justificacion' => 'required|integer',
-            'hora' => 'nullable|date_format:H:i:s',
-            'mensaje' => 'required|string',
-            'archivos' => 'nullable',
-        ];
-        $message = 'Justificación registrada correctamente.';
-
-        if ($request->has('estatus')) {
-            $validaciones['estatus'] = 'required|in:1,2';
-            $message = ($request->estatus == 1)
-                ? 'Justificación aprobada correctamente.'
-                : 'Justificación rechazada correctamente.';
-        }
-
-        $validator = Validator::make($request->all(), $validaciones);
-
-        if ($validator->fails()) {
-            return ApiResponse::validation($validator->errors()->toArray());
-        }
-
         try {
-            $justificacion = DB::table('justificaciones')->where('id', $request->id_justificacion)->first();
-            $tipoAsistencia = null;
+            $validator = Validator::make($request->all(), [
+                'id_justificacion' => 'required|integer',
+                'id_asistencia' => 'required|integer',
+                'id_notificacion' => 'required|integer',
+                'estatus' => 'required|in:1,2',
+                'mensaje' => 'required|string',
+                'archivos' => 'nullable'
+            ]);
 
-            if (!$justificacion) {
-                return ApiResponse::error('La justificación no existe.');
+            if ($validator->fails()) {
+                return ApiResponse::validation($validator->errors()->toArray());
             }
 
-            // Manejo del estatus
-            $estatusOriginal = $justificacion->estatus;
-            $limiteDerivado = strtotime(date("Y-m-d " . $this->horaLimiteDerivado));
-            $horaActual = time();
+            $justificacion = DB::table('justificaciones')->where('id', $request->id_justificacion)->first();
+            // Verificar si la justificación existe
+            if (!$justificacion) {
+                return ApiResponse::error('No se encontró la justificación.');
+            }
 
-            if ($estatusOriginal == 10 && $horaActual > $limiteDerivado) {
+            // Declarar variables
+            $tipoAsistencia = $justificacion->tipo_asistencia;
+            $id_asistencia = $request->id_asistencia;
+            $estatus = $request->estatus;
+            $now = now();
+
+            $asistencia = DB::table('asistencias')->where('id', $id_asistencia)->exists();
+            // Verificar si la asistencia existe
+            if (!$asistencia) {
+                return ApiResponse::error('No se encontró la asistencia.');
+            }
+
+            DB::beginTransaction();
+
+            // Crear contenido HTML
+            $contenido = $this->createBodyMessage(
+                $tipoAsistencia,
+                $request->mensaje,
+                $justificacion->contenido_html,
+                $now->format('Y-m-d H:i:s')
+            );
+
+            DB::table('justificaciones')
+                ->where('id', $request->id_justificacion)
+                ->update([
+                    'contenido_html' => $contenido,
+                    'estatus' => $estatus
+                ]);
+
+            if (in_array($estatus, [1, 2])) {
+                $tipoAsistencia = match (true) {
+                    $estatus == 1 && $tipoAsistencia == 7 => 7,
+                    $estatus == 1 => 3,
+                    default => $tipoAsistencia
+                };
+
+                DB::table('asistencias')->where('id', $id_asistencia)->update([
+                    'tipo_asistencia' => $tipoAsistencia,
+                ]);
+            }
+
+            if (!empty($request->archivos)) {
+                $this->procesarArchivosJustificacion($request->archivos, $id_asistencia);
+            }
+            $archivos = DB::table('media_archivos')->where('asistencia_id', $id_asistencia)->get();
+
+            if ($request->id_notificacion)
+                NotificacionController::marcarLeido($request->id_notificacion);
+            DB::commit();
+            return ApiResponse::success(
+                str_replace(':?', $estatus == 1 ? 'aprobada' : 'rechazada', 'Justificación :? correctamente.'),
+                [
+                    'estatus' => $estatus,
+                    'tipo_asistencia' => $tipoAsistencia,
+                    'contenido' => $contenido,
+                    'archivos' => $archivos ?? []
+                ]
+            );
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('[JustificacionController@responseJustificacionByAdmin] ' . $e->getMessage());
+            return ApiResponse::error('Error al actualizar el registro.');
+        }
+    }
+
+    public function responseJustificacionByUser(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'id_justificacion' => 'required|integer',
+                'id_asistencia' => 'required|integer',
+                'id_notificacion' => 'required|integer',
+                'hora' => 'nullable|date_format:H:i:s',
+                'asunto' => 'required|string|max:255',
+                'mensaje' => 'required|string',
+                'archivos' => 'nullable'
+            ]);
+
+            if ($validator->fails()) {
+                return ApiResponse::validation($validator->errors()->toArray());
+            }
+
+            $justificacion = DB::table('justificaciones')->where('id', $request->id_justificacion)->first();
+            // Verificar si la justificación existe
+            if (!$justificacion) {
+                return ApiResponse::error('No se encontró la justificación.');
+            }
+
+            // Declarar variables
+            $tipoAsistencia = $justificacion->tipo_asistencia;
+            $estatusOriginal = $justificacion->estatus;
+
+            // Verificar si es derivado y dentro del tiempo limite
+            if ($estatusOriginal == 10 && $this->horaActual > $this->limiteDerivado) {
                 return ApiResponse::error('Solo se puede responder la drivación hasta las ' . $this->horaLimiteDerivado);
             }
 
-            $estatus = ($estatusOriginal == 10)
-                ? 0
-                : ($request->estatus ?? $estatusOriginal);
-
+            $id_asistencia = $request->id_asistencia;
+            $estatus = $estatusOriginal == 10 ? 0 : $estatusOriginal;
             $now = now();
+
+            $asistencia = DB::table('asistencias')->where('id', $id_asistencia)->exists();
+            // Verificar si la asistencia existe
+            if (!$asistencia) {
+                return ApiResponse::error('No se entrontró la asistencia.');
+            }
+
+            DB::beginTransaction();
+
             // Crear contenido HTML
             $contenido = $this->createBodyMessage(
                 $justificacion->tipo_asistencia,
@@ -166,107 +274,69 @@ class JustificacionController extends Controller
                 $now->format('Y-m-d H:i:s')
             );
 
-            $values = [
-                'contenido_html' => $contenido,
-                'estatus' => $estatus
-            ];
-
-            if ($request->filled('asunto')) {
-                $values['asunto'] = $request->asunto;
-            }
-
-            DB::beginTransaction();
-
             DB::table('justificaciones')
                 ->where('id', $request->id_justificacion)
-                ->update($values);
+                ->update([
+                    'contenido_html' => $contenido,
+                    'asunto' => $request->asunto,
+                    'estatus' => $estatus
+                ]);
 
-            $asistencias = DB::table('asistencias')->where([
-                'user_id' => $justificacion->user_id,
-                'fecha' => $justificacion->fecha,
-            ])->first();
+            $actualizarAsistencia = [];
+            if ($estatusOriginal == 10)
+                $actualizarAsistencia['hora'] = $request->hora ?? $now->format('H:i:s');
 
-            // Procesar asistencia solo cuando corresponde
-            if ($asistencias) {
-                if ($estatusOriginal == 10) {
-                    DB::table('asistencias')->where('id', $asistencias->id)->update([
-                        'hora' => $request->hora ?? $now->format('H:i:s')
-                    ]);
-                }
-
-                // Procesar asistencia solo cuando corresponde
-                if (in_array($estatus, [1, 2]) && $estatusOriginal != 10) {
-                    // Decidir tipo de asistencia de forma clara
-                    $tipoAsistencia = match (true) {
-                        $estatus == 1 && $justificacion->tipo_asistencia == 7 => 7,
-                        $estatus == 1 => 3,
-                        default => $justificacion->tipo_asistencia
-                    };
-
-                    DB::table('asistencias')->where('id', $asistencias->id)->update([
-                        'tipo_asistencia' => $tipoAsistencia,
-                    ]);
-                }
-
-                if (!empty($request->archivos)) {
-                    $this->procesarArchivosJustificacion($request->archivos, $asistencias->id);
-                }
-                $archivos = DB::table('media_archivos')->where('asistencia_id', $asistencias->id)->get();
+            if (in_array($estatus, [1, 2]) && $estatusOriginal != 10) {
+                $tipoAsistencia = match (true) {
+                    $estatus == 1 && $tipoAsistencia == 7 => 7,
+                    $estatus == 1 => 3,
+                    default => $tipoAsistencia
+                };
+                $actualizarAsistencia['tipo_asistencia'] = $tipoAsistencia;
             }
 
-            DB::commit();
-            return ApiResponse::success($message, [
-                'estatus' => $estatus,
-                'tipo_asistencia' => $tipoAsistencia,
-                'contenido' => $contenido,
-                'archivos' => $archivos ?? []
+            if (!empty($actualizarAsistencia))
+                DB::table('asistencias')->where('id', $id_asistencia)->update($actualizarAsistencia);
+
+            if (!empty($request->archivos)) {
+                $this->procesarArchivosJustificacion($request->archivos, $id_asistencia);
+            }
+            $archivos = DB::table('media_archivos')->where('asistencia_id', $id_asistencia)->get();
+
+            // Enviar notificaciones
+            if ($request->id_notificacion)
+                NotificacionController::marcarLeido($request->id_notificacion);
+
+            NotificacionController::crear([
+                'user_id' => $justificacion->user_id,
+                'is_admin' => 1,
+                'tipo_notificacion' => 2,
+                'descripcion_id' => 4,
+                'ruta_id' => 1,
+                'accion_id' => 2,
+                'payload_accion' => $id_asistencia,
             ]);
+            DB::commit();
+            return ApiResponse::success(
+                'Justificación respondida correctamente.',
+                [
+                    'estatus' => $estatus,
+                    'tipo_asistencia' => $tipoAsistencia,
+                    'contenido' => $contenido,
+                    'archivos' => $archivos ?? []
+                ]
+            );
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('[JustificacionController@responseJustificacion] ' . $e->getMessage());
+            Log::error('[JustificacionController@responseJustificacionByUser] ' . $e->getMessage());
             return ApiResponse::error('Error al actualizar el registro.');
-        }
-    }
-
-    public function showJustificacion($id)
-    {
-        try {
-            // ✅ Busca la justificación
-            $justificacion = DB::table('justificaciones')->where('id', $id)->first();
-
-            if (!$justificacion) {
-                ApiResponse::notFound('No se encontró una justificación para el usuario en esa fecha.');
-            }
-
-            $personal = DB::table('personal')->select('dni', 'nombre', 'apellido')->where('user_id', $justificacion->user_id)->first();
-
-            // 🧾 Formatea la respuesta
-            return ApiResponse::success('Justificación encontrada.', [
-                'personal' => $personal,
-                'justificacion' => [
-                    'id' => $justificacion->id,
-                    'user_id' => $justificacion->user_id,
-                    'fecha' => $justificacion->fecha,
-                    'tipo_asistencia' => $justificacion->tipo_asistencia,
-                    'asunto' => $justificacion->asunto,
-                    'contenido_html' => $justificacion->contenido_html,
-                    'estatus' => $justificacion->estatus,
-                    'created_at' => $justificacion->created_at
-                ]
-            ]);
-        } catch (Exception $e) {
-            Log::error('[JustificacionController@showJustificacion] ' . $e->getMessage());
-            return ApiResponse::error('Ocurrió un error interno al obtener la justificación. Intente nuevamente más tarde.');
         }
     }
 
     public function marcarDerivado(int $id)
     {
         try {
-            $limiteDerivado = strtotime(date("Y-m-d " . $this->horaLimiteDerivado));
-            $horaActual = time();
-
-            if ($horaActual > $limiteDerivado) {
+            if ($this->horaActual > $this->limiteDerivado) {
                 return ApiResponse::error('Solo se puede deribar hasta las 10:30:00 am');
             }
 
@@ -303,14 +373,15 @@ class JustificacionController extends Controller
                 'estatus' => 10, // pendiente
             ]);
 
-            // NotificacionController::crear([
-            //     'user_id' => $asistencia->user_id,
-            //     'tipo_notificacion' => 1,
-            //     'descripcion_id' => 1,
-            //     'ruta_id' => 2, // 1 -> mis asistencias (donde el técnico sube foto)
-            //     'accion_id' => 1, // 1 -> justificarDerivado
-            //     'payload_accion' => $asistencia->id,
-            // ]);
+            NotificacionController::crear([
+                'user_id' => $asistencia->user_id,
+                'tipo_notificacion' => 1,
+                'descripcion_id' => 1,
+                'ruta_id' => 2,
+                'accion_id' => 1,
+                'payload_accion' => $asistencia->id,
+                'limite_show' => 'derivado'
+            ]);
             DB::commit();
 
             return ApiResponse::success('Se Derivó con exito, falta respuesta por parte del tecnico.');

@@ -1354,9 +1354,9 @@ tr .active-acciones {
 }
 
 .acronimo {
-    width: 3rem;
-    min-width: 3rem;
-    height: 3rem;
+    width: 2.5rem;
+    min-width: 2.5rem;
+    height: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1375,31 +1375,31 @@ tr .active-acciones {
 .ql-editor-html p[date-file],
 .ql-editor-html ol li[date-file],
 .ql-editor-html ul li[date-file] {
-  display: inline-block;
-  position: relative;
-  margin: 0;
+    display: inline-block;
+    position: relative;
+    margin: 0;
 }
 
 .ql-editor-html p[date-file]::before,
 .ql-editor-html ol li[date-file]::after,
 .ql-editor-html ul li[date-file]::after {
-  content: attr(date-file);
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 104px;
-  background: rgba(0, 0, 0);
-  color: #fff;
-  font-size: 10px;
-  padding: 3px 7px;
-  border-radius: 4px;
-  pointer-events: none;
-  white-space: nowrap;
+    content: attr(date-file);
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 104px;
+    background: rgba(0, 0, 0);
+    color: #fff;
+    font-size: 10px;
+    padding: 3px 7px;
+    border-radius: 4px;
+    pointer-events: none;
+    white-space: nowrap;
 }
 
 .ql-editor-html ol li[date-file]::after,
 .ql-editor-html ul li[date-file]::after {
-  left: 21px;
+    left: 21px;
 }
 
 .ql-editor-html img:hover,
@@ -1446,43 +1446,4 @@ tr .active-acciones {
 .ql-editor-html b,
 .ql-editor-html strong {
     font-weight: 800;
-}
-
-@media (max-width: 520px) {
-    #contenedor-notificaciones {
-        position: fixed !important;
-        inset: 30px 0px auto auto !important;
-        margin: 15px !important;
-        transform: none !important;
-        left: 0 !important;
-    }
-
-    #contenedor-notificaciones .dropdown-item div {
-        min-width: 0 !important;
-        height: 2.5rem;
-    }
-
-    #contenedor-notificaciones .dropdown-item div div span {
-        width: 2.5rem;
-        min-width: 2.5rem;
-        height: 2.5rem;
-    }
-
-    #contenedor-notificaciones .dropdown-item div div div .nombre_usuario {
-        user-select: none;
-        font-size: .825rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        line-height: 1.2;
-    }
-
-    #contenedor-notificaciones .dropdown-item div div div .descripcion {
-        user-select: none;
-        font-size: .7rem;
-        overflow: hidden;
-        /* text-overflow: ellipsis; */
-        white-space: nomal;
-        line-height: 1.2;
-    }
 }

@@ -16,12 +16,39 @@ class Controller extends BaseController
     use AuthorizesRequests, ValidatesRequests;
     public $horaLimitePuntual;
     public $horaLimiteDerivado;
+    public $limitePuntual;
+    public $limiteDerivado;
+    public $horaActual;
 
-    public function __construct() {
+    public function __construct()
+    {
+        $strFecha = 'Y-m-d';
+        $this->horaActual = time();
+        // $this->horaActual = strtotime(date("{$strFecha} H:i:s"));
+
         $config_system = DB::table('config_system')->get()->keyBy('config');
 
         $this->horaLimitePuntual = $config_system['horaLimitePuntual']?->values ?? "08:30:59";
         $this->horaLimiteDerivado = $config_system['horaLimiteDerivado']?->values ?? "10:30:00";
+
+        $this->limitePuntual = strtotime(date("{$strFecha} {$this->horaLimitePuntual}"));
+        $this->limiteDerivado = strtotime(date("{$strFecha} {$this->horaLimiteDerivado}"));
+    }
+
+    public function getDay($date)
+    {
+        $day = strtolower(date('l', strtotime($date)));
+        $map = [
+            'monday' => 'lunes',
+            'tuesday' => 'martes',
+            'wednesday' => 'miercoles',
+            'thursday' => 'jueves',
+            'friday' => 'viernes',
+            'saturday' => 'sabado',
+            'sunday' => null,
+        ];
+
+        return $map[$day] ?? null;
     }
 
     public function obtenerModulos2($tipo_acceso, $sistema)

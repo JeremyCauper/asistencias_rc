@@ -244,44 +244,42 @@
                         <script src="{{ secure_asset('front/js/layout/swicth_layout.js') }}"></script>
                     </div>
                     <!-- Notifications -->
-                    {{-- <div> 
-                        <div class="dropdown">
-                            <a data-mdb-dropdown-init class="text-reset ms-3 dropdown-toggle hidden-arrow"
-                                href="#" id="navbarDropdownMenuLink" role="button" aria-expanded="false">
+                    <div class="ms-1">
+                        <div class="dropdown" id="contenedor-notificaciones">
+                            <button data-mdb-dropdown-init class="btn-notification hover-layout" role="button" data-mdb-auto-close="outside" aria-expanded="false">
                                 <i class="fas fa-bell"></i>
-                                <span class="badge rounded-pill badge-notification bg-danger">1</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-right py-2 px-1"
-                                aria-labelledby="navbarDropdownMenuLink" id="contenedor-notificaciones">
-                                <li>
-                                    <div class="dropdown-item rounded" role="button">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <div class="d-flex align-items-center">
-                                                <span class="img-xs rounded-circle text-white acronimo"
-                                                    style="background-color:#7367F0;">
-                                                    JB
-                                                </span>
-
-                                                <div class="mx-2">
-                                                    <p class="fw-bold mb-1">Justificación de derivación pendiente.</p>
-                                                    <p class="text-muted mb-0">Jair Buitron C.</p>
-                                                </div>
-                                            </div>
-
-                                            <span class="badge rounded-pill" style="background-color:#7367F0;">
-                                                Técnico
+                                <span class="badge rounded-pill badge-notification bg-danger"></span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right py-0 px-1">
+                                <div class="dropdown-header d-flex align-items-center justify-content-between px-2">
+                                    <h6 class="mb-0" style="user-select: none">Notificaciones</h6>
+                                    <button class="btn btn-light btn-sm px-2" noti-btn="reload"><i class="fas fa-rotate"></i></button>
+                                </div>
+                                <div class="dropdown-body">
+                                    {{-- <div class="dropdown-item p-2 my-1 rounded" role="button">
+                                        <small class="noti-hora">2025-11-12 12:00:00</small>
+                                        <div class="noti-contenido d-flex align-items-center mt-2">
+                                            <span class="img-xs rounded-circle text-white acronimo"
+                                                style="background-color:#7367F0;">
+                                                JB
                                             </span>
+
+                                            <div class="mx-2">
+                                                <p class="fw-bold mb-1 titulo">Justificación de derivación.
+                                                </p>
+                                                <small class="text-muted mb-0 descripcion">Jair Buitron C.</small>
+                                            </div>
                                         </div>
-                                    </div>
-                                </li>
-                            </ul>
+                                    </div> --}}
+                                </div>
+                            </div>
                         </div>
                         <script src="{{ secure_asset('front/js/Notificaciones.js') }}"></script>
-                    </div> --}}
-                    <div>
-                        <button class="sidebar-close__navbar hover-layout ms-2" type="button"
+                    </div>
+                    <div class="ms-1">
+                        <button class="sidebar-close__navbar hover-layout" type="button"
                             aria-label="Cerrar barra lateral">
-                            <i class="fas fa-bars" style="color: #8f8f8f;"></i>
+                            <i class="fas fa-bars"></i>
                         </button>
                     </div>
                 </div>

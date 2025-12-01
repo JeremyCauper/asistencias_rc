@@ -48,8 +48,6 @@ class MisAsistenciaController extends Controller
             $user_id = session('user_id');
             $fechaIni = date("Y-m-01", strtotime($fecha));
             $fechaFin = date("Y-m-t", strtotime($fecha));
-            // $fechaIni = date("Y-m-d");
-            // $fechaFin = date("Y-m-d");
 
             $descuentos = DB::table('descuentos_asistencia')
                 ->where('user_id', $user_id)
@@ -64,7 +62,6 @@ class MisAsistenciaController extends Controller
                 ->keyBy('fecha');
 
             $tipoAsistencias = JsonDB::table('tipo_asistencia')->whereIn('id', [1, 4, 7])->get()->keyBy('id');
-            $tipoModalidades = JsonDB::table('tipo_modalidad')->whereIn('id', [2])->get()->keyBy('id');
 
             $listado = [];
             $asistencias = DB::table('asistencias')
@@ -72,34 +69,22 @@ class MisAsistenciaController extends Controller
                 ->whereBetween('fecha', [$fechaIni, $fechaFin])
                 ->get()->toArray();
 
-            $limitePuntual = strtotime(date("Y-m-d " . $this->horaLimitePuntual));
-            $limiteDerivado = strtotime(date("Y-m-d " . $this->horaLimiteDerivado));
-            $horaActual = time();
 
             foreach ($asistencias as $a) {
-                $diaSemana = strtolower(date('l', strtotime($a->fecha)));
                 $descuento = $descuentos->get($a->fecha) ?? null;
                 $justificacion = $justificaciones->get($a->fecha) ?? null;
                 $notificacion = false;
-                $campoDia = [
-                    'monday' => 'Lunes',
-                    'tuesday' => 'Martes',
-                    'wednesday' => 'Miercoles',
-                    'thursday' => 'Jueves',
-                    'friday' => 'Viernes',
-                    'saturday' => 'Sabado',
-                    'sunday' => 'Domingo',
-                ][$diaSemana] ?? null;
+                $campoDia = $this->getDay($a->fecha);
                 $tipo_asistencia = $a?->tipo_asistencia ?? 0;
                 $tipo_modalidad = $a?->tipo_modalidad;
                 $fechaActual = date('Y-m-d') == $a->fecha;
 
                 // Si aún no tiene registro pero debería asistir
-                if (!$a->hora && in_array($tipo_modalidad, [1, 2]) && $tipo_asistencia == 1 && $horaActual < $limitePuntual && $fechaActual) {
+                if ((!$a->hora || $a->hora) && in_array($tipo_modalidad, [1, 2]) && $tipo_asistencia == 1 && $this->horaActual < $this->limitePuntual && $fechaActual) {
                     $tipo_asistencia = 0;
                 }
 
-                if ($justificacion && in_array($justificacion->estatus, [0, 10]) && $horaActual < $limiteDerivado && $fechaActual) {
+                if ($justificacion && in_array($justificacion->estatus, [0, 10]) && $this->horaActual < $this->limiteDerivado && $fechaActual) {
                     $tipo_asistencia = 7;
                 }
 
@@ -107,7 +92,7 @@ class MisAsistenciaController extends Controller
                 $acciones = [];
 
                 // Si es un tipo de asistencia que puede ser justificado, no tiene justificación aún y es el día actual
-                if ($justificacion && $justificacion?->estatus == 10 && $horaActual < $limiteDerivado && $fechaActual) {
+                if ($justificacion && $justificacion?->estatus == 10 && $this->horaActual < $this->limiteDerivado && $fechaActual) {
                     $acciones[] = [
                         'funcion' => "justificarDerivado({$a->id})",
                         'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencias->get(7)->color . ';"></i>Justificar Derivado'
@@ -117,9 +102,10 @@ class MisAsistenciaController extends Controller
 
                 // Si es un tipo de asistencia que puede ser justificado, no tiene justificación aún y es el día actual
                 if (
+                    in_array($tipo_asistencia, [1, 4]) &&
                     (
-                        !$justificacion && in_array($tipo_asistencia, [1, 4]) && $horaActual > $limitePuntual ||
-                        $justificacion && $justificacion?->estatus == 10 && $horaActual > $limiteDerivado
+                        !$justificacion && in_array($tipo_asistencia, [1, 4]) && $this->horaActual > $this->limitePuntual ||
+                        $justificacion && $justificacion?->estatus == 10 && $this->horaActual > $this->limiteDerivado
                     ) &&
                     $fechaActual
                 ) {
@@ -139,7 +125,7 @@ class MisAsistenciaController extends Controller
                     ][$justificacion->estatus];
 
                     $acciones[] = [
-                        'funcion' => "showJustificacion({$a->id})",
+                        'funcion' => "verJustificacion({$a->id})",
                         'texto' => '<i class="fas fa-clock me-2 text-' . $tJustificacion['color'] . '"></i> Justificación ' . $tJustificacion['text']
                     ];
                 }

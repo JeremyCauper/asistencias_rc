@@ -59,8 +59,6 @@ $(document).ready(function () {
             const tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
                 || { descripcion: 'Pendiente', color: '#9fa6b2' };
 
-            console.log(tasistencia);
-
             const estado = ESTADOS_JUSTIFICACION[just.estatus || 0];
             const contenidoHTML = base64ToUtf8(just.contenido_html);
 
@@ -74,6 +72,7 @@ $(document).ready(function () {
             });
             setMediaUrls('#modalJustificacion [aria-item="contenido_html"]', archivos);
 
+            window.currentAsistenciaId = id;
             window.currentJustificacionId = just.id;
             window.currentJustificacionStatus = just.estatus;
         } catch (error) {
@@ -127,15 +126,16 @@ $(document).ready(function () {
 
             boxAlert.loading();
             const archivos_data = Object.keys(quillRespJustificacion.mediaMap || {});
-            const id = window.currentJustificacionId;
-            const res = await fetch(__url + '/justificacion/responder-justificacion', {
+            const res = await fetch(__url + '/justificacion/responder-justificacion/admin', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": __token
                 },
                 body: JSON.stringify({
-                    id_justificacion: id,
+                    id_justificacion: window.currentJustificacionId,
+                    id_asistencia: window.currentAsistenciaId,
+                    id_notificacion: window.currentNotificacionId,
                     estatus,
                     mensaje,
                     archivos: archivos_data
@@ -157,6 +157,7 @@ $(document).ready(function () {
             setMediaUrls('#modalJustificacion [aria-item="contenido_html"]', resp.archivos);
 
             boxAlert.box({ h: data.message });
+            window.noti.cargar();
             $('#responderJustificacion').slideUp();
             updateTable();
         } catch (err) {
@@ -165,7 +166,7 @@ $(document).ready(function () {
         }
     };
 
-    window.justificarAsistencia = async (user_id, fecha, hora, tipo_asistencia) => {
+    window.justificarAsistencia = async (id, user_id, fecha, hora, tipo_asistencia) => {
         try {
             $('#modalJustificar').modal('show');
             fMananger.formModalLoding('modalJustificar', 'show');
@@ -183,6 +184,7 @@ $(document).ready(function () {
             window.user_id = user_id;
             window.fecha = fecha;
             window.tipo_asistencia = tipo_asistencia;
+            window.currentAsistenciaId = id;
             fMananger.formModalLoding('modalJustificar', 'hide');
         } catch (e) {
             console.log(e);
@@ -215,6 +217,7 @@ $(document).ready(function () {
 
         try {
             const body = JSON.stringify({
+                id_asistencia: window.currentAsistenciaId,
                 user_id: window.user_id,
                 fecha: window.fecha,
                 tipo_asistencia: window.tipo_asistencia,
