@@ -59,6 +59,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/personal/{id}', [SyncPersonalController::class, 'update']);
     Route::post('/personal/cambiarEstatus', [SyncPersonalController::class, 'cambiarEstatus']);
     Route::delete('/personal/{id}', [SyncPersonalController::class, 'marcarEliminar']);
+    Route::get('/personal/cargar-vacaciones/{id}', [SyncPersonalController::class, 'cargarVacaciones']);
+    Route::post('/personal/crear-vacaciones', [SyncPersonalController::class, 'crearVacaciones']);
 
     Route::controller(AsistenciaController::class)
         ->prefix('asistencias-diarias')

@@ -116,10 +116,14 @@ $(document).ready(function () {
             }
 
             const estado = ESTADOS_JUSTIFICACION[estatus || 0];
-            const contenidoHTMLResp = quillRespJustificacion.html();
+            let contenidoHTMLResp = quillRespJustificacion.html();
 
             if (quillRespJustificacion.isEmpty() && estatus === 2) {
                 return boxAlert.box({ i: 'warning', h: 'Escribe una respuesta antes de enviar.' });
+            }
+
+            if (quillRespJustificacion.isEmpty() && estatus === 1) {
+                contenidoHTMLResp = `<p>✅ La justificación ha sido <b>aprobada</b>.</p>`;
             }
 
             const mensaje = utf8ToBase64(contenidoHTMLResp);

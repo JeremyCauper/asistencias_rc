@@ -73,5 +73,15 @@
         "eliminado": 0,
         "updated_at": "",
         "created_at": "2025-11-03 14:44:43"
+    },
+    {
+        "id": 8,
+        "descripcion": "Vacaciones",
+        "color": "#00b6a9",
+        "estatus": 1,
+        "selected": 0,
+        "eliminado": 0,
+        "updated_at": "2025-12-01 16:58:05",
+        "created_at": "2025-12-01 11:13:50"
     }
 ]

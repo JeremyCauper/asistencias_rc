@@ -63,6 +63,7 @@ $(document).ready(function () {
         $('#tpjueves1').click();
         $('#tpviernes1').click();
         $('#tpsabado1').click();
+        limpiarCalendario();
     });
 
     // 🧠 Evento: cuando el campo DNI cambia o se completa con 8 dígitos
@@ -101,6 +102,92 @@ $(document).ready(function () {
             $(`#tpsabado${p.trabajo_personal?.sabado ?? 1}`).click();
             fMananger.formModalLoding('modalPersonal', 'hide');
         });
+    });
+
+    $(document).on('click', '.btnVacaciones', async function () {
+        try {
+            setTimeout(() => {
+                calendario.updateSize();
+            }, 300);
+            let id = $(this).data('id');
+            $('#modalVacaciones').modal('show');
+            fMananger.formModalLoding('modalVacaciones', 'show');
+
+            const res = await $.getJSON(`${__url}/personal/cargar-vacaciones/${id}`);
+            fMananger.formModalLoding('modalVacaciones', 'hide');
+
+            if (!res?.data) {
+                return boxAlert.box({
+                    i: 'error',
+                    t: 'No se pudo obtener la información',
+                    h: res.message || 'No se encontraron datos de la asistencia seleccionada.'
+                });
+            }
+
+            const data = res.data;
+            window.currentAsistenciaUserId = id; // Guardar el ID del usuario actual
+            window.currentFechasVacaciones = data; // Guardar las fechas de vacaciones actuales
+            cargarFechas(data);
+        } catch (error) {
+            fMananger.formModalLoding('modalVacaciones', 'hide');
+            console.error(error);
+            boxAlert.box({
+                i: 'error',
+                t: 'Error en la solicitud',
+                h: 'No se pudo recuperar la información del servidor.'
+            });
+        }
+    });
+
+    $("#btnVerDatos").on("click", async function () {
+        try {
+            let fechas = extractDatesFromEvents();
+            if (fechas.fechasNuevas.length === 0) {
+                return boxAlert.box({
+                    i: 'info',
+                    t: 'Sin cambios',
+                    h: 'No se han realizado modificaciones en las fechas de vacaciones.'
+                });
+            }
+
+            if (!await boxAlert.confirm({
+                t: '¿Estas seguro de guardar los cambios?',
+                h: `Se van a agregar <strong>${fechas.fechasNuevas.length}</strong> y eliminar <strong>${fechas.fechasEliminadas.length}</strong> fechas.`
+            })) return;
+
+            fMananger.formModalLoding('modalVacaciones', 'show');
+            const response = await fetch(`${__url}/personal/crear-vacaciones`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': __token,
+                },
+                body: JSON.stringify({
+                    user_id: window.currentAsistenciaUserId,
+                    eliminadas: fechas.fechasEliminadas,
+                    nuevas: fechas.fechasNuevas
+                }),
+            });
+
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                const mensaje = data.message || 'No se pudo completar la operación.';
+                return boxAlert.box({ i: 'error', t: 'Algo salió mal...', h: mensaje });
+            }
+
+            window.currentFechasVacaciones = getEvents(); // Actualizar las fechas actuales
+            boxAlert.box({ h: data.message });
+        } catch (error) {
+            console.error('Error en la solicitud:', error);
+
+            boxAlert.box({
+                i: 'error',
+                t: 'Error en la conexión',
+                h: 'Ocurrió un problema al procesar la solicitud. Verifica tu conexión e intenta nuevamente.'
+            });
+        } finally {
+            fMananger.formModalLoding('modalVacaciones', 'hide');
+        }
     });
 
     // 🗑️ Eliminar

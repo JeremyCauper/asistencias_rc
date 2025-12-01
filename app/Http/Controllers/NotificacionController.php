@@ -13,12 +13,13 @@ class NotificacionController extends Controller
     {
         $user = Auth::user();
         $userId = $user->id;
+        $isTecnico = $user->rol_system == 1;
 
         // Personal
         $personalQuery = DB::table('personal')->select('user_id', 'dni', 'nombre', 'apellido');
         $whereAsistencia = ['leido' => 0];
 
-        if ($user->rol_system == 1) {
+        if ($isTecnico) {
             $personal = $personalQuery->where('user_id', $userId)->get()->keyBy('user_id');
             $whereAsistencia['user_id'] = $userId;
             $whereAsistencia['is_admin'] = 0;
@@ -27,7 +28,6 @@ class NotificacionController extends Controller
                 $personalQuery = $personalQuery->where('area_id', $user->area_id);
             }
             $personal = $personalQuery->get()->keyBy('user_id');
-            $whereAsistencia['is_admin'] = 1;
         }
 
         $notificaciones = DB::table('notificaciones')
@@ -44,11 +44,15 @@ class NotificacionController extends Controller
                 continue; // por seguridad si no existiera user en tabla personal
             }
 
-            $limiteShow = match($noti->limite_show) {
+            if (!$isTecnico && $userId != $noti->user_id && $noti->is_admin == 0) {
+                continue;
+            }
+
+            $limiteShow = match ($noti->limite_show) {
                 'derivado' => $this->limiteDerivado,
                 default => null
             };
-            
+
             if ($limiteShow && $this->horaActual > $limiteShow) {
                 continue;
             }
