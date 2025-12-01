@@ -219,17 +219,7 @@ class SyncPersonalController extends Controller
             );
 
             $fecha = date('Y-m-d');
-            $diaSemana = strtolower(date('l', strtotime($fecha)));
-
-            $campoDia = [
-                'monday' => 'tplunes',
-                'tuesday' => 'tpmartes',
-                'wednesday' => 'tpmiercoles',
-                'thursday' => 'tpjueves',
-                'friday' => 'tpviernes',
-                'saturday' => 'tpsabado',
-                'sunday' => null,
-            ][$diaSemana] ?? null;
+            $campoDia = $this->getDay($fecha);
 
             $asistencia = DB::table('asistencias')->where(['user_id' => $id, 'fecha' => $fecha])->first();
             if ($asistencia && !$asistencia->hora) {

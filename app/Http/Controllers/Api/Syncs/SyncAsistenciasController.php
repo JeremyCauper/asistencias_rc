@@ -16,18 +16,8 @@ class SyncAsistenciasController extends Controller
     {
         try {
             $fecha = $request->query('fecha', date('Y-m-d'));
-            $diaSemana = strtolower(date('l', strtotime($fecha))); // monday, tuesday, ...
 
-            $mapDias = [
-                'monday' => 'lunes',
-                'tuesday' => 'martes',
-                'wednesday' => 'miercoles',
-                'thursday' => 'jueves',
-                'friday' => 'viernes',
-                'saturday' => 'sabado',
-            ];
-
-            $campoDia = $mapDias[$diaSemana] ?? null;
+            $campoDia = $this->getDay($fecha);
             $insertados = 0;
             $modalidad_trabajo = null;
 
@@ -81,7 +71,7 @@ class SyncAsistenciasController extends Controller
         try {
             $asistencias = $request->input('asistencias', []);
             $sincronizadas = [];
-            $limitePuntual = strtotime("08:30:59");
+            $limiteHoraPuntual = strtotime($this->horaLimitePuntual);
 
             if (!empty($asistencias)) {
                 DB::beginTransaction();
@@ -94,7 +84,7 @@ class SyncAsistenciasController extends Controller
                     $horaMarcada = strtotime($hora);
                     $tipo_asistencia = 4;
                     $derivado = false;
-                    if ($horaMarcada <= $limitePuntual)
+                    if ($horaMarcada <= $limiteHoraPuntual)
                         $tipo_asistencia = 2;
 
                     $asistencia = DB::table('asistencias')->where(['user_id' => $userId, 'fecha' => $fecha])->first();

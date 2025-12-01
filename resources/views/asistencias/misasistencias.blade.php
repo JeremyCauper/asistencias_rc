@@ -323,9 +323,6 @@
                         <span aria-item="estado">...</span>
                     </div>
 
-                    <!-- Datos ocultos -->
-                    <input type="hidden" id="id_justificacion" name="id_justificacion">
-
                     <!-- Asunto -->
                     <div class="mb-3">
                         <label for="asunto" class="form-label requested">Asunto</label>
