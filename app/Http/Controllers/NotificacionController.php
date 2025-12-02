@@ -19,12 +19,12 @@ class NotificacionController extends Controller
         $personalQuery = DB::table('personal')->select('user_id', 'dni', 'nombre', 'apellido');
         $whereAsistencia = ['leido' => 0];
 
-        if ($isTecnico) {
+        if ($isTecnico && $user->sistema == 0) {
             $personal = $personalQuery->where('user_id', $userId)->get()->keyBy('user_id');
             $whereAsistencia['user_id'] = $userId;
             $whereAsistencia['is_admin'] = 0;
         } else {
-            if (!in_array($user->rol_system, [2, 7])) {
+            if (!in_array($user->rol_system, [2, 7]) && $user->sistema == 0) {
                 $personalQuery = $personalQuery->where('area_id', $user->area_id);
             }
             $personal = $personalQuery->get()->keyBy('user_id');
@@ -48,12 +48,13 @@ class NotificacionController extends Controller
                 continue;
             }
 
+            $fechaArry = explode(' ', $noti->created_at);
             $limiteShow = match ($noti->limite_show) {
-                'derivado' => $this->limiteDerivado,
+                'derivado' => strtotime($fechaArry[0] . ' ' . $this->horaLimiteDerivado),
                 default => null
             };
 
-            if ($limiteShow && $this->horaActual > $limiteShow) {
+            if ($this->horaActual > $limiteShow) {
                 continue;
             }
 

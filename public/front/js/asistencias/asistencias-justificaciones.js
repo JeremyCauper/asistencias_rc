@@ -75,6 +75,7 @@ $(document).ready(function () {
             window.currentAsistenciaId = id;
             window.currentJustificacionId = just.id;
             window.currentJustificacionStatus = just.estatus;
+            window.currentNotificacionId = noti.extractId('verJustificacion');
         } catch (error) {
             fMananger.formModalLoding('modalJustificacion', 'hide');
             console.error(error);

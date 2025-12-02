@@ -80,12 +80,14 @@ class MisAsistenciaController extends Controller
                 $fechaActual = date('Y-m-d') == $a->fecha;
 
                 // Si aún no tiene registro pero debería asistir
-                if ((!$a->hora || $a->hora) && in_array($tipo_modalidad, [1, 2]) && $tipo_asistencia == 1 && $this->horaActual < $this->limitePuntual && $fechaActual) {
+                if (
+                    (
+                        (!$a->hora || $a->hora) && in_array($tipo_modalidad, [1, 2]) && $tipo_asistencia == 1 && $this->horaActual < $this->limitePuntual ||
+                        $justificacion && in_array($justificacion->estatus, [0, 10])
+                    ) &&
+                    $fechaActual
+                ) {
                     $tipo_asistencia = 0;
-                }
-
-                if ($justificacion && in_array($justificacion->estatus, [0, 10]) && $this->horaActual < $this->limiteDerivado && $fechaActual) {
-                    $tipo_asistencia = 7;
                 }
 
                 // Acciones dinámicas
@@ -95,16 +97,28 @@ class MisAsistenciaController extends Controller
                 if ($justificacion && $justificacion?->estatus == 10 && $this->horaActual < $this->limiteDerivado && $fechaActual) {
                     $acciones[] = [
                         'funcion' => "justificarDerivado({$a->id})",
-                        'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencias->get(7)->color . ';"></i>Justificar Derivado'
+                        'texto' => '<i class="fas fa-comments me-2" style="color: ' . $tipoAsistencias->get(7)->color . ';"></i>Justificar Derivado'
                     ];
                     $notificacion = $tipo_asistencia == 7; // notificar solo si es tipo 7 (derivado)
                 }
 
                 // Si es un tipo de asistencia que puede ser justificado, no tiene justificación aún y es el día actual
                 if (
+                    !$justificacion &&
+                    in_array($tipo_asistencia, [0]) &&
+                    $tipo_modalidad == 2 &&
+                    $fechaActual
+                ) {
+                    $acciones[] = [
+                        'funcion' => "justificarAsistencia({$a->id})",
+                        'texto' => '<i class="fas fa-comment-dots me-2 text-success"></i>Justificar Remoto'
+                    ];
+                }
+
+                if (
                     in_array($tipo_asistencia, [1, 4]) &&
                     (
-                        !$justificacion && in_array($tipo_asistencia, [1, 4]) && $this->horaActual > $this->limitePuntual ||
+                        !$justificacion && $this->horaActual > $this->limitePuntual ||
                         $justificacion && $justificacion?->estatus == 10 && $this->horaActual > $this->limiteDerivado
                     ) &&
                     $fechaActual
@@ -112,7 +126,7 @@ class MisAsistenciaController extends Controller
                     $tipoAsistencia = $tipoAsistencias->get($a->tipo_asistencia);
                     $acciones[] = [
                         'funcion' => "justificarAsistencia({$a->id})",
-                        'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencia->color . ';"></i>Justificar ' . $tipoAsistencia->descripcion
+                        'texto' => '<i class="fas fa-comment-dots me-2" style="color: ' . $tipoAsistencia->color . ';"></i>Justificar ' . $tipoAsistencia->descripcion
                     ];
                 }
 
@@ -126,7 +140,7 @@ class MisAsistenciaController extends Controller
 
                     $acciones[] = [
                         'funcion' => "verJustificacion({$a->id})",
-                        'texto' => '<i class="fas fa-clock me-2 text-' . $tJustificacion['color'] . '"></i> Justificación ' . $tJustificacion['text']
+                        'texto' => '<i class="fas fa-comment-dots me-2 text-' . $tJustificacion['color'] . '"></i> Justificación ' . $tJustificacion['text']
                     ];
                 }
 

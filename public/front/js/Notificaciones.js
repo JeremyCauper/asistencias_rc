@@ -6,6 +6,7 @@ class Notificaciones {
         this.container = document.querySelector('#contenedor-notificaciones');
         this.btnReload = document.querySelector('[noti-btn="reload"]');
         this.storageKey = 'notificacion_accion_pendiente';
+        this.storageNotificacion = 'notificacion_storage';
 
         this.TITULOS = {
             1: 'Derivación pendiente',
@@ -30,6 +31,11 @@ class Notificaciones {
             1: (payload) => justificarDerivado(payload),
             2: (payload) => verJustificacion(payload),
         };
+
+        this.STR_ACCIONES = {
+            1: 'justificarDerivado',
+            2: 'verJustificacion',
+        };
     }
 
     async init() {
@@ -47,13 +53,27 @@ class Notificaciones {
 
     async cargar() {
         let lista = [];
-        try {
-            const res = await fetch(this.url_base + this.endpointListar);
-            if (!res.ok) throw new Error('Error al listar notificaciones'); // console.error('Error al listar notificaciones');
-            lista = await res.json();
-        } catch (error) {
-            console.error(error);
+        let intentos = 0;
+        const maxIntentos = 3;
+
+        while (intentos < maxIntentos) {
+            try {
+                const res = await fetch(this.url_base + this.endpointListar);
+                if (!res.ok) throw new Error('Error al listar notificaciones');
+
+                lista = await res.json();
+                break; // éxito, salimos del bucle
+            } catch (error) {
+                intentos++;
+                console.error(`Intento ${intentos} falló:`, error);
+
+                // Si ya llegó al límite de intentos, mostramos la alerta
+                if (intentos === maxIntentos) {
+                    alert('No se puede extraer la información porque hubo un error.');
+                }
+            }
         }
+
         this.render(lista || []);
     }
 
@@ -65,6 +85,7 @@ class Notificaciones {
         badgeNotification.innerHTML = lista.length || '';
 
         if (lista.length) {
+            let notificaionesPendientes = [];
             lista.forEach(n => {
                 const titulo = this.TITULOS[n.tipo_notificacion] ?? 'Notificación';
                 const sigla = (n.is_admin == 0) ? '<i class="fas fa-user-tie"></i>' : n.sigla ?? '??';
@@ -91,7 +112,12 @@ class Notificaciones {
             `;
                 item.addEventListener('click', () => this.onClick(n));
                 containerBody.appendChild(item);
+
+                let accion = this.STR_ACCIONES[n.accion_id];
+                let payload = n.payload_accion;
+                notificaionesPendientes.push({ id: n.id, accion, payload });
             });
+            localStorage.setItem(this.storageNotificacion, JSON.stringify(notificaionesPendientes));
         } else {
             containerBody.innerHTML = `
             <div class="dropdown-text text-center text-muted py-3">
@@ -169,6 +195,13 @@ class Notificaciones {
         const res = await fetch(`${this.url_base}${this.endpointMarcar}/${id}`);
         if (!res.ok) throw new Error('Error marcar leido');
         return res.json();
+    }
+
+    extractId(funcion) {
+        const raw = localStorage.getItem(this.storageNotificacion);
+        if (!raw) return [];
+        let data = JSON.parse(raw) || [];
+        return data.find(n => n.accion === funcion)?.id || 0;
     }
 }
 

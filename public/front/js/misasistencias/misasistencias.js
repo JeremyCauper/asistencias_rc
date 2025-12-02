@@ -127,6 +127,7 @@ $(document).ready(function () {
 
             window.currentJustificacionId = just.id;
             window.currentAsistenciaId = id;
+            window.currentNotificacionId = noti.extractId('justificarDerivado')
             $('#asunto').val('Justificación de Asistencia Derivada');
             fMananger.formModalLoding('modalJustificarDerivado', 'hide');
         } catch (error) {
