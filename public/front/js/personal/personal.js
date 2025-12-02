@@ -142,7 +142,7 @@ $(document).ready(function () {
     $("#btnVerDatos").on("click", async function () {
         try {
             let fechas = extractDatesFromEvents();
-            if (fechas.fechasNuevas.length === 0) {
+            if (fechas.fechasNuevas.length === 0 && fechas.fechasEliminadas.length === 0) {
                 return boxAlert.box({
                     i: 'info',
                     t: 'Sin cambios',

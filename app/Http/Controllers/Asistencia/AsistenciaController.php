@@ -139,12 +139,14 @@ class AsistenciaController extends Controller
                     $asistencia_id = $asistencia?->id ?? null;
 
                     // Si aún no tiene registro pero debería asistir
-                    if ((!$hora || $hora) && in_array($tipo_modalidad, [1, 2]) && $tipo_asistencia == 1 && $this->horaActual < $this->limitePuntual && $fechaActual) {
+                    if (
+                        (
+                            (!$hora || $hora) && in_array($tipo_modalidad, [1, 2]) && $tipo_asistencia == 1 && $this->horaActual < $this->limitePuntual ||
+                            $justificacion && in_array($justificacion->estatus, [0, 10])
+                        ) &&
+                        $fechaActual
+                    ) {
                         $tipo_asistencia = 0;
-                    }
-
-                    if ($justificacion && in_array($justificacion->estatus, [0, 10]) && $this->horaActual < $this->limiteDerivado && $fechaActual) {
-                        $tipo_asistencia = 7;
                     }
 
                     // Acciones dinámicas
@@ -176,7 +178,7 @@ class AsistenciaController extends Controller
 
                         $acciones[] = [
                             'funcion' => "verJustificacion($asistencia_id)",
-                            'texto' => '<i class="fas fa-clock me-2 text-' . $tJustificacion['color'] . '"></i> Justificación ' . $tJustificacion['text']
+                            'texto' => '<i class="fas fa-comments me-2 text-' . $tJustificacion['color'] . '"></i> Justificación ' . $tJustificacion['text']
                         ];
                         $notificacion = $justificacion->estatus == 0;
                     }
@@ -185,8 +187,11 @@ class AsistenciaController extends Controller
                         $asistencia_id &&
                         in_array($tipo_asistencia, [1, 4]) &&
                         $mesActual &&
-                        ($isAdmin || $isJefatura || $isSystem) ||
-                        ($justificacion && $justificacion->estatus == 10 && $this->horaActual > $this->limiteDerivado)
+                        ($isAdmin || $isJefatura || $isSystem) &&
+                        (
+                            !$justificacion ||
+                            ($justificacion && $justificacion->estatus == 10 && $this->horaActual > $this->limiteDerivado)
+                        )
                     ) {
                         $tipoAsistencia = $tipoAsistencias->get($tipo_asistencia);
                         $acciones[] = [

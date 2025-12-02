@@ -6,7 +6,7 @@ let añosCargados = {}; // Registro de años ya cargados para evitar duplicados
 
 let elementoCalendario = document.getElementById('calendar');
 
-let fechaMinima = '2025-12-01';
+let fechaMinima = date('Y-m-d');
 
 calendario = new FullCalendar.Calendar(elementoCalendario, {
     initialView: 'dayGridMonth',
