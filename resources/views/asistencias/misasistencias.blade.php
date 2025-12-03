@@ -43,7 +43,7 @@
             },
             {
                 name: "estado-asistencias",
-                text: "ASISTENCIAS",
+                text: "PUNTUALES",
                 color: "success",
                 searchTable: 2,
                 chart: true,

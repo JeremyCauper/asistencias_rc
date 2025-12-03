@@ -66,7 +66,7 @@
             },
             {
                 name: "estado-asistencias",
-                text: "ASISTENCIAS",
+                text: "PUNTUALES",
                 color: "success",
                 searchTable: 2,
                 chart: true,
@@ -248,7 +248,7 @@
                         <select id="areas" name="areas" multiple="multiple" class="multiselect-select-all">
                             @foreach ($areas as $v)
                                 <option
-                                    {{ session('tipo_usuario') == 2 ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
+                                    {{ in_array(session('tipo_usuario'), [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
                                     value="{{ $v->id }}">
                                     {{ $v->descripcion }}
                                 </option>
@@ -658,7 +658,7 @@
                             <select id="tipoArea" name="tipoArea" multiple="multiple" class="multiselect-select-all">
                                 @foreach ($areas as $v)
                                     <option
-                                        {{ session('tipo_usuario') == 2 ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
+                                        {{ in_array(session('tipo_usuario'), [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
                                         value="{{ $v->id }}">
                                         {{ $v->descripcion }}
                                     </option>
