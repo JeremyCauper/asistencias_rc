@@ -12,7 +12,7 @@ class NotificacionController extends Controller
     public function listar()
     {
         $user = Auth::user();
-        $userId = $user->id;
+        $userId = $user->user_id;
         $isTecnico = $user->rol_system == 1;
 
         // Personal
