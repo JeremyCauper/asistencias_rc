@@ -79,7 +79,7 @@ class AsistenciaController extends Controller
                 ->where(['mes' => date('m', $strtoTime), 'dia' => date('d', $strtoTime)])
                 ->first();
 
-            if (!empty($tipoModalidad) && !empty($tipoPersonal)) {
+            if (!empty($tipoModalidad) && !empty($tipoPersonal) && !empty($tipoArea)) {
                 $asistencias = DB::table('asistencias')
                     ->where('fecha', $fecha)
                     ->get()

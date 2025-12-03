@@ -329,8 +329,8 @@ class SyncPersonalController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required|integer',
-                'nuevas' => 'required|array',
-                'nuevas.*' => 'required|date_format:Y-m-d',
+                'nuevas' => 'nullable|array',
+                'nuevas.*' => 'nullable|date_format:Y-m-d',
                 'eliminadas' => 'nullable|array',
                 'eliminadas.*' => 'nullable|date_format:Y-m-d',
             ]);

@@ -125,7 +125,7 @@ $(document).ready(function () {
             }
 
             const data = res.data;
-            window.currentAsistenciaUserId = id; // Guardar el ID del usuario actual
+            window.currentUserId = id; // Guardar el ID del usuario actual
             window.currentFechasVacaciones = data; // Guardar las fechas de vacaciones actuales
             cargarFechas(data);
         } catch (error) {
@@ -163,7 +163,7 @@ $(document).ready(function () {
                     'X-CSRF-TOKEN': __token,
                 },
                 body: JSON.stringify({
-                    user_id: window.currentAsistenciaUserId,
+                    user_id: window.currentUserId,
                     eliminadas: fechas.fechasEliminadas,
                     nuevas: fechas.fechasNuevas
                 }),
