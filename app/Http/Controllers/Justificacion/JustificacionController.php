@@ -22,7 +22,7 @@ class JustificacionController extends Controller
             $validator = Validator::make($request->all(), [
                 'id_asistencia' => 'required|integer',
                 'fecha' => 'required|date',
-                'hora' => 'nullable|date_format:H:i:s',
+                'entrada' => 'nullable|date_format:H:i:s',
                 'tipo_asistencia' => 'required|in:0,1,4',
                 'asunto' => 'required|string|max:255',
                 'contenido' => 'required|string',
@@ -91,16 +91,16 @@ class JustificacionController extends Controller
 
             // Procesar asistencia solo cuando corresponde
             if ($estatus == 1) {
-                $hora = $request->hora ?? null;
+                $entrada = $request->entrada ?? null;
                 $tipoAsistencia = match (true) {
-                    !$hora => 3,  // sin hora -> asistencia normal/otro estado
-                    strtotime(date("Y-m-d " . $hora)) > $this->limitePuntual => 4, // tiene hora y es tarde
-                    default => 2  // tiene hora y es puntual
+                    !$entrada => 3,  // sin entrada -> asistencia normal/otro estado
+                    strtotime(date("Y-m-d " . $entrada)) > $this->limitePuntual => 4, // tiene entrada y es tarde
+                    default => 2  // tiene entrada y es puntual
                 };
 
                 DB::table('asistencias')->where('id', $id_asistencia)->update([
                     'tipo_asistencia' => $tipoAsistencia,
-                    'hora' => $hora
+                    'entrada' => $entrada
                 ]);
             }
 
@@ -229,7 +229,7 @@ class JustificacionController extends Controller
                 'id_justificacion' => 'required|integer',
                 'id_asistencia' => 'required|integer',
                 'id_notificacion' => 'required|integer',
-                'hora' => 'nullable|date_format:H:i:s',
+                'entrada' => 'nullable|date_format:H:i:s',
                 'asunto' => 'required|string|max:255',
                 'mensaje' => 'required|string',
                 'archivos' => 'nullable'
@@ -284,7 +284,7 @@ class JustificacionController extends Controller
 
             $actualizarAsistencia = [];
             if ($estatusOriginal == 10)
-                $actualizarAsistencia['hora'] = $request->hora ?? $now->format('H:i:s');
+                $actualizarAsistencia['entrada'] = $request->entrada ?? $now->format('H:i:s');
 
             if (in_array($estatus, [1, 2]) && $estatusOriginal != 10) {
                 $tipoAsistencia = match (true) {

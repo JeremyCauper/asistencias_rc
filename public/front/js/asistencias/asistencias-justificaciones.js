@@ -65,7 +65,7 @@ $(document).ready(function () {
             llenarInfoModal('modalJustificacion', {
                 estado: badgeHtml(estado.color, estado.descripcion),
                 personal: `${personal?.dni ?? ''} - ${personal?.nombre ?? ''} ${personal?.apellido ?? ''}`,
-                fecha: `${just.fecha} ${data.hora || ''}`,
+                fecha: `${just.fecha} ${data.entrada || ''}`,
                 tipo_asistencia: badgeHtml(tasistencia.color, tasistencia.descripcion, true),
                 asunto: just.asunto,
                 contenido_html: contenidoHTML
@@ -171,7 +171,7 @@ $(document).ready(function () {
         }
     };
 
-    window.justificarAsistencia = async (id, user_id, fecha, hora, tipo_asistencia) => {
+    window.justificarAsistencia = async (id, user_id, fecha, entrada, tipo_asistencia) => {
         try {
             $('#modalJustificar').modal('show');
             fMananger.formModalLoding('modalJustificar', 'show');
@@ -181,7 +181,7 @@ $(document).ready(function () {
             window.tasistencia = tasistencia;
 
             llenarInfoModal('modalJustificar', {
-                fecha: `${fecha} ${(hora || '')}`,
+                fecha: `${fecha} ${(entrada || '')}`,
                 estado: `<span class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>`,
             });
             window.tasistencia = tasistencia;

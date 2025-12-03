@@ -49,7 +49,6 @@ class SyncAsistenciasController extends Controller
                 DB::table('asistencias')->insert([
                     'user_id' => $per->user_id,
                     'fecha' => $fecha,
-                    'hora' => null,
                     'tipo_modalidad' => $tipoModalidad,
                     'tipo_asistencia' => $tipoAsistencia,
                     'sincronizado' => 1,
@@ -71,52 +70,99 @@ class SyncAsistenciasController extends Controller
         try {
             $asistencias = $request->input('asistencias', []);
             $sincronizadas = [];
-            $limiteHoraPuntual = strtotime($this->horaLimitePuntual);
+            $limitePuntual = strtotime("08:30:59");
 
             if (!empty($asistencias)) {
                 DB::beginTransaction();
+
                 foreach ($asistencias as $a) {
+
                     $userId = $a['deviceUserId'];
-                    $recordTime = $a['recordTime'];
-                    $strtoTime = strtotime($recordTime);
-                    $fecha = date('Y-m-d', $strtoTime);
-                    $hora = date('H:i:s', $strtoTime);
+                    $fecha = $a['fecha'];
+                    $hora = $a['hora'];
                     $horaMarcada = strtotime($hora);
-                    $tipo_asistencia = 4;
-                    $derivado = false;
-                    if ($horaMarcada <= $limiteHoraPuntual)
-                        $tipo_asistencia = 2;
+                    $puntual = $horaMarcada <= $limitePuntual;
+                    $descuento = false;
 
                     $asistencia = DB::table('asistencias')->where(['user_id' => $userId, 'fecha' => $fecha])->first();
-                    if ($asistencia)
-                        $derivado = $asistencia->tipo_asistencia == 7;
 
-                    if (!$derivado) {
-                        DB::table('asistencias')->updateOrInsert(
-                            ['user_id' => $userId, 'fecha' => $fecha],
-                            [
-                                'hora' => $hora,
-                                'tipo_modalidad' => 1,
-                                'tipo_asistencia' => $tipo_asistencia,
-                                'ip' => $a['ip'],
-                                'sincronizado' => 1,
-                            ]
-                        );
+                    $payloadBase = [
+                        'tipo_modalidad' => 1,
+                        'ip' => $a['ip'],
+                        'sincronizado' => 1,
+                    ];
+                    /*---------------------------------------------------------
+                    | CASO A: No existe asistencia previa (primera marca)
+                    ---------------------------------------------------------*/
+                    if (!$asistencia) {
+                        DB::table('asistencias')->insert(array_merge($payloadBase, [
+                            'user_id' => $userId,
+                            'fecha' => $fecha,
+                            'entrada' => $hora,
+                            'tipo_asistencia' => $puntual ? 2 : 4,
+                        ]));
 
-                        if ($tipo_asistencia == 4) {
-                            DB::table('descuentos_asistencia')->insert(['user_id' => $userId, 'fecha' => $fecha]);
+                        $descuento = !$puntual;
+                    } else {
+                        if ($asistencia->tipo_asistencia != 8) {
+                            /*---------------------------------------------------------
+                            | CASO B: Ya existe asistencia, evaluar salida/entrada
+                            ---------------------------------------------------------*/
+                            $entradaMarcada = strtotime($asistencia->entrada);
+                            $transcurrido = $horaMarcada - $entradaMarcada;
+
+                            // Solo registra salida/entrada si pasaron más de 10 minutos
+                            if ($transcurrido > 600) {
+                                $jornada = 'salida';
+                                // Si por alguna razón entrada está vacía, la registra
+                                if (empty($asistencia->entrada)) {
+                                    $jornada = 'entrada';
+
+                                    if ($asistencia->tipo_asistencia != 7) {
+                                        $tipo = $puntual ? 2 : 4;
+                                        $payloadBase['tipo_asistencia'] = $tipo;
+
+                                        $descuento = !$puntual;
+                                    }
+                                }
+
+                                DB::table('asistencias')->where('id', $asistencia->id)
+                                    ->update(array_merge($payloadBase, [
+                                        $jornada => $hora,
+                                    ]));
+                            }
                         }
                     }
+
+                    /*---------------------------------------------------------
+                    | Registrar descuento si corresponde
+                    ---------------------------------------------------------*/
+                    if ($descuento) {
+                        DB::table('descuentos_asistencia')->insert([
+                            'user_id' => $userId,
+                            'fecha' => $fecha,
+                        ]);
+                    }
+
+                    $a['sincronizado'] = 1;
                     $sincronizadas[] = $a;
                 }
+
                 DB::commit();
             }
 
-            return response()->json(['success' => true, 'sincronizadas' => $sincronizadas]);
+            return response()->json([
+                'success' => true,
+                'sincronizadas' => $sincronizadas
+            ]);
         } catch (Exception $e) {
+
             DB::rollBack();
 
-            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }

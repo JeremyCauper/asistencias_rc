@@ -93,7 +93,7 @@ async function modificarDescuento(id) {
         // Llenar campos visibles
         llenarInfoModal('modalDescuento', {
             personal: `${json.personal.dni} - ${json.personal.nombre} ${json.personal.apellido}`,
-            fecha: `${json.fecha} ${(json.hora || '')}`,
+            fecha: `${json.fecha} ${(json.entrada || '')}`,
             estado: `<span class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>`
         });
 

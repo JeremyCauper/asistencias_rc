@@ -300,7 +300,8 @@
                         <th>Tipo</th>
                         <th>Modalidad</th>
                         <th>Estado</th>
-                        <th>Hora</th>
+                        <th>Entrada</th>
+                        <th>Salida</th>
                         <th>Descuento</th>
                         <th>Acciones</th>
                     </tr>
@@ -409,7 +410,13 @@
                             }
                         },
                         {
-                            data: 'hora',
+                            data: 'entrada',
+                            render: function(data, type, row) {
+                                return data || '-';
+                            }
+                        },
+                        {
+                            data: 'salida',
                             render: function(data, type, row) {
                                 return data || '-';
                             }
@@ -433,7 +440,7 @@
                         }
                         $(row).addClass('text-center');
                         $(row).find('td:eq(0)').addClass('text-start');
-                        $(row).find('td:eq(7)').addClass(`td-acciones`);
+                        $(row).find('td:eq(8)').addClass(`td-acciones`);
                     },
                     order: [
                         [0, 'asc']

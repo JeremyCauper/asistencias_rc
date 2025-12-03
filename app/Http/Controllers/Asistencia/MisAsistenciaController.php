@@ -61,7 +61,7 @@ class MisAsistenciaController extends Controller
                 ->get()
                 ->keyBy('fecha');
 
-            $tipoAsistencias = JsonDB::table('tipo_asistencia')->whereIn('id', [1, 4, 7])->get()->keyBy('id');
+            $tipoAsistencias = JsonDB::table('tipo_asistencia')->select('id', 'descripcion', 'color')->get()->keyBy('id');
 
             $listado = [];
             $asistencias = DB::table('asistencias')
@@ -82,7 +82,7 @@ class MisAsistenciaController extends Controller
                 // Si aún no tiene registro pero debería asistir
                 if (
                     (
-                        (!$a->hora || $a->hora) && in_array($tipo_modalidad, [1, 2]) && $tipo_asistencia == 1 && $this->horaActual < $this->limitePuntual ||
+                        (!$a->entrada || $a->entrada) && in_array($tipo_modalidad, [1, 2]) && $tipo_asistencia == 1 && $this->horaActual < $this->limitePuntual ||
                         $justificacion && in_array($justificacion->estatus, [0, 10])
                     ) &&
                     $fechaActual
@@ -144,14 +144,20 @@ class MisAsistenciaController extends Controller
                     ];
                 }
 
+                $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object) ['color' => '#9fa6b2', 'descripcion' => 'Pendiente'];
+
                 $listado[] = [
                     'jornada' => $campoDia,
                     'fecha' => $a->fecha,
-                    'hora' => $a->hora,
+                    'entrada' => $a->entrada,
+                    'salida' => $a?->salida ?? null,
                     'tipo_modalidad' => $tipo_modalidad,
                     'tipo_asistencia' => $tipo_asistencia,
                     'descuento' => $descuento?->monto_descuento ?? null,
-                    'acciones' => $this->DropdownAcciones(['button' => $acciones], $notificacion)
+                    'acciones' => $this->DropdownAcciones([
+                        'tittle' => '<label class="badge" style="line-height: 1.5;background-color: ' . $badgeTitle->color . '">' . $badgeTitle->descripcion . '</label>',
+                        'button' => $acciones
+                    ], $notificacion)
                 ];
             }
 

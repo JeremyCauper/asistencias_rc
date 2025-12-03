@@ -110,7 +110,7 @@ class AsistenciaController extends Controller
                     ->whereIn('area_id', $tipoArea)
                     ->get()->toArray();
 
-                $tipoAsistencias = JsonDB::table('tipo_asistencia')->whereIn('id', [1, 4, 7])->get()->keyBy('id');
+                $tipoAsistencias = JsonDB::table('tipo_asistencia')->select('id', 'descripcion', 'color')->get()->keyBy('id');
 
                 $fechaActual = date('Y-m-d') == $fecha;
                 $mesActual = date('Y-m') == date('Y-m', $strtoTime);
@@ -134,14 +134,14 @@ class AsistenciaController extends Controller
                     $justificacion = $justificaciones->get($p->user_id) ?? null;
 
                     $notificacion = false;
-                    $hora = $asistencia?->hora ?? null;
+                    $entrada = $asistencia?->entrada ?? null;
                     $tipo_asistencia = $asistencia?->tipo_asistencia ?? 0;
                     $asistencia_id = $asistencia?->id ?? null;
 
                     // Si aún no tiene registro pero debería asistir
                     if (
                         (
-                            (!$hora || $hora) && in_array($tipo_modalidad, [1, 2]) && $tipo_asistencia == 1 && $this->horaActual < $this->limitePuntual ||
+                            (!$entrada || $entrada) && in_array($tipo_modalidad, [1, 2]) && $tipo_asistencia == 1 && $this->horaActual < $this->limitePuntual ||
                             $justificacion && in_array($justificacion->estatus, [0, 10])
                         ) &&
                         $fechaActual
@@ -195,23 +195,29 @@ class AsistenciaController extends Controller
                     ) {
                         $tipoAsistencia = $tipoAsistencias->get($tipo_asistencia);
                         $acciones[] = [
-                            'funcion' => "justificarAsistencia({$asistencia_id}, {$p->user_id}, '{$fecha}', '{$hora}', {$tipo_asistencia})",
+                            'funcion' => "justificarAsistencia({$asistencia_id}, {$p->user_id}, '{$fecha}', '{$entrada}', {$tipo_asistencia})",
                             'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencia->color . ';"></i>Justificar ' . $tipoAsistencia->descripcion
                         ];
                     }
+
+                    $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object)['color' => '#9fa6b2', 'descripcion' => 'Pendiente'];
 
                     $listado[] = [
                         'tipo_personal' => $p->rol_system,
                         'area' => $p->area_id,
                         'personal' => "{$p->apellido}, {$p->nombre}",
                         'fecha' => $fecha,
-                        'hora' => $hora,
+                        'entrada' => $entrada,
+                        'salida' => $asistencia?->salida ?? null,
                         'tipo_modalidad' => $tipo_modalidad,
                         'tipo_asistencia' => $tipo_asistencia,
                         'justificacion' => $justificacion?->estatus ?? null,
                         'notificacion' => $notificacion,
                         'descuento' => $descuento?->monto_descuento ?? null,
-                        'acciones' => $this->DropdownAcciones(['button' => $acciones], $notificacion)
+                        'acciones' => $this->DropdownAcciones([
+                            'tittle' => '<label class="badge" style="line-height: 1.5;background-color: ' . $badgeTitle->color . '">' . $badgeTitle->descripcion . '</label>',
+                            'button' => $acciones
+                        ], $notificacion)
                     ];
                 }
             }
@@ -269,7 +275,7 @@ class AsistenciaController extends Controller
             $fechaActual = date('Y-m-d') == $asistencia->fecha;
 
             if (
-                !$asistencia->hora &&
+                !$asistencia->entrada &&
                 in_array($asistencia->tipo_modalidad, [1, 2]) &&
                 $tipo_asistencia == 1 &&
                 $this->horaActual < $this->limitePuntual &&
@@ -287,7 +293,7 @@ class AsistenciaController extends Controller
                 'id' => $asistencia->id,
                 'user_id' => $asistencia->user_id,
                 'fecha' => $asistencia->fecha,
-                'hora' => $asistencia->hora,
+                'entrada' => $asistencia->entrada,
                 'tipo_modalidad' => $asistencia->tipo_modalidad,
                 'tipo_asistencia' => $tipo_asistencia,
                 'personal' => $personal,
