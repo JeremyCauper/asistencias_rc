@@ -174,7 +174,8 @@
                     <tr class="text-bg-primary text-center">
                         <th>Jornada</th>
                         <th>Fecha</th>
-                        <th>Hora</th>
+                        <th>Entrada</th>
+                        <th>Salida</th>
                         <th>Modalidad</th>
                         <th>Estado</th>
                         <th>Descuento</th>
@@ -220,13 +221,22 @@
                         }
                     },
                     columns: [{
-                            data: 'jornada'
+                            data: 'jornada', render: function(data, type, row) {
+                                let dia = (data || 'domingo');
+                                return dia.charAt(0).toUpperCase() + dia.slice(1);
+                            }
                         },
                         {
                             data: 'fecha'
                         },
                         {
-                            data: 'hora',
+                            data: 'entrada',
+                            render: function(data, type, row) {
+                                return data || '-';
+                            }
+                        },
+                        {
+                            data: 'salida',
                             render: function(data, type, row) {
                                 return data || '-';
                             }
@@ -261,7 +271,8 @@
                     ],
                     createdRow: function(row, data, dataIndex) {
                         $(row).addClass('text-center');
-                        $(row).find('td:eq(6)').addClass(`td-acciones`);
+                        $(row).find('td:eq(0)').addClass('text-start');
+                        $(row).find('td:eq(7)').addClass(`td-acciones`);
                     },
                     order: [
                         [1, 'desc']

@@ -226,7 +226,7 @@ class SyncPersonalController extends Controller
             $campoDia = $this->getDay($fecha);
 
             $asistencia = DB::table('asistencias')->where(['user_id' => $id, 'fecha' => $fecha])->first();
-            if ($asistencia && !$asistencia->hora) {
+            if ($asistencia && !$asistencia->entrada) {
                 DB::table('asistencias')->where(['user_id' => $id, 'fecha' => $fecha])->update([
                     'tipo_modalidad' => $request->$campoDia,
                     'tipo_asistencia' => $request->$campoDia == 4 ? 3 : 2,

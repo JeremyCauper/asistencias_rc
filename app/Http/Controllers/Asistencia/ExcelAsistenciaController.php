@@ -112,7 +112,7 @@ class ExcelAsistenciaController extends Controller
                     // Si la fecha es feriado (y no domingo), marcamos tipo_asistencia = 6 (feriado)
                     if ($feriado && !$asistenciaDia) {
                         $registro[$fecha] = [
-                            'hora' => null,
+                            'entrada' => null,
                             'tipo_modalidad' => 5,
                             'tipo_asistencia' => 6, // Feriado
                         ];
@@ -121,7 +121,7 @@ class ExcelAsistenciaController extends Controller
 
                     if (!$asistenciaDia) {
                         $registro[$fecha] = [
-                            'hora' => null,
+                            'entrada' => null,
                             'tipo_modalidad' => 1,
                             'tipo_asistencia' => 5, // Feriado
                         ];
@@ -134,11 +134,11 @@ class ExcelAsistenciaController extends Controller
                         $tipo_modalidad = $configUsuario->$campoDia ?? 5;
                     }
 
-                    $hora = null;
+                    $entrada = null;
                     $tipo_asistencia = 0; // No aplica por defecto
 
                     if ($asistenciaDia) {
-                        $hora = $asistenciaDia->hora;
+                        $entrada = $asistenciaDia->entrada;
                         $tipo_modalidad = $asistenciaDia->tipo_modalidad;
                         $tipo_asistencia = $asistenciaDia->tipo_asistencia;
                     } else {
@@ -148,8 +148,8 @@ class ExcelAsistenciaController extends Controller
                         }
                     }
 
-                    // Determinar tardanza si hora > 08:30:59 y asistencia válida
-                    if ($hora && strtotime($hora) > $horaLimiteTardanza && $tipo_asistencia == 2) {
+                    // Determinar tardanza si entrada > 08:30:59 y asistencia válida
+                    if ($entrada && strtotime($entrada) > $horaLimiteTardanza && $tipo_asistencia == 2) {
                         $tipo_asistencia = 4; // Tardanza
                     }
 
@@ -168,7 +168,7 @@ class ExcelAsistenciaController extends Controller
                         $totalDescuento += floatval($descuentoDia->monto_descuento);
 
                     $registro[$fecha] = [
-                        'hora' => $hora,
+                        'entrada' => $entrada,
                         'tipo_modalidad' => $tipo_modalidad,
                         'tipo_asistencia' => $tipo_asistencia,
                     ];

@@ -245,7 +245,7 @@ async function exportar_Asistencias(tiempo) {
                     let estado = tipoAsistencia.find(s => s.id === p[e].tipo_asistencia);
                     if (estado) {
                         txtAsistencia = estado.descripcion;
-                        if (p[e].hora) txtAsistencia = `${estado.simbolo}\n${p[e].hora}`;
+                        if (p[e].entrada) txtAsistencia = `${estado.simbolo}\n${p[e].entrada}`;
                     }
                     rowData[e] = txtAsistencia;
                 }

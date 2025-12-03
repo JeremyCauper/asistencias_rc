@@ -121,7 +121,7 @@ $(document).ready(function () {
                 || { descripcion: 'Pendiente', color: '#9fa6b2' };
 
             llenarInfoModal('modalJustificarDerivado', {
-                fecha: `${data.fecha} ${(data.hora || '')}`,
+                fecha: `${data.fecha} ${(data.entrada || '')}`,
                 estado: `<span class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>`,
             });
 
@@ -245,7 +245,7 @@ $(document).ready(function () {
             window.tasistencia = tasistencia;
 
             llenarInfoModal('modalJustificar', {
-                fecha: `${data.fecha} ${(data.hora || '')}`,
+                fecha: `${data.fecha} ${(data.entrada || '')}`,
                 estado: `<span class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>`,
             });
             window.tasistencia = tasistencia;
@@ -304,7 +304,7 @@ $(document).ready(function () {
             const body = JSON.stringify({
                 id_asistencia: window.currentAsistenciaId,
                 fecha: window.fecha,
-                hora: hora_justificacion,
+                entrada: hora_justificacion,
                 tipo_asistencia: window.tipo_asistencia,
                 asunto: $('#asunto_justificar').val(),
                 contenido: mensaje,
@@ -379,7 +379,7 @@ $(document).ready(function () {
 
             llenarInfoModal('modalVerJustificacion', {
                 ver_estatus: `<span class="badge badge-${estado.color} ms-2" style="font-size: 0.75rem;">${estado.descripcion}</span>`,
-                ver_fecha_asistencia: `${data.fecha} ${data.hora || ''}`,
+                ver_fecha_asistencia: `${data.fecha} ${data.entrada || ''}`,
                 ver_tipo_asistencia: `<span class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>`,
                 ver_asunto: just.asunto,
                 ver_contenido_html: base64ToUtf8(just.contenido_html)
