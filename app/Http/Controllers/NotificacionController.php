@@ -24,11 +24,12 @@ class NotificacionController extends Controller
             $whereAsistencia['user_id'] = $userId;
             $whereAsistencia['is_admin'] = 0;
         } else {
-            if (!in_array($user->rol_system, [2, 7]) && $user->sistema == 0) {
+            if (!in_array($user->rol_system, [2, 7])) {
                 $personalQuery = $personalQuery->where('area_id', $user->area_id);
             }
             $personal = $personalQuery->get()->keyBy('user_id');
         }
+
 
         $notificaciones = DB::table('notificaciones')
             ->where($whereAsistencia)
@@ -36,6 +37,8 @@ class NotificacionController extends Controller
             ->limit(100)
             ->get();
 
+        // return response()->json($notificaciones);
+        
         // Armado de respuesta
         $result = [];
 
@@ -54,7 +57,7 @@ class NotificacionController extends Controller
                 default => null
             };
 
-            if ($this->horaActual > $limiteShow) {
+            if ($limiteShow != null && $this->horaActual > $limiteShow) {
                 continue;
             }
 
