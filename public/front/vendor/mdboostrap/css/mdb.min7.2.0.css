@@ -5667,7 +5667,7 @@ fieldset:disabled .btn {
 .badge {
     --mdb-badge-padding-x: 0.65em;
     --mdb-badge-padding-y: 0.35em;
-    --mdb-badge-font-size: 0.75em;
+    --mdb-badge-font-size: smaller;
     --mdb-badge-font-weight: 500;
     --mdb-badge-color: #fff;
     --mdb-badge-border-radius: .5rem;
