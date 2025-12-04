@@ -215,7 +215,7 @@ class AsistenciaController extends Controller
                         'notificacion' => $notificacion,
                         'descuento' => $descuento?->monto_descuento ?? null,
                         'acciones' => $this->DropdownAcciones([
-                            'tittle' => '<label class="badge" style="line-height: 1.5;background-color: ' . $badgeTitle->color . '">' . $badgeTitle->descripcion . '</label>',
+                            'tittle' => '<label class="badge" style="background-color: ' . $badgeTitle->color . '">' . $badgeTitle->descripcion . '</label>',
                             'button' => $acciones
                         ], $notificacion)
                     ];
