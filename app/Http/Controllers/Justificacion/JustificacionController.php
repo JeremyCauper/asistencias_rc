@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\In;
 
 class JustificacionController extends Controller
 {
@@ -108,7 +109,7 @@ class JustificacionController extends Controller
                 $this->procesarArchivosJustificacion($request->archivos, $id_asistencia);
             }
 
-            if (!$request->by_admin) {
+            if (!$request->by_admin && !in_array($tipo_asistencia, [2])) {
                 $configuraciones = match($tipo_asistencia) {
                     1 => [3, 2],
                     4 => [4, 3]
