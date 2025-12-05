@@ -2,18 +2,18 @@
 @section('title', 'Asistencias del personal')
 
 @section('cabecera')
-    <link href="{{ secure_asset('front/vendor/quill/quill.snow.css') }}" rel="stylesheet">
+    <link href="{{ secure_asset('front/vendor/quill/quill.snow.css') }}?v=1.0.0" rel="stylesheet">
 
-    <script type="text/javascript" src="{{ secure_asset('front/vendor/daterangepicker/moment.min.js') }}"></script>
-    <script type="text/javascript" src="{{ secure_asset('front/vendor/daterangepicker/daterangepicker.min.js') }}"></script>
-    <link rel="stylesheet" type="text/css" href="{{ secure_asset('front/vendor/daterangepicker/daterangepicker.css') }}">
+    <script type="text/javascript" src="{{ secure_asset('front/vendor/daterangepicker/moment.min.js') }}?v=1.0.0"></script>
+    <script type="text/javascript" src="{{ secure_asset('front/vendor/daterangepicker/daterangepicker.min.js') }}?v=1.0.0"></script>
+    <link rel="stylesheet" type="text/css" href="{{ secure_asset('front/vendor/daterangepicker/daterangepicker.css') }}?v=1.0.0">
 
-    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap_multiselect.js') }}"></script>
-    <script src="{{ secure_asset('front/vendor/multiselect/form_multiselect.js') }}"></script>
+    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap.bundle.min.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap_multiselect.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/vendor/multiselect/form_multiselect.js') }}?v=1.0.0"></script>
 
-    <script src="{{ secure_asset('front/vendor/echartjs/echarts.min.js') }}"></script>
-    <script src="{{ secure_asset('front/js/app/ChartMananger.js') }}"></script>
+    <script src="{{ secure_asset('front/vendor/echartjs/echarts.min.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/js/app/ChartMananger.js') }}?v=1.0.0"></script>
     <script>
         const tipoAsistencia = @json($tipoAsistencia);
         const tipoPersonal = @json($tipoPersonal);
@@ -698,18 +698,18 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ secure_asset('front/js/MediaViewer.js') }}"></script>
+    <script src="{{ secure_asset('front/js/app/MediaViewerControl.js') }}?v=1.0.0"></script>
     <!-- Librería Browser Image Compression -->
-    <script src="{{ secure_asset('front/vendor/compression/compressor.min.js') }}"></script>
+    <script src="{{ secure_asset('front/vendor/compression/compressor.min.js') }}?v=1.0.0"></script>
     <!-- Incluye ExcelJS desde CDN -->
-    <script src="{{ secure_asset('front/vendor/quill/quill.min.js') }}"></script>
+    <script src="{{ secure_asset('front/vendor/quill/quill.min.js') }}?v=1.0.0"></script>
 
-    <script src="{{ secure_asset('front/js/editorQuill.js') }}"></script>
-    <script src="{{ secure_asset('front/js/asistencias/asistencias.js') }}"></script>
+    <script src="{{ secure_asset('front/js/app/QuillControl.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/js/asistencias/asistencias.js') }}?v=1.0.0"></script>
     @if (!in_array(session('tipo_usuario'), [1, 5, 6]) || session('tipo_sistema'))
-        <script src="{{ secure_asset('front/vendor/exceljs/exceljs.min.js') }}"></script>
-        <script src="{{ secure_asset('front/vendor/exceljs/FileSaver.min.js') }}"></script>
-        <script src="{{ secure_asset('front/js/asistencias/export-excel-asistencias.js') }}"></script>
+        <script src="{{ secure_asset('front/vendor/exceljs/exceljs.min.js') }}?v=1.0.0"></script>
+        <script src="{{ secure_asset('front/vendor/exceljs/FileSaver.min.js') }}?v=1.0.0"></script>
+        <script src="{{ secure_asset('front/js/asistencias/export-excel-asistencias.js') }}?v=1.0.0"></script>
     @endif
-    <script src="{{ secure_asset('front/js/asistencias/asistencias-justificaciones.js') }}"></script>
+    <script src="{{ secure_asset('front/js/asistencias/asistencias-justificaciones.js') }}?v=1.0.0"></script>
 @endsection

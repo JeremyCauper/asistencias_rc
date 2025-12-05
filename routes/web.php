@@ -35,9 +35,12 @@ Route::get('/', function () {
     return redirect('/inicio');
 });
 
-Route::get('/inicio', [LoginController::class, 'view'])->name('login');
+Route::get('/inicio', [LoginController::class, 'view'])->name('login')->middleware('guest:web');
 Route::post('/iniciar', [LoginController::class, 'login']);
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/offline', function () {
+    return view('offline');
+});
 
 Route::middleware('auth')->group(function () {
     Route::post('/personal/actualizar-password', [LoginController::class, 'actualizarPassword']);

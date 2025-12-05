@@ -42,7 +42,7 @@ class EditorJustificacion {
                         image: () => this.handleFileUpload('image', 'image/*', 10),
                         video: () => this.handleFileUpload('video', 'video/*', 10),
                         pdf: () => this.handleFileUpload('pdf', 'application/pdf', 5),
-                        camera: () => this.handleCamera()
+                        camera: () => this.handleCamera(10)
                     }
                 }
             }
@@ -65,7 +65,7 @@ class EditorJustificacion {
                     p.removeAttribute('date-file');
                 }
             });
-            
+
             ($(this.selector)[0]).querySelectorAll('li[date-file]').forEach(p => {
                 const hijos = Array.from(p.childNodes).filter(n => n.nodeType !== 3 || n.textContent.trim() !== '');
                 if (hijos.length === 1 && hijos[0].nodeName === 'BR') {
@@ -196,7 +196,7 @@ class EditorJustificacion {
     /** ============================
      *  🔹 CAPTURA CON CÁMARA
      * ============================ */
-    handleCamera() {
+    handleCamera(maxMB) {
         if (!esCelular()) {
             return boxAlert.box({ i: "warning", h: "Acción disponible solo en dispositivos móviles." });
         }
@@ -204,7 +204,7 @@ class EditorJustificacion {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = "image/*";
-        input.capture = "camera"; // abre cámara (Android directo, iPhone por menú)
+        input.capture = "user"; // abre cámara (Android directo, iPhone por menú)
 
         const tiempoApertura = Date.now();  // Marca cuando abriste la cámara
 
@@ -218,11 +218,6 @@ class EditorJustificacion {
             const delta = ahora - file.lastModified;
             const deltaDesdeApertura = ahora - tiempoApertura;
 
-            // const fecha = new Date(file.lastModified);
-            // const horas = fecha.getHours();        // 0–23
-            // const minutos = fecha.getMinutes();    // 0–59
-            // const segundos = fecha.getSeconds();   // 0–59
-            // const pad = n => String(n).padStart(2, '0');
             let fechaStr = date('H:i:s', file.lastModified);
 
             this.fileMap.push({
@@ -231,12 +226,13 @@ class EditorJustificacion {
                 type: file.type,
                 lastModified: fechaStr
             });
-            /*
-                ✔ Condición real:
-                - Foto tomada hace menos de 15 segundos
-                - Y la selección ocurrió poco después de abrir la cámara
-            */
+            
             const desdeCamara = (delta < 15000) && (deltaDesdeApertura < 20000);
+
+            const limit = maxMB * 1024 * 1024;
+            if (file.size > limit) {
+                return boxAlert.box({ i: "warning", h: `El achivo debe tener un tamaño menor de ${maxMB}MB.` });
+            }
 
             if (!desdeCamara) {
                 boxAlert.box({
@@ -268,7 +264,7 @@ class EditorJustificacion {
 
             const limit = maxMB * 1024 * 1024;
             if (file.size > limit) {
-                return boxAlert.box({ i: "warning", h: `Máximo ${maxMB}MB para ${tipo}` });
+                return boxAlert.box({ i: "warning", h: `El achivo debe tener un tamaño menor de ${maxMB}MB.` });
             }
 
             this.uploadFile(file, tipo);
@@ -279,7 +275,7 @@ class EditorJustificacion {
 
     async convertToWebP(file) {
         const sizeMB = file.size / (1024 * 1024);
-        const quality = sizeMB > 3 ? 0.90 : 0.45;
+        const quality = sizeMB > 3 ? 0.90 : 0.55;
 
         boxAlert.loading(`Convertiendo imagen, ${sizeMB.toFixed(2)}MB... (puede tardar un poco)`);
 

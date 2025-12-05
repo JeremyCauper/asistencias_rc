@@ -73,12 +73,6 @@
     <!-- Home -->
     <link rel="stylesheet" href="{{ secure_asset('front/css/app.css') }}">
     <script>
-        const tipoSistema = {{ session('tipo_sistema') }};
-        const nomUsuario = '{{ session()->get('config')->nombre_perfil }}';
-        const txtAcceso = '{{ session()->get('config')->acceso }}';
-        const acronimo = '{{ session()->get('config')->sigla }}';
-        const acronimo_bg = '{{ session()->get('config')->siglaBg }}';
-        const tipoUsuario = {{ session('tipo_usuario') }};
         const __url = "{{ secure_url('') }}";
         const __asset = "{{ secure_asset('front/') }}";
         const __token = "{{ csrf_token() }}";;
@@ -294,7 +288,7 @@
     </script>
     <!-- MDB -->
     <script type="text/javascript" src="{{ secure_asset('front/vendor/mdboostrap/js/mdb.umd.min7.2.0.js') }}"></script>
-    <script src="{{ secure_asset('front/js/layout/template.js') }}"></script>
+    <script src="{{ secure_asset('front/layout/template.js') }}"></script>
     <script src="{{ secure_asset('front/js/layout/hoverable-collapse.js') }}"></script>
     <script src="{{ secure_asset('front/js/layout/off-canvas.js') }}"></script>
     <!-- <script src="{{ secure_asset('front/vendor/inputmask/jquery.inputmask.bundle.min.js') }}"></script> -->

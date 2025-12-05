@@ -26,8 +26,7 @@
                         <i class="fas fa-plus"></i>
                         Nuevo Menu
                     </button>
-                    <button class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init
-                        data-mdb-target="#modal_ordenm">
+                    <button class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#modal_ordenm">
                         <i class="fas fa-arrow-right-arrow-left" style="transform: rotate(90deg);"></i>
                         Ordenar Menu
                     </button>
@@ -60,34 +59,53 @@
                                 fixedHeader: true, // Para fijar el encabezado al hacer scroll vertical
                                 ajax: {
                                     url: `${__url}/mantenimiento-dev/menu/menu/listar`,
-                                    dataSrc: function (json) {
+                                    dataSrc: function(json) {
                                         $("#tb_orden_menu tbody").html('');
-                                        $.each(json?.data, function (i, e) {
+                                        $.each(json?.data, function(i, e) {
                                             $("#tb_orden_menu tbody").append($('<tr>', {
                                                 "tr-id": e.id,
                                                 "tr-orden": e.orden,
                                                 "draggable": "true"
-                                            }).html(`<td>${e.orden}</td><td><i class="${e.icono} me-2"></i> ${e.descripcion}</td>`));
+                                            }).html(
+                                                `<td>${e.orden}</td><td><i class="${e.icono} me-2"></i> ${e.descripcion}</td>`
+                                                ));
                                         });
                                         return json?.data;
                                     },
-                                    error: function (xhr, error, thrown) {
+                                    error: function(xhr, error, thrown) {
                                         boxAlert.table();
                                         console.log('Respuesta del servidor:', xhr);
                                     }
                                 },
-                                columns: [
-                                    { data: 'orden' },
-                                    { data: 'descripcion' },
-                                    { data: 'iconText' },
-                                    { data: 'ruta' },
-                                    { data: 'submenu' },
-                                    { data: 'created_at' },
-                                    { data: 'updated_at' },
-                                    { data: 'estado' },
-                                    { data: 'acciones' }
+                                columns: [{
+                                        data: 'orden'
+                                    },
+                                    {
+                                        data: 'descripcion'
+                                    },
+                                    {
+                                        data: 'iconText'
+                                    },
+                                    {
+                                        data: 'ruta'
+                                    },
+                                    {
+                                        data: 'submenu'
+                                    },
+                                    {
+                                        data: 'created_at'
+                                    },
+                                    {
+                                        data: 'updated_at'
+                                    },
+                                    {
+                                        data: 'estado'
+                                    },
+                                    {
+                                        data: 'acciones'
+                                    }
                                 ],
-                                createdRow: function (row, data, dataIndex) {
+                                createdRow: function(row, data, dataIndex) {
                                     $(row).addClass('text-center');
                                     $(row).find('td:eq(0), td:eq(1), td:eq(2)').addClass('text-start');
                                     $(row).find('td:eq(8)').addClass('td-acciones');
@@ -119,8 +137,10 @@
                         <div class="col-lg-6 mb-2">
                             <label class="form-label mb-0" for="icono">Icono</label>
                             <div class="input-group">
-                                <span class="input-group-text rounded me-1 px-2"><i class="fas fa-question" aria-label="icono"></i></span>
-                                <input type="text" class="form-control rounded" id="icono" name="icono" requested="Icono">
+                                <span class="input-group-text rounded me-1 px-2"><i class="fas fa-question"
+                                        aria-label="icono"></i></span>
+                                <input type="text" class="form-control rounded" id="icono" name="icono"
+                                    requested="Icono">
                             </div>
                         </div>
                         <div class="col-lg-12 col-8 mb-2">
@@ -147,7 +167,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" data-mdb-ripple-init data-mdb-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init
+                        data-mdb-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Guardar</button>
                 </div>
             </form>
@@ -191,7 +212,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" data-mdb-ripple-init data-mdb-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init
+                        data-mdb-dismiss="modal">Cerrar</button>
                     <button class="btn btn-primary" onclick="cambiarOrden()" data-mdb-ripple-init>Guardar</button>
                 </div>
             </div>
@@ -208,7 +230,7 @@
             var $placeholder = $("<tr aria-dragover style='border: 2px dashed #ccc;'><td colspan='2'>&nbsp;</td></tr>");
 
             // Al iniciar el arrastre: ocultamos la fila y colocamos el placeholder en su posición original
-            $('#tb_orden_menu tbody tr').on('dragstart', async function (e) {
+            $('#tb_orden_menu tbody tr').on('dragstart', async function(e) {
                 draggedRow = $(this);
                 e.originalEvent.dataTransfer.effectAllowed = 'move';
                 setTimeout(() => {
@@ -216,14 +238,15 @@
                 }, 50);
             });
 
-            $('#tb_orden_menu tbody').on('dragover', function (e) {
+            $('#tb_orden_menu tbody').on('dragover', function(e) {
                 e.preventDefault();
                 if (!draggedRow) return false;
 
                 var posY = e.originalEvent.pageY;
                 var $target = $(e.target).closest('tr'); // Encuentra la fila sobre la que estamos pasando
 
-                if (!$($target[0]).attr('tr-id') || $($target[0]).attr('tr-id') == $(draggedRow).attr('tr-id')) return false;
+                if (!$($target[0]).attr('tr-id') || $($target[0]).attr('tr-id') == $(draggedRow).attr('tr-id'))
+                    return false;
 
                 if ($target.length && !$target.hasClass('placeholder')) {
                     var targetOffset = $target.offset().top;
@@ -240,7 +263,7 @@
             });
 
             // Al soltar, reemplazamos el placeholder por la fila oculta y actualizamos el orden
-            $('#tb_orden_menu tbody').on('drop', function (e) {
+            $('#tb_orden_menu tbody').on('drop', function(e) {
                 e.preventDefault();
                 if (draggedRow) {
                     $placeholder.replaceWith(draggedRow);
@@ -250,7 +273,7 @@
             });
 
             // En caso de cancelar el arrastre, mostramos la fila y removemos el placeholder
-            $('#tb_orden_menu tbody').on('dragend', function (e) {
+            $('#tb_orden_menu tbody').on('dragend', function(e) {
                 if (draggedRow) {
                     draggedRow.removeAttr('class').removeAttr('style');
                     draggedRow = null;
@@ -261,7 +284,7 @@
 
             // Función para actualizar el atributo 'tr-orden' y la celda de orden
             function actualizarOrden() {
-                $('#tb_orden_menu tbody tr').each(function (index) {
+                $('#tb_orden_menu tbody tr').each(function(index) {
                     var nuevoOrden = index + 1;
                     $(this).attr('tr-orden', nuevoOrden);
                     // Actualizamos la primera celda (columna "Orden")
@@ -272,13 +295,16 @@
 
         function extraerIdsYOrdenes() {
             var datos = [];
-            $("#tb_orden_menu tbody tr").each(function () {
+            $("#tb_orden_menu tbody tr").each(function() {
                 var id = $(this).attr("tr-id");
                 var orden = $(this).attr("tr-orden");
-                datos.push({ id: id, orden: orden });
+                datos.push({
+                    id: id,
+                    orden: orden
+                });
             });
             return datos;
         }
     </script>
-    <script src="{{secure_asset('front/js/mantenimiento_dev/menu/menu.js')}}"></script>
+    <script src="{{ secure_asset('front/js/mantenimiento_dev/menu/menu.js') }}?v=1.0.0"></script>
 @endsection

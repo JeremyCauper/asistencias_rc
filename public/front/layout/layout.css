@@ -16,6 +16,7 @@
     --root-border-color: rgb(255, 255, 255, .3);
 }
 
+
 html {
     overflow: unset;
 }
@@ -186,7 +187,7 @@ body * .hover-layout:hover {
     background-size: contain !important;
     width: 1.75rem;
     height: 1.75rem;
-    background: url(../../front/images/app/LogoRC.png) no-repeat center center;
+    background: url(../../front/images/app/icons/icon.png) no-repeat center center;
 }
 
 .layout-container .sidebar .sidebar__header .sidebar-close i::before {
@@ -555,7 +556,7 @@ body * .hover-layout:hover {
     }
 
     .layout-container .navbar .navbar-brand .logo_rci {
-        background: url(../../front/images/app/LogoRC.png) no-repeat center center;
+        background: url(../../front/images/app/icons/icon.png) no-repeat center center;
         width: 40px;
         height: 40px;
     }

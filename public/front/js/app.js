@@ -823,3 +823,15 @@ function colores(c) {
     };
     return coloresPorLetra[c[0].toUpperCase()] || '#3b71ca';
 }
+
+/*async function pedirPermisoNotificaciones() {
+    const permiso = await Notification.requestPermission();
+    if (permiso === "granted") {
+        console.log("Permiso otorgado");
+    } else {
+        console.log("Permiso denegado");
+    }
+}
+
+// Llama a esta función, por ejemplo, cuando el usuario hace login
+pedirPermisoNotificaciones();*/
