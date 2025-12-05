@@ -2,12 +2,12 @@
 @section('title', 'Mis asistencias')
 
 @section('cabecera')
-    <link href="{{ secure_asset('front/vendor/quill/quill.snow.css') }}" rel="stylesheet">
-    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap_multiselect.js') }}"></script>
-    <script src="{{ secure_asset('front/vendor/multiselect/form_multiselect.js') }}"></script>
-    <script src="{{ secure_asset('front/vendor/echartjs/echarts.min.js') }}"></script>
-    <script src="{{ secure_asset('front/js/app/ChartMananger.js') }}"></script>
+    <link href="{{ secure_asset('front/vendor/quill/quill.snow.css') }}?v=1.0.0" rel="stylesheet">
+    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap.bundle.min.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap_multiselect.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/vendor/multiselect/form_multiselect.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/vendor/echartjs/echarts.min.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/js/app/ChartMananger.js') }}?v=1.0.0"></script>
     <script>
         const empresas = @json($empresas);
         const tipoModalidad = @json($tipoModalidad);
@@ -446,9 +446,9 @@
 
 @section('scripts')
     <!-- Librería Browser Image Compression -->
-    <script src="{{ secure_asset('front/js/MediaViewer.js') }}"></script>
-    <script src="{{ secure_asset('front/vendor/compression/compressor.min.js') }}"></script>
-    <script src="{{ secure_asset('front/vendor/quill/quill.min.js') }}"></script>
-    <script src="{{ secure_asset('front/js/editorQuill.js') }}"></script>
-    <script src="{{ secure_asset('front/js/misasistencias/misasistencias.js') }}"></script>
+    <script src="{{ secure_asset('front/js/app/MediaViewerControl.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/vendor/compression/compressor.min.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/vendor/quill/quill.min.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/js/app/QuillControl.js') }}?v=1.0.1"></script>
+    <script src="{{ secure_asset('front/js/misasistencias/misasistencias.js') }}?v=1.0.0"></script>
 @endsection

@@ -16,8 +16,7 @@
                     <strong>Listado de Sub Menu</strong>
                 </h6>
                 <div>
-                    <button class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init
-                        data-mdb-target="#modal_submenu">
+                    <button class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#modal_submenu">
                         <i class="fas fa-plus"></i>
                         Nuevo Sub Menu
                     </button>
@@ -50,26 +49,41 @@
                                 ajax: {
                                     url: `${__url}/mantenimiento-dev/menu/sub-menu/listar`,
                                     dataSrc: "data",
-                                    error: function (xhr, error, thrown) {
+                                    error: function(xhr, error, thrown) {
                                         boxAlert.table();
                                         console.log('Respuesta del servidor:', xhr);
                                     }
                                 },
-                                columns: [
-                                    { data: 'menu', render: function (data, type, row) {
+                                columns: [{
+                                        data: 'menu',
+                                        render: function(data, type, row) {
                                             let menu = menus.find(menu => menu.id == data);
                                             return `<i class="${menu.icon} me-2"></i>${menu.descripcion}`;
                                         }
                                     },
-                                    { data: 'categoria' },
-                                    { data: 'descripcion' },
-                                    { data: 'ruta' },
-                                    { data: 'created_at' },
-                                    { data: 'updated_at' },
-                                    { data: 'estado' },
-                                    { data: 'acciones' }
+                                    {
+                                        data: 'categoria'
+                                    },
+                                    {
+                                        data: 'descripcion'
+                                    },
+                                    {
+                                        data: 'ruta'
+                                    },
+                                    {
+                                        data: 'created_at'
+                                    },
+                                    {
+                                        data: 'updated_at'
+                                    },
+                                    {
+                                        data: 'estado'
+                                    },
+                                    {
+                                        data: 'acciones'
+                                    }
                                 ],
-                                createdRow: function (row, data, dataIndex) {
+                                createdRow: function(row, data, dataIndex) {
                                     $(row).addClass('text-center');
                                     $(row).find('td:eq(0), td:eq(1), td:eq(2)').addClass('text-start');
                                     $(row).find('td:eq(7)').addClass('td-acciones');
@@ -125,7 +139,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" data-mdb-ripple-init data-mdb-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init
+                        data-mdb-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Guardar</button>
                 </div>
             </form>
@@ -135,5 +150,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{secure_asset('front/js/mantenimiento_dev/menu/submenu.js')}}?v={{ time() }}"></script>
+    <script src="{{ secure_asset('front/js/mantenimiento_dev/menu/submenu.js') }}?v=1.0.0"></script>
 @endsection

@@ -2,14 +2,14 @@
 @section('title', 'Control del Personal')
 
 @section('cabecera')
-    <link rel="stylesheet" href="{{ secure_asset('front/css/app/personal/personal.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('front/css/app/personal/personal.css') }}?v=1.0.0">
     <script>
         const empresa = @json($empresa);
         const areas = @json($areas);
         const tipoModalidad = @json($tipoModalidad);
         const tipoPersonal = @json($tipoPersonal);
     </script>
-    <script src="{{ secure_asset('front/vendor/full-calendar/index.global.min.js') }}"></script>
+    <script src="{{ secure_asset('front/vendor/full-calendar/index.global.min.js') }}?v=1.0.0"></script>
 @endsection
 
 @section('content')
@@ -334,7 +334,7 @@
                                     ))
                                     estilos.append(
                                         `.${clase}:checked{border-color: ${color};}.${clase}[type=radio]:checked:after{background-color: ${color};}`
-                                        );
+                                    );
                                 });
                                 $('#trabajo_personal').append($('<div>', {
                                     class: 'input-group mb-1'
@@ -359,7 +359,8 @@
     </div>
 
     <!-- 🔹 Modal -->
-    <div class="modal fade" id="modalVacaciones" tabindex="-1" aria-labelledby="modalVacacionesLabel" aria-hidden="true">
+    <div class="modal fade" id="modalVacaciones" tabindex="-1" aria-labelledby="modalVacacionesLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
@@ -377,10 +378,10 @@
             </div>
         </div>
     </div>
-    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}"></script>
+    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}?v=1.0.0"></script>
 
 
     <!-- 🔹 Scripts -->
-    <script src="{{ secure_asset('front/vendor/inputmask/jquery.inputmask.bundle.min.js') }}"></script>
-    <script src="{{ secure_asset('front/js/personal/personal.js') }}"></script>
+    <script src="{{ secure_asset('front/vendor/inputmask/jquery.inputmask.bundle.min.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/js/personal/personal.js') }}?v=1.0.0"></script>
 @endsection
