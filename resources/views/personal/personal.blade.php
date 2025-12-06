@@ -2,14 +2,14 @@
 @section('title', 'Control del Personal')
 
 @section('cabecera')
-    <link rel="stylesheet" href="{{ secure_asset('front/css/app/personal/personal.css') }}?v=1.0.0">
+    <link rel="stylesheet" href="{{ secure_asset('front/css/app/personal/personal.css') }}?v=1">
     <script>
         const empresa = @json($empresa);
         const areas = @json($areas);
         const tipoModalidad = @json($tipoModalidad);
         const tipoPersonal = @json($tipoPersonal);
     </script>
-    <script src="{{ secure_asset('front/vendor/full-calendar/index.global.min.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset($ft_js->full_calendar) }}"></script>
 @endsection
 
 @section('content')
@@ -386,10 +386,10 @@
             </div>
         </div>
     </div>
-    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}?v=1"></script>
 
 
     <!-- 🔹 Scripts -->
-    <script src="{{ secure_asset('front/vendor/inputmask/jquery.inputmask.bundle.min.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/js/personal/personal.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset($ft_js->jquery_inputmask_bundle) }}"></script>
+    <script src="{{ secure_asset('front/js/personal/personal.js') }}?v=1"></script>
 @endsection

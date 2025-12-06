@@ -2,12 +2,12 @@
 @section('title', 'Mis asistencias')
 
 @section('cabecera')
-    <link href="{{ secure_asset('front/vendor/quill/quill.snow.css') }}?v=1.0.0" rel="stylesheet">
-    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap.bundle.min.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap_multiselect.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/vendor/multiselect/form_multiselect.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/vendor/echartjs/echarts.min.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/js/app/ChartMananger.js') }}?v=1.0.0"></script>
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->quill_show) }}">
+    <script src="{{ secure_asset($ft_js->bootstrap_bundle) }}"></script>
+    <script src="{{ secure_asset($ft_js->bootstrap_multiselect) }}"></script>
+    <script src="{{ secure_asset($ft_js->form_multiselect) }}"></script>
+    <script src="{{ secure_asset($ft_js->echarts) }}"></script>
+    <script src="{{ secure_asset($ft_js->ChartMananger) }}"></script>
     <script>
         const empresas = @json($empresas);
         const tipoModalidad = @json($tipoModalidad);
@@ -445,9 +445,9 @@
 
 @section('scripts')
     <!-- Librería Browser Image Compression -->
-    <script src="{{ secure_asset('front/js/app/MediaViewerControl.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/vendor/compression/compressor.min.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/vendor/quill/quill.min.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/js/app/QuillControl.js') }}?v=1.0.1"></script>
-    <script src="{{ secure_asset('front/js/misasistencias/misasistencias.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset($ft_js->MediaViewerControl) }}"></script>
+    <script src="{{ secure_asset($ft_js->compressor) }}"></script>
+    <script src="{{ secure_asset($ft_js->quill) }}"></script>
+    <script src="{{ secure_asset($ft_js->QuillControl) }}"></script>
+    <script src="{{ secure_asset('front/js/misasistencias/misasistencias.js') }}?v=1"></script>
 @endsection

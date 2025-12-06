@@ -18,30 +18,40 @@ return [
     ],
 
     'js' => (object) [
-        'jquery' => 'front/vendor/jquery/jquery.min.js?v=1',
         'actualizarPassword' => 'front/js/actualizarPassword.js?v=1',
+
+        'app' => 'front/js/app.js?v=1',
+        'AlertMananger' => 'front/js/app/AlertMananger.js?v=1',
+        'NotificacionesControl' => 'front/js/app/NotificacionesControl.js?v=1',
+        'FormMananger' => 'front/js/app/FormMananger.js?v=1',
+        'ChartMananger' => 'front/js/app/ChartMananger.js?v=1',
+        'MediaViewerControl' => 'front/js/app/MediaViewerControl.js?v=1',
+        'QuillControl' => 'front/js/app/QuillControl.js?v=1',
+
+        'swicth_layout' => 'front/layout/swicth_layout.js?v=1',
+        'toggle_template' => 'front/layout/toggle_template.js?v=1',
+        'template' => 'front/layout/template.js?v=1',
+
+        'jquery' => 'front/vendor/jquery/jquery.min.js?v=1',
+        'mdb_umd_min7_2_0' => 'front/vendor/mdboostrap/js/mdb.umd.min7.2.0.js?v=1',
+        'jquery_dataTables' => 'front/vendor/dataTable/jquery.dataTables.min.js?v=1',
         'sweet_sweetalert2' => 'front/vendor/sweetalert/sweetalert2@11.js?v=1',
         'select2' => 'front/vendor/select/select2.min.js?v=1',
         'form_select2' => 'front/vendor/select/form_select2.js?v=1',
-        'AlertMananger' => 'front/js/app/AlertMananger.js?v=1',
-        'jquery_dataTables' => 'front/vendor/dataTable/jquery.dataTables.min.js?v=1',
-        'app' => 'front/js/app.js?v=1',
-
-        'swicth_layout' => 'front/layout/swicth_layout.js?v=1',
-        'NotificacionesControl' => 'front/js/app/NotificacionesControl.js?v=1',
-        'toggle_template' => 'front/layout/toggle_template.js?v=1',
-        'mdb_umd_min7_2_0' => 'front/vendor/mdboostrap/js/mdb.umd.min7.2.0.js?v=1',
-        'template' => 'front/layout/template.js?v=1',
-        'FormMananger' => 'front/js/app/FormMananger.js?v=1',
-        'service_worker' => 'sw.js?v=1.1',
-
         'daterangepicker_moment' => 'front/vendor/daterangepicker/moment.min.js?v=1',
         'daterangepicker' => 'front/vendor/daterangepicker/daterangepicker.min.js?v=1',
         'bootstrap_bundle' => 'front/vendor/multiselect/bootstrap.bundle.min.js?v=1',
         'bootstrap_multiselect' => 'front/vendor/multiselect/bootstrap_multiselect.js?v=1',
         'form_multiselect' => 'front/vendor/multiselect/form_multiselect.js?v=1',
         'echarts' => 'front/vendor/echartjs/echarts.min.js?v=1',
-        'ChartMananger' => 'front/js/app/ChartMananger.js?v=1',
+        'compressor' => 'front/vendor/compression/compressor.min.js?v=1',
+        'quill' => 'front/vendor/quill/quill.min.js?v=1',
+        'exceljs' => 'front/vendor/exceljs/exceljs.min.js?v=1',
+        'FileSaver' => 'front/vendor/exceljs/FileSaver.min.js?v=1',
+        'full_calendar' => 'front/vendor/full-calendar/full-calendar.min.js?v=1',
+        'jquery_inputmask_bundle' => 'front/vendor/inputmask/jquery.inputmask.bundle.min.js?v=1',
+
+        'service_worker' => 'sw.js?v=1.3',
     ],
 
     'json' => (object) [

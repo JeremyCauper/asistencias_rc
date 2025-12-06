@@ -42,7 +42,7 @@ class EditorJustificacion {
                         image: () => this.handleFileUpload('image', 'image/*', 10),
                         video: () => this.handleFileUpload('video', 'video/*', 10),
                         pdf: () => this.handleFileUpload('pdf', 'application/pdf', 5),
-                        camera: () => this.handleCamera(10)
+                        camera: async () => await this.handleCamera(10)
                     }
                 }
             }
@@ -193,12 +193,34 @@ class EditorJustificacion {
         }, 100);
     }
 
+    async solicitarPermisoCamara() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            stream.getTracks().forEach(t => t.stop());
+            return true;
+        } catch (err) {
+            return false;
+        }
+    }
+
     /** ============================
      *  🔹 CAPTURA CON CÁMARA
      * ============================ */
-    handleCamera(maxMB) {
+    async handleCamera(maxMB) {
         if (!esCelular()) {
             return boxAlert.box({ i: "warning", h: "Acción disponible solo en dispositivos móviles." });
+        }
+
+        const permiso = await navigator.permissions.query({ name: "camera" });
+        if (permiso.state === "denied") {
+            return boxAlert.box({ i: "warning", h: "Acceso a la cámara denegado, debe desbloquearlo del los ajustes del navegador." });
+        }
+
+        if (permiso.state === "prompt") {
+            const ok = await this.solicitarPermisoCamara();
+            if (!ok) {
+                return boxAlert.box({ i: "warning", h: "Se denegó el acceso a la cámara." }); // si no lo otorga, detenemos
+            }
         }
 
         const input = document.createElement('input');
@@ -226,7 +248,7 @@ class EditorJustificacion {
                 type: file.type,
                 lastModified: fechaStr
             });
-            
+
             const desdeCamara = (delta < 15000) && (deltaDesdeApertura < 20000);
 
             const limit = maxMB * 1024 * 1024;

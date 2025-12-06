@@ -6,7 +6,7 @@
     <script src="{{ secure_asset('front/vendor/multiselect/bootstrap_multiselect.js') }}?v=1.0.0"></script>
     <script src="{{ secure_asset('front/vendor/multiselect/form_multiselect.js') }}?v=1.0.0"></script>
     <script>
-        const tipoModalidad = <?= $tipoModalidad ?>;
+        const tipoModalidad = @json($tipoModalidad);
     </script>
 @endsection
 @section('content')
@@ -138,5 +138,5 @@
 
 @section('scripts')
     <script></script>
-    <script src="{{ secure_asset('front/js/mantenimiento_dev/tipoasistencia/tipoasistencia.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/js/mantenimiento_dev/tipoasistencia/tipoasistencia.js') }}?v=1"></script>
 @endsection

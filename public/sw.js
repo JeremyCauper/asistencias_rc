@@ -1,4 +1,4 @@
-const CACHE_NAME = "v1.0.0";
+const CACHE_NAME = "v1.0";
 const OFFLINE_URL = "offline";
 
 self.addEventListener("install", event => {
@@ -9,32 +9,59 @@ self.addEventListener("install", event => {
             let ruta_principal = "front/";
 
             let biblioteca_front = [
-                { file: "css/app.css", ver: "1.0.0" },
-                { file: "js/app.js", ver: "1.0.0" },
-                { file: "images/app/icons/icon.png", ver: "1.0.0" },
-                { file: "images/app/icons/icon-192.png", ver: "1.0.0" },
-                { file: "images/app/icons/icon-512.png", ver: "1.0.0" },
+                // Archivos de front
+                // IMG
+                { file: 'images/app/icons/icon.png', v: "1" },
+                { file: "images/app/icons/icon-192.png", v: "1" },
+                { file: "images/app/icons/icon-512.png", v: "1" },
 
-                { file: "layout/layout.css", ver: "1.0.0" },
-                { file: "layout/swicth_layout.css", ver: "1.0.0" },
-                { file: "layout/swicth_layout.js", ver: "1.0.0" },
-                { file: "layout/template.js", ver: "1.0.0" },
-                { file: "layout/toggle_template.js", ver: "1.0.0" },
+                // CSS
+                { file: 'vendor/mdboostrap/css/all.min6.0.0.css', v: "1" },
+                { file: 'vendor/mdboostrap/css/mdb.min7.2.0.css', v: "1" },
+                { file: 'vendor/select/select2.min.css', v: "1" },
+                { file: 'vendor/sweetalert/animate.min.css', v: "1" },
+                { file: 'vendor/sweetalert/default.css', v: "1" },
+                { file: 'vendor/fontGoogle/fonts.css', v: "1" },
+                { file: 'layout/layout.css', v: "1" },
+                { file: 'css/app.css', v: "1" },
+                { file: 'layout/swicth_layout.css', v: "1" },
+                { file: 'vendor/quill/quill.snow.css', v: "1" },
+                { file: 'vendor/daterangepicker/daterangepicker.css', v: "1" },
 
-                { file: "vendor/fontGoogle/fonts.css", ver: "1.0.0" },
-                { file: "vendor/dataTable/jquery.dataTables.min.js", ver: "1.0.0" },
-                { file: "vendor/sweetalert/animate.min.css", ver: "1.0.0" },
-                { file: "vendor/sweetalert/default.css", ver: "1.0.0" },
-                { file: "vendor/sweetalert/sweetalert2@11.js", ver: "1.0.0" },
-                { file: "vendor/jquery/jquery.min.js", ver: "1.0.0" },
-                { file: "vendor/mdboostrap/css/all.min6.0.0.css", ver: "1.0.0" },
-                { file: "vendor/mdboostrap/css/mdb.min7.2.0.css", ver: "1.0.0" },
-                { file: "vendor/mdboostrap/js/mdb.umd.min7.2.0.js", ver: "1.0.0" },
+                // JS
+                { file: 'js/app.js', v: "1" },
+                { file: 'js/app/AlertMananger.js', v: "1" },
+                { file: 'js/app/NotificacionesControl.js', v: "1" },
+                { file: 'js/app/FormMananger.js', v: "1" },
+                { file: 'js/app/ChartMananger.js', v: "1" },
+                { file: 'js/app/MediaViewerControl.js', v: "1" },
+                { file: 'js/app/QuillControl.js', v: "1" },
+                { file: 'layout/swicth_layout.js', v: "1" },
+                { file: 'layout/toggle_template.js', v: "1" },
+                { file: 'layout/template.js', v: "1" },
+                { file: 'vendor/jquery/jquery.min.js', v: "1" },
+                { file: 'vendor/mdboostrap/js/mdb.umd.min7.2.0.js', v: "1" },
+                { file: 'vendor/dataTable/jquery.dataTables.min.js', v: "1" },
+                { file: 'vendor/sweetalert/sweetalert2@11.js', v: "1" },
+                { file: 'vendor/select/select2.min.js', v: "1" },
+                { file: 'vendor/select/form_select2.js', v: "1" },
+                { file: 'vendor/daterangepicker/moment.min.js', v: "1" },
+                { file: 'vendor/daterangepicker/daterangepicker.min.js', v: "1" },
+                { file: 'vendor/multiselect/bootstrap.bundle.min.js', v: "1" },
+                { file: 'vendor/multiselect/bootstrap_multiselect.js', v: "1" },
+                { file: 'vendor/multiselect/form_multiselect.js', v: "1" },
+                { file: 'vendor/echartjs/echarts.min.js', v: "1" },
+                { file: 'vendor/compression/compressor.min.js', v: "1" },
+                { file: 'vendor/quill/quill.min.js', v: "1" },
+                { file: 'vendor/exceljs/exceljs.min.js', v: "1" },
+                { file: 'vendor/exceljs/FileSaver.min.js', v: "1" },
+                { file: 'vendor/full-calendar/full-calendar.min.js', v: "1" },
+                { file: 'vendor/inputmask/jquery.inputmask.bundle.min.js', v: "1" },
             ];
 
             // Generamos las URLS
             let archivos_finales = biblioteca_front.map(biblioteca => {
-                return `${ruta_principal}${biblioteca.file}?v=${biblioteca.ver}`
+                return `${ruta_principal}${biblioteca.file}?v=${biblioteca.v}`
             });
 
             // Agregamos la URL offline
@@ -59,7 +86,7 @@ self.addEventListener("activate", event => {
                     // Si la caché no es la actual, la borramos
                     if (cacheWhitelist.indexOf(cacheName) === -1) {
                         console.log("🗑️ Borrando caché antigua:", cacheName);
-                        return caches.delete(cacheName); 
+                        return caches.delete(cacheName);
                         // AQUÍ BORRAMOS EL .then(() => window.location.reload())
                     }
                 })

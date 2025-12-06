@@ -1,6 +1,9 @@
 $(document).ready(function () {
     const quillRespJustificacion = new EditorJustificacion('#respuesta-justificacion');
-    const quilleditorJustificar = new EditorJustificacion('#editor-justificar');
+    const quilleditorJustificar = new EditorJustificacion('#editor-justificar', {
+        noPasteImg: true,
+        botones: ['link', 'camera']
+    });
 
     $('.modal').on('hidden.bs.modal', function () {
         llenarInfoModal('modalJustificacion');

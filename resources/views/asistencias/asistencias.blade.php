@@ -696,18 +696,16 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ secure_asset('front/js/app/MediaViewerControl.js') }}?v=1.0.0"></script>
-    <!-- Librería Browser Image Compression -->
-    <script src="{{ secure_asset('front/vendor/compression/compressor.min.js') }}?v=1.0.0"></script>
-    <!-- Incluye ExcelJS desde CDN -->
-    <script src="{{ secure_asset('front/vendor/quill/quill.min.js') }}?v=1.0.0"></script>
-
-    <script src="{{ secure_asset('front/js/app/QuillControl.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/js/asistencias/asistencias.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset($ft_js->MediaViewerControl) }}"></script>
+    <script src="{{ secure_asset($ft_js->compressor) }}"></script>
+    <script src="{{ secure_asset($ft_js->quill) }}"></script>
+    <script src="{{ secure_asset($ft_js->QuillControl) }}"></script>
+    
+    <script src="{{ secure_asset('front/js/asistencias/asistencias.js') }}?v=1"></script>
     @if (!in_array(session('tipo_usuario'), [1, 5, 6]) || session('tipo_sistema'))
-        <script src="{{ secure_asset('front/vendor/exceljs/exceljs.min.js') }}?v=1.0.0"></script>
-        <script src="{{ secure_asset('front/vendor/exceljs/FileSaver.min.js') }}?v=1.0.0"></script>
-        <script src="{{ secure_asset('front/js/asistencias/export-excel-asistencias.js') }}?v=1.0.0"></script>
+        <script src="{{ secure_asset($ft_js->exceljs) }}"></script>
+        <script src="{{ secure_asset($ft_js->FileSaver) }}"></script>
+        <script src="{{ secure_asset('front/js/asistencias/export-excel-asistencias.js') }}?v=1"></script>
     @endif
-    <script src="{{ secure_asset('front/js/asistencias/asistencias-justificaciones.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/js/asistencias/asistencias-justificaciones.js') }}?v=1.1"></script>
 @endsection
