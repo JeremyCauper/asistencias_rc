@@ -10,7 +10,7 @@ return [
         'sweet_animate' => 'front/vendor/sweetalert/animate.min.css?v=1',
         'sweet_default' => 'front/vendor/sweetalert/default.css?v=1',
         'fonts' => 'front/vendor/fontGoogle/fonts.css?v=1',
-        'layout' => 'front/layout/layout.css?v=1',
+        'layout' => 'front/layout/layout.css?v=1.2',
         'app' => 'front/css/app.css?v=1',
         'swicth_layout' => 'front/layout/swicth_layout.css?v=1',
         'quill_show' => 'front/vendor/quill/quill.snow.css?v=1',
@@ -51,14 +51,14 @@ return [
         'full_calendar' => 'front/vendor/full-calendar/full-calendar.min.js?v=1',
         'jquery_inputmask_bundle' => 'front/vendor/inputmask/jquery.inputmask.bundle.min.js?v=1',
 
-        'service_worker' => 'sw.js?v=1.3',
+        'service_worker' => 'sw.js?v=1.0.4',
     ],
 
     'json' => (object) [
-        'manifest' => 'manifest.json?v=1',
+        'manifest' => 'manifest.json?v=1.5',
     ],
 
     'img' => (object) [
-        'icon' => 'front/images/app/icons/icon.png?v=1',
+        'icon' => 'front/images/app/icons/icon.png?v=1.2',
     ]
 ];

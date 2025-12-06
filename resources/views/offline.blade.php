@@ -6,17 +6,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Sin Conexión</title>
-    <link rel="shortcut icon" href="{{ secure_asset('front/images/app/icons/icon.png') }}?v=1.0.0" />
+    <link rel="shortcut icon" href="{{ secure_asset($ft_img->icon) }}" />
     <!-- Font Awesome -->
-    <link href="{{ secure_asset('front/vendor/mdboostrap/css/all.min6.0.0.css') }}?v=1.0.0" rel="stylesheet">
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->mdb_all_min6_0_0) }}">
     <!-- MDB -->
-    <link href="{{ secure_asset('front/vendor/mdboostrap/css/mdb.min7.2.0.css') }}?v=1.0.0" rel="stylesheet">
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->mdb_min7_2_0) }}">
 </head>
 
 <body class="d-flex align-items-center justify-content-center"
     style="height: 100vh; background-color: #171717;overflow: hidden;">
     <div class="text-center">
-        <img src="{{ secure_asset('front/images/app/icons/icon.png') }}?v=1.0.0" alt="" style="width: 9rem">
+        <img src="{{ secure_asset($ft_img->icon) }}" alt="" style="width: 9rem">
         <p class="mb-2 mt-4 text-white">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512" class="me-2">
                 <path d="M93.72,183.25C49.49,198.05,16,233.1,16,288c0,66,54,112,120,112H320.37"

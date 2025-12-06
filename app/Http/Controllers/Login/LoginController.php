@@ -51,7 +51,8 @@ class LoginController extends Controller
         $modulos = $this->obtenerModulos(Auth::user()->rol_system, Auth::user()->sistema);
         $nombres = $this->formatearNombre(Auth::user()->nombre, Auth::user()->apellido);
         $acceso = JsonDB::table('tipo_personal')->where('id', Auth::user()->rol_system)->first();
-
+        
+        $request->session()->regenerate();
         session([
             'customModulos' => $modulos->menus,
             'rutaRedirect' => $modulos->ruta,
@@ -68,8 +69,6 @@ class LoginController extends Controller
                 'siglaBg' => $this->colores(Auth::user()->nombre[0]),
             ],
         ]);
-
-        $request->session()->regenerate();
 
         // Autenticación exitosa
         return response()->json(['success' => true, 'message' => '', 'data' => $modulos->ruta], 200);
