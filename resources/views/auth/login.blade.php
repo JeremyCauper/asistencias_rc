@@ -5,18 +5,19 @@
     <!-- Requiredd meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="manifest" href="{{ secure_asset('manifest.json') }}?v=1.0.0">
+    <link rel="manifest" href="{{ secure_asset($ft_json->manifest) }}">
     <meta name="theme-color" content="#000000">
 
-    <link rel="shortcut icon" href="{{ secure_asset('front/images/app/icons/icon.png') }}?v=1.0.0" />
+    <link rel="shortcut icon" href="{{ secure_asset($ft_img->icon) }}" />
     <title>RC Asistencias | Inicio</title>
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="{{ secure_asset('front/vendor/mdboostrap/css/all.min6.0.0.css') }}?v=1.0.0">
-    <link rel="stylesheet" href="{{ secure_asset('front/vendor/mdboostrap/css/mdb.min7.2.0.css') }}?v=1.0.0">
-    <link rel="stylesheet" href="{{ secure_asset('front/vendor/sweetalert/default.css') }}?v=1.0.0">
-    <link rel="stylesheet" href="{{ secure_asset('front/css/app/auth.css') }}?v=1.0.0">
+    <link href="{{ secure_asset($ft_css->mdb_all_min6_0_0) }}" rel="stylesheet">
+    <!-- MDB -->
+    <link href="{{ secure_asset($ft_css->mdb_min7_2_0) }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->sweet_default) }}">
+    <link rel="stylesheet" href="{{ secure_asset('front/css/app/auth.css') }}?v=1">
 
-    <script src="{{ secure_asset('front/vendor/jquery/jquery.min.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset($ft_js->jquery) }}"></script>
 
     <script>
         const intervalToken = setInterval(() => {
@@ -36,17 +37,13 @@
                 <div class="logo_rci"></div>
             </a>
             <div class="navbar-brand">
-                <span class="text-white me-0">
-                    ASISTENCIAS - RCI
-                </span>
-                <div class="ms-2">
-                    <link href="{{ secure_asset('front/layout/swicth_layout.css') }}?v=1.0.0" rel="stylesheet">
-                    <input id="check" type="checkbox">
-                    <label for="check" class="check-trail">
-                        <span class="check-handler"></span>
-                    </label>
-                    <script src="{{ secure_asset('front/layout/swicth_layout.js') }}?v=1.0.0"></script>
+                <div class="me-2">
+                    <span class="text-white me-0">
+                        ASISTENCIAS - RCI
+                    </span>
                 </div>
+                {{-- Switch Layout --}}
+                @include('layout.partials.swicth_layout')
             </div>
         </div>
     </nav>
@@ -94,47 +91,16 @@
         </div>
     </div>
 
-    <script src="{{ secure_asset('front/vendor/mdboostrap/js/mdb.umd.min7.2.0.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/vendor/sweetalert/sweetalert2@11.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/js/app/AlertMananger.js') }}?v=1.0.0"></script>
+    <script type="text/javascript" src="{{ secure_asset($ft_js->mdb_umd_min7_2_0) }}"></script>
+    <script src="{{ secure_asset($ft_js->sweet_sweetalert2) }}"></script>
+    <script src="{{ secure_asset($ft_js->AlertMananger) }}"></script>
     <script>
         const __url = "{{ secure_url('') }}";
         const __token = "{{ csrf_token() }}";
     </script>
     <script src="{{ secure_asset('front/js/auth/auth.js') }}?v=1.0.0"></script>
 
-    <script>
-        if ("serviceWorker" in navigator) {
-            // 1. Registramos el Service Worker
-            navigator.serviceWorker.register("{{ secure_asset('sw.js') }}?v=1.0.0");
-
-            // 2. Variable para evitar que la página se recargue en bucle infinito
-            let refreshing = false;
-
-            // 3. Escuchamos el evento "controllerchange"
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                if (refreshing) return;
-                refreshing = true;
-
-                // 4. Mostramos la Alerta de SweetAlert
-                Swal.fire({
-                    title: '<h6>¡Actualización Disponible!</h6>',
-                    text: 'Hay una nueva versión del sistema. Es necesario recargar para aplicar los cambios.',
-                    icon: 'info',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, recargar',
-                    cancelButtonText: 'Más tarde',
-                    allowOutsideClick: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.reload();
-                    }
-                });
-            });
-        }
-    </script>
+    @include('layout.partials.service_worker')
 </body>
 
 </html>

@@ -2,18 +2,18 @@
 @section('title', 'Asistencias del personal')
 
 @section('cabecera')
-    <link href="{{ secure_asset('front/vendor/quill/quill.snow.css') }}?v=1.0.0" rel="stylesheet">
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->quill_show) }}">
+    <link rel="stylesheet" type="text/css" href="{{ secure_asset($ft_css->daterangepicker) }}">
 
-    <script type="text/javascript" src="{{ secure_asset('front/vendor/daterangepicker/moment.min.js') }}?v=1.0.0"></script>
-    <script type="text/javascript" src="{{ secure_asset('front/vendor/daterangepicker/daterangepicker.min.js') }}?v=1.0.0"></script>
-    <link rel="stylesheet" type="text/css" href="{{ secure_asset('front/vendor/daterangepicker/daterangepicker.css') }}?v=1.0.0">
+    <script type="text/javascript" src="{{ secure_asset($ft_js->daterangepicker_moment) }}"></script>
+    <script type="text/javascript" src="{{ secure_asset($ft_js->daterangepicker) }}"></script>
 
-    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap.bundle.min.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap_multiselect.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/vendor/multiselect/form_multiselect.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset($ft_js->bootstrap_bundle) }}"></script>
+    <script src="{{ secure_asset($ft_js->bootstrap_multiselect) }}"></script>
+    <script src="{{ secure_asset($ft_js->form_multiselect) }}"></script>
 
-    <script src="{{ secure_asset('front/vendor/echartjs/echarts.min.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/js/app/ChartMananger.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset($ft_js->echarts) }}"></script>
+    <script src="{{ secure_asset($ft_js->ChartMananger) }}"></script>
     <script>
         const tipoAsistencia = @json($tipoAsistencia);
         const tipoPersonal = @json($tipoPersonal);
@@ -59,8 +59,8 @@
 
         let incidencia_estados = [{
                 name: "estado-total",
-                text: "Total",
-                color: "purple",
+                text: "Total de Asistencias",
+                color: "secondary",
                 searchTable: 0,
                 chart: false,
             },
@@ -93,10 +93,10 @@
                 chart: true,
             },
             {
-                name: "estado-noaplica",
-                text: "NO APLICA",
-                color: "dark",
-                searchTable: 6,
+                name: "estado-derivados",
+                text: "Derivados",
+                color: "purple",
+                searchTable: 7,
                 chart: true,
             },
         ];
@@ -154,8 +154,7 @@
             }
         });
 
-        function setEstados(obj_estado) {
-            let total = obj_estado.reduce((acc, item) => acc + item.value, 0);
+        function setEstados(obj_estado, total) {
             $('#count-estado-total').text(total);
 
             obj_estado.forEach((e, i) => {
@@ -297,7 +296,7 @@
                     <tr class="text-bg-primary text-center">
                         <th>Personal</th>
                         <th>Area</th>
-                        <th>Tipo</th>
+                        <th>Tipo Personal</th>
                         <th>Modalidad</th>
                         <th>Estado</th>
                         <th>Entrada</th>
@@ -336,7 +335,6 @@
                                 `<b>${feriado.tipo}:</b> ${feriado.nombre}` : '');
 
                             let lista = json.data?.listado || [];
-                            // cargarNotificaciones(lista)
                             let estadosAsistencias = [{
                                     name: "estado-faltas",
                                     value: lista.filter(a => a.tipo_asistencia === 1).length
@@ -354,11 +352,11 @@
                                     value: lista.filter(a => a.tipo_asistencia === 4).length
                                 },
                                 {
-                                    name: "estado-noaplica",
-                                    value: lista.filter(a => a.tipo_asistencia === 6).length
+                                    name: "estado-derivados",
+                                    value: lista.filter(a => a.tipo_asistencia === 7).length
                                 },
                             ];
-                            setEstados(estadosAsistencias);
+                            setEstados(estadosAsistencias, lista.length);
                             return lista;
                         },
                         error: function(xhr, error, thrown) {

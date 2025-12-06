@@ -51,40 +51,41 @@
     @endif
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="manifest" href="{{ secure_asset('manifest.json') }}?v=1.0.0">
+    <link rel="manifest" href="{{ secure_asset($ft_json->manifest) }}">
     <meta name="theme-color" content="#000000">
 
-    <link rel="shortcut icon" href="{{ secure_asset('front/images/app/icons/icon.png') }}?v=1.0.0" />
+    <link rel="shortcut icon" href="{{ secure_asset($ft_img->icon) }}" />
     <title>@yield('title')</title>
     <!-- Font Awesome -->
-    <link href="{{ secure_asset('front/vendor/mdboostrap/css/all.min6.0.0.css') }}?v=1.0.0" rel="stylesheet">
+    <link href="{{ secure_asset($ft_css->mdb_all_min6_0_0) }}" rel="stylesheet">
     <!-- MDB -->
-    <link href="{{ secure_asset('front/vendor/mdboostrap/css/mdb.min7.2.0.css') }}?v=1.0.0" rel="stylesheet">
+    <link href="{{ secure_asset($ft_css->mdb_min7_2_0) }}" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ secure_asset('front/vendor/sweetalert/animate.min.css') }}?v=1.0.0">
-    <link rel="stylesheet" href="{{ secure_asset('front/vendor/sweetalert/default.css') }}?v=1.0.0">
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->select2) }}">
+
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->sweet_animate) }}">
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->sweet_default) }}">
     <!-- Google Fonts -->
-    <link rel="stylesheet" href="{{ secure_asset('front/vendor/fontGoogle/fonts.css') }}?v=1.0.0" />
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->fonts) }}" />
     <!-- Home -->
-    <link href="{{ secure_asset('front/layout/layout.css') }}?v=1.0.0" rel="stylesheet">
-    <link href="{{ secure_asset('front/css/app.css') }}?v=1.0.0" rel="stylesheet">
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->layout) }}">
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->app) }}">
     <script>
         const __url = "{{ secure_url('') }}";
         const __asset = "{{ secure_asset('front/') }}";
         const __token = "{{ csrf_token() }}";;
     </script>
     <!-- JQuery -->
-    <script src="{{ secure_asset('front/vendor/jquery/jquery.min.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset($ft_js->jquery) }}"></script>
     @if (session('cambio') && env('APP_ENV') == 'produccion')
-        <script id="cambioPass" src="{{ secure_asset('front/js/actualizarPassword.js') }}?v=1.0.0"></script>
+        <script id="cambioPass" src="{{ secure_asset($ft_js->actualizarPassword) }}"></script>
     @endif
-    <script src="{{ secure_asset('front/vendor/sweetalert/sweetalert2@11.js') }}?v=1.0.0"></script>
-    <link href="{{ secure_asset('front/vendor/select/select2.min.css') }}?v=1.0.0" rel="stylesheet">
-    <script src="{{ secure_asset('front/vendor/select/select2.min.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/vendor/select/form_select2.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/js/app/AlertMananger.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/vendor/dataTable/jquery.dataTables.min.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/js/app.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset($ft_js->sweet_sweetalert2) }}"></script>
+    <script src="{{ secure_asset($ft_js->select2) }}"></script>
+    <script src="{{ secure_asset($ft_js->form_select2) }}"></script>
+    <script src="{{ secure_asset($ft_js->AlertMananger) }}"></script>
+    <script src="{{ secure_asset($ft_js->jquery_dataTables) }}"></script>
+    <script src="{{ secure_asset($ft_js->app) }}"></script>
 
     @yield('cabecera')
 </head>
@@ -228,15 +229,9 @@
                     <div class="logo_rci"></div>
                 </div>
                 <div class="navbar-brand mb-0 p-0">
-                    <div>
-                        <link href="{{ secure_asset('front/layout/swicth_layout.css') }}?v=1.0.0" rel="stylesheet">
-                        <input id="check" type="checkbox">
-                        <label for="check" class="check-trail">
-                            <span class="check-handler"></span>
-                        </label>
-                        <script src="{{ secure_asset('front/layout/swicth_layout.js') }}?v=1.0.0"></script>
-                    </div>
-                    <!-- Notifications -->
+                    {{-- Switch Layout --}}
+                    @include('layout.partials.swicth_layout')
+                    {{-- Notifications --}}
                     <div class="ms-1">
                         <div class="dropdown" id="contenedor-notificaciones">
                             <button data-mdb-dropdown-init class="btn-notification hover-layout" role="button"
@@ -254,25 +249,10 @@
                                     <div class="dropdown-text text-center text-muted py-3">
                                         Sin notificaciones
                                     </div>
-                                    {{-- <div class="dropdown-item p-2 my-1 rounded" role="button">
-                                        <small class="noti-hora">2025-11-12 12:00:00</small>
-                                        <div class="noti-contenido d-flex align-items-center mt-2">
-                                            <span class="img-xs rounded-circle text-white acronimo"
-                                                style="background-color:#7367F0;">
-                                                JB
-                                            </span>
-
-                                            <div class="mx-2">
-                                                <p class="fw-bold mb-1 titulo">Justificación de derivación.
-                                                </p>
-                                                <small class="text-muted mb-0 descripcion">Jair Buitron C.</small>
-                                            </div>
-                                        </div>
-                                    </div> --}}
                                 </div>
                             </div>
                         </div>
-                        <script src="{{ secure_asset('front/js/app/NotificacionesControl.js') }}?v=1.0.0"></script>
+                        <script src="{{ secure_asset($ft_js->NotificacionesControl) }}"></script>
                     </div>
                     <div class="ms-1">
                         <button class="sidebar-close__navbar hover-layout" type="button"
@@ -289,7 +269,7 @@
             </div>
 
         </main>
-        <script src="{{ secure_asset('front/layout/toggle_template.js') }}?v=1.0.0"></script>
+        <script src="{{ secure_asset($ft_js->toggle_template) }}"></script>
     </div>
 
     <script>
@@ -301,43 +281,11 @@
         }, 1000);
     </script>
     <!-- MDB -->
-    <script type="text/javascript" src="{{ secure_asset('front/vendor/mdboostrap/js/mdb.umd.min7.2.0.js') }}?v=1.0.0">
-    </script>
-    <script src="{{ secure_asset('front/layout/template.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/js/app/FormMananger.js') }}?v=1.0.0"></script>
-    <!-- plugins:js -->
-    <script>
-        if ("serviceWorker" in navigator) {
-            // 1. Registramos el Service Worker
-            navigator.serviceWorker.register("{{ secure_asset('sw.js') }}?v=1.0.1");
+    <script type="text/javascript" src="{{ secure_asset($ft_js->mdb_umd_min7_2_0) }}"></script>
+    <script src="{{ secure_asset($ft_js->template) }}"></script>
+    <script src="{{ secure_asset($ft_js->FormMananger) }}"></script>
 
-            // 2. Variable para evitar que la página se recargue en bucle infinito
-            let refreshing = false;
-
-            // 3. Escuchamos el evento "controllerchange"
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                if (refreshing) return;
-                refreshing = true;
-
-                // 4. Mostramos la Alerta de SweetAlert
-                Swal.fire({
-                    title: '<h6>¡Actualización Disponible!</h6>',
-                    text: 'Hay una nueva versión del sistema. Es necesario recargar para aplicar los cambios.',
-                    icon: 'info',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, recargar',
-                    cancelButtonText: 'Más tarde',
-                    allowOutsideClick: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.reload();
-                    }
-                });
-            });
-        }
-    </script>
+    @include('layout.partials.service_worker')
     @yield('scripts')
 </body>
 

@@ -36,8 +36,8 @@
 
         let incidencia_estados = [{
                 name: "estado-total",
-                text: "Total",
-                color: "purple",
+                text: "Total de Asistencias",
+                color: "secondary",
                 searchTable: 0,
                 chart: false,
             },
@@ -70,10 +70,10 @@
                 chart: true,
             },
             {
-                name: "estado-noaplica",
-                text: "NO APLICA",
-                color: "dark",
-                searchTable: 6,
+                name: "estado-derivados",
+                text: "Derivados",
+                color: "purple",
+                searchTable: 7,
                 chart: true,
             },
         ];
@@ -131,8 +131,7 @@
             }
         });
 
-        function setEstados(obj_estado) {
-            let total = obj_estado.reduce((acc, item) => acc + item.value, 0);
+        function setEstados(obj_estado, total) {
             $('#count-estado-total').text(total);
 
             obj_estado.forEach((e, i) => {
@@ -208,11 +207,11 @@
                                     value: lista.filter(a => a.tipo_asistencia === 4).length
                                 },
                                 {
-                                    name: "estado-noaplica",
-                                    value: lista.filter(a => a.tipo_asistencia === 6).length
+                                    name: "estado-derivados",
+                                    value: lista.filter(a => a.tipo_asistencia === 7).length
                                 },
                             ];
-                            setEstados(estadosAsistencias);
+                            setEstados(estadosAsistencias, lista.length);
                             return lista;
                         },
                         error: function(xhr, error, thrown) {
