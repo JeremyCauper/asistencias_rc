@@ -1,4 +1,4 @@
-const CACHE_NAME = "v1.8";
+const CACHE_NAME = "v1.1";
 const OFFLINE_URL = "offline?v=1" ;
 
 self.addEventListener("install", event => {
@@ -7,60 +7,61 @@ self.addEventListener("install", event => {
     event.waitUntil(
         caches.open(CACHE_NAME).then(async cache => {
             let ruta_principal = "front/";
+            let version = 1.1;
 
             let biblioteca_front = [
                 // IMG
-                { file: 'images/app/icons/icon.png', v: "1.2" },
-                { file: "images/app/icons/icon-192.png", v: "1.2" },
-                { file: "images/app/icons/icon-512.png", v: "1.2" },
+                { file: 'images/app/icons/icon.png' },
+                { file: "images/app/icons/icon-192.png" },
+                { file: "images/app/icons/icon-512.png" },
 
                 // CSS
-                { file: 'vendor/mdboostrap/css/all.min6.0.0.css', v: "1" },
-                { file: 'vendor/mdboostrap/css/mdb.min7.2.0.css', v: "1" },
-                { file: 'vendor/select/select2.min.css', v: "1" },
-                { file: 'vendor/sweetalert/animate.min.css', v: "1" },
-                { file: 'vendor/sweetalert/default.css', v: "1" },
-                { file: 'vendor/fontGoogle/fonts.css', v: "1" },
-                { file: 'layout/layout.css', v: "1.2" },
-                { file: 'css/app.css', v: "1" },
-                { file: 'layout/swicth_layout.css', v: "1" },
-                { file: 'vendor/quill/quill.snow.css', v: "1" },
-                { file: 'vendor/daterangepicker/daterangepicker.css', v: "1" },
+                { file: 'vendor/mdboostrap/css/all.min6.0.0.css' },
+                { file: 'vendor/mdboostrap/css/mdb.min7.2.0.css' },
+                { file: 'vendor/select/select2.min.css' },
+                { file: 'vendor/sweetalert/animate.min.css' },
+                { file: 'vendor/sweetalert/default.css' },
+                { file: 'vendor/fontGoogle/fonts.css' },
+                { file: 'layout/layout.css' },
+                { file: 'css/app.css' },
+                { file: 'layout/swicth_layout.css' },
+                { file: 'vendor/quill/quill.snow.css' },
+                { file: 'vendor/daterangepicker/daterangepicker.css' },
 
                 // JS
-                { file: 'js/app.js', v: "1" },
-                { file: 'js/app/AlertMananger.js', v: "1" },
-                { file: 'js/app/NotificacionesControl.js', v: "1" },
-                { file: 'js/app/FormMananger.js', v: "1" },
-                { file: 'js/app/ChartMananger.js', v: "1" },
-                { file: 'js/app/MediaViewerControl.js', v: "1" },
-                { file: 'js/app/QuillControl.js', v: "1" },
-                { file: 'layout/swicth_layout.js', v: "1" },
-                { file: 'layout/toggle_template.js', v: "1" },
-                { file: 'layout/template.js', v: "1" },
-                { file: 'vendor/jquery/jquery.min.js', v: "1" },
-                { file: 'vendor/mdboostrap/js/mdb.umd.min7.2.0.js', v: "1" },
-                { file: 'vendor/dataTable/jquery.dataTables.min.js', v: "1" },
-                { file: 'vendor/sweetalert/sweetalert2@11.js', v: "1" },
-                { file: 'vendor/select/select2.min.js', v: "1" },
-                { file: 'vendor/select/form_select2.js', v: "1" },
-                { file: 'vendor/daterangepicker/moment.min.js', v: "1" },
-                { file: 'vendor/daterangepicker/daterangepicker.min.js', v: "1" },
-                { file: 'vendor/multiselect/bootstrap.bundle.min.js', v: "1" },
-                { file: 'vendor/multiselect/bootstrap_multiselect.js', v: "1" },
-                { file: 'vendor/multiselect/form_multiselect.js', v: "1" },
-                { file: 'vendor/echartjs/echarts.min.js', v: "1" },
-                { file: 'vendor/compression/compressor.min.js', v: "1" },
-                { file: 'vendor/quill/quill.min.js', v: "1" },
-                { file: 'vendor/exceljs/exceljs.min.js', v: "1" },
-                { file: 'vendor/exceljs/FileSaver.min.js', v: "1" },
-                { file: 'vendor/full-calendar/full-calendar.min.js', v: "1" },
-                { file: 'vendor/inputmask/jquery.inputmask.bundle.min.js', v: "1" },
+                { file: 'js/app.js' },
+                { file: 'js/app/AlertMananger.js' },
+                { file: 'js/app/NotificacionesControl.js' },
+                { file: 'js/app/FormMananger.js' },
+                { file: 'js/app/ChartMananger.js' },
+                { file: 'js/app/MediaViewerControl.js' },
+                { file: 'js/app/QuillControl.js' },
+                { file: 'layout/swicth_layout.js' },
+                { file: 'layout/toggle_template.js' },
+                { file: 'layout/template.js' },
+                { file: 'vendor/jquery/jquery.min.js' },
+                { file: 'vendor/mdboostrap/js/mdb.umd.min7.2.0.js' },
+                { file: 'vendor/dataTable/jquery.dataTables.min.js' },
+                { file: 'vendor/sweetalert/sweetalert2@11.js' },
+                { file: 'vendor/select/select2.min.js' },
+                { file: 'vendor/select/form_select2.js' },
+                { file: 'vendor/daterangepicker/moment.min.js' },
+                { file: 'vendor/daterangepicker/daterangepicker.min.js' },
+                { file: 'vendor/multiselect/bootstrap.bundle.min.js' },
+                { file: 'vendor/multiselect/bootstrap_multiselect.js' },
+                { file: 'vendor/multiselect/form_multiselect.js' },
+                { file: 'vendor/echartjs/echarts.min.js' },
+                { file: 'vendor/compression/compressor.min.js' },
+                { file: 'vendor/quill/quill.min.js' },
+                { file: 'vendor/exceljs/exceljs.min.js' },
+                { file: 'vendor/exceljs/FileSaver.min.js' },
+                { file: 'vendor/full-calendar/full-calendar.min.js' },
+                { file: 'vendor/inputmask/jquery.inputmask.bundle.min.js' },
             ];
 
             // Construir URLs con versión
             let archivos_finales = biblioteca_front.map(b =>
-                `${ruta_principal}${b.file}?v=${b.v}`
+                `${ruta_principal}${b.file}?v=${version}`
             );
 
             // Página offline

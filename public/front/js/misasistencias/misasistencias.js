@@ -124,10 +124,7 @@ $(document).ready(function () {
                 fecha: `${data.fecha} ${(data.entrada || '')}`,
                 estado: `<span class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>`,
             });
-
-            window.currentJustificacionId = just.id;
             window.currentAsistenciaId = id;
-            window.currentNotificacionId = noti.extractId('justificarDerivado')
             $('#asunto').val('Justificación de Asistencia Derivada');
             fMananger.formModalLoding('modalJustificarDerivado', 'hide');
         } catch (error) {
@@ -169,9 +166,7 @@ $(document).ready(function () {
         // Obtiene el contenido HTML del editor
         valid.data.data.mensaje = utf8ToBase64(quillJustificarDerivado.html());
         valid.data.data.archivos = archivos_data;
-        valid.data.data.id_justificacion = window.currentJustificacionId;
         valid.data.data.id_asistencia = window.currentAsistenciaId;
-        valid.data.data.id_notificacion = window.currentNotificacionId;
 
         try {
             const body = JSON.stringify(valid.data.data);
@@ -215,7 +210,6 @@ $(document).ready(function () {
     window.justificarAsistencia = async (id) => {
         try {
             boxAlert.loading();
-            setTimeout(() => $('#modalJustificarDerivado').modal('hide'), 600);
             const endpoint = await fetch(`${__url}/asistencias-diarias/mostrar/${id}`);
             const response = await endpoint.json();
             const data = response.data;
@@ -250,7 +244,6 @@ $(document).ready(function () {
             });
             window.tasistencia = tasistencia;
 
-            window.fecha = data.fecha;
             window.tipo_asistencia = data.tipo_asistencia;
             window.currentAsistenciaId = id;
 
@@ -303,13 +296,11 @@ $(document).ready(function () {
         try {
             const body = JSON.stringify({
                 id_asistencia: window.currentAsistenciaId,
-                fecha: window.fecha,
                 entrada: hora_justificacion,
                 tipo_asistencia: window.tipo_asistencia,
                 asunto: $('#asunto_justificar').val(),
                 contenido: mensaje,
-                archivos: archivos_data,
-                by_admin: false
+                archivos: archivos_data
             });
 
             const response = await fetch(__url + '/justificacion/justificar', {

@@ -9,6 +9,7 @@ use App\Services\JsonDB;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -22,41 +23,44 @@ class JustificacionController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'id_asistencia' => 'required|integer',
-                'fecha' => 'required|date',
                 'entrada' => 'nullable|date_format:H:i:s',
                 'tipo_asistencia' => 'required|in:0,1,4',
                 'asunto' => 'required|string|max:255',
                 'contenido' => 'required|string',
-                'archivos' => 'nullable',
-                'by_admin' => 'boolean'
+                'archivos' => 'nullable'
             ]);
 
             if ($validator->fails()) {
                 return ApiResponse::validation($validator->errors()->toArray());
             }
 
-            $user_id = $request->has('user_id') ? $request->user_id : session('user_id');
-            $tipo_asistencia = $request->tipo_asistencia == 0 ? 2 : $request->tipo_asistencia;
-            $estatus = $request->has('estatus') ? $request->estatus : ($tipo_asistencia == 2 ? 1 : 0);
             $id_asistencia = $request->id_asistencia;
 
-            // Verifica si ya existe una justificación para esa fecha
-            $justificacion = DB::table('justificaciones')
-                ->where('user_id', $user_id)
-                ->where('fecha', $request->fecha)
-                ->first();
+            // Verifica si ya existe una justificación para este id
+            $justificacion = DB::table('justificaciones')->where('asistencia_id', $id_asistencia)->first();
             $justificacionEstatus = $justificacion?->estatus ?? null;
 
             if ($justificacion && in_array($justificacionEstatus, [0, 1, 2])) {
                 return ApiResponse::success('Ya existe una justificación para esa fecha.');
             }
-            $tipo_asistencia = $justificacionEstatus == 10 ? 1 : $tipo_asistencia;
 
-            $asistencia = DB::table('asistencias')->where('id', $id_asistencia)->exists();
+            $asistencia = DB::table('asistencias')->select('user_id', 'fecha')->where('id', $id_asistencia)->first();
             // Verificar si la asistencia existe
             if (!$asistencia) {
                 return ApiResponse::error('No se encontró la asistencia.');
             }
+
+            $tipo_asistencia = match (true) {
+                $justificacionEstatus == 10 => 1,
+                $request->tipo_asistencia == 0 => 2,
+                default => $request->tipo_asistencia
+            };
+            $estatus = match (true) {
+                $request->has('estatus') => $request->estatus,
+                $tipo_asistencia == 2 => 1,
+                default => 0
+            };
+            $user_id = $request->has('user_id') ? $request->user_id : Auth::user()->user_id;
 
             DB::beginTransaction();
             // Crear contenido HTML
@@ -69,24 +73,25 @@ class JustificacionController extends Controller
             );
 
             if ($justificacion) {
-                DB::table('justificaciones')->where(['user_id' => $user_id, 'fecha' => $request->fecha])
+                DB::table('justificaciones')->where('asistencia_id', $id_asistencia)
                     ->update([
                         'tipo_asistencia' => $tipo_asistencia,
                         'asunto' => $request->asunto,
                         'contenido_html' => $contenido,
-                        'estatus' => $tipo_asistencia == 2 ? 1 : $estatus, // pendiente
+                        'estatus' => $estatus, // pendiente
                     ]);
             } else {
                 // Crea la justificación
                 DB::table('justificaciones')->insert([
+                    'asistencia_id' => $id_asistencia,
                     'user_id' => $user_id,
-                    'fecha' => $request->fecha,
+                    'fecha' => $asistencia->fecha,
                     'tipo_asistencia' => $tipo_asistencia,
                     'asunto' => $request->asunto,
                     'contenido_html' => $contenido,
                     'created_by' => session('user_id'),
                     'created_at' => now()->format('Y-m-d H:i:s'),
-                    'estatus' => $tipo_asistencia == 2 ? 1 : $estatus, // pendiente
+                    'estatus' => $estatus, // pendiente
                 ]);
             }
 
@@ -94,8 +99,8 @@ class JustificacionController extends Controller
             if ($estatus == 1) {
                 $entrada = $request->entrada ?? null;
                 $tipoAsistencia = match (true) {
-                    !$entrada => 3,  // sin entrada -> asistencia normal/otro estado
-                    strtotime(date("Y-m-d " . $entrada)) > $this->limitePuntual => 4, // tiene entrada y es tarde
+                    empty($entrada) => 3,  // sin entrada -> asistencia normal/otro estado
+                    strtotime(date("$this->strFecha $entrada")) > $this->limitePuntual => 4, // tiene entrada y es tarde
                     default => 2  // tiene entrada y es puntual
                 };
 
@@ -109,16 +114,18 @@ class JustificacionController extends Controller
                 $this->procesarArchivosJustificacion($request->archivos, $id_asistencia);
             }
 
-            if (!$request->by_admin && !in_array($tipo_asistencia, [2])) {
-                $configuraciones = match($tipo_asistencia) {
+            if ($user_id == Auth::user()->user_id && !in_array($tipo_asistencia, [2])) {
+                $configuraciones = match ($tipo_asistencia) {
                     1 => [3, 2],
                     4 => [4, 3]
                 };
 
                 NotificacionController::crear([
+                    'tipo_notificacion' => 0,
+                    'asignado_id' => $id_asistencia,
                     'user_id' => $user_id,
                     'is_admin' => 1,
-                    'tipo_notificacion' => $configuraciones[0],
+                    'titulo_id' => $configuraciones[0],
                     'descripcion_id' => $configuraciones[1],
                     'ruta_id' => 1,
                     'accion_id' => 2,
@@ -140,9 +147,7 @@ class JustificacionController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'id_justificacion' => 'required|integer',
                 'id_asistencia' => 'required|integer',
-                'id_notificacion' => 'required|integer',
                 'estatus' => 'required|in:1,2',
                 'mensaje' => 'required|string',
                 'archivos' => 'nullable'
@@ -152,7 +157,9 @@ class JustificacionController extends Controller
                 return ApiResponse::validation($validator->errors()->toArray());
             }
 
-            $justificacion = DB::table('justificaciones')->where('id', $request->id_justificacion)->first();
+            $id_asistencia = $request->id_asistencia;
+
+            $justificacion = DB::table('justificaciones')->where('asistencia_id', $id_asistencia)->first();
             // Verificar si la justificación existe
             if (!$justificacion) {
                 return ApiResponse::error('No se encontró la justificación.');
@@ -160,7 +167,6 @@ class JustificacionController extends Controller
 
             // Declarar variables
             $tipoAsistencia = $justificacion->tipo_asistencia;
-            $id_asistencia = $request->id_asistencia;
             $estatus = $request->estatus;
             $now = now();
 
@@ -180,8 +186,7 @@ class JustificacionController extends Controller
                 $now->format('Y-m-d H:i:s')
             );
 
-            DB::table('justificaciones')
-                ->where('id', $request->id_justificacion)
+            DB::table('justificaciones')->where('asistencia_id', $id_asistencia)
                 ->update([
                     'contenido_html' => $contenido,
                     'estatus' => $estatus
@@ -204,8 +209,8 @@ class JustificacionController extends Controller
             }
             $archivos = DB::table('media_archivos')->where('asistencia_id', $id_asistencia)->get();
 
-            if ($request->id_notificacion)
-                NotificacionController::marcarLeido($request->id_notificacion);
+            if ($id_asistencia)
+                NotificacionController::marcarLeido(0, $id_asistencia);
             DB::commit();
             return ApiResponse::success(
                 str_replace(':?', $estatus == 1 ? 'aprobada' : 'rechazada', 'Justificación :? correctamente.'),
@@ -227,9 +232,7 @@ class JustificacionController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'id_justificacion' => 'required|integer',
                 'id_asistencia' => 'required|integer',
-                'id_notificacion' => 'required|integer',
                 'entrada' => 'nullable|date_format:H:i:s',
                 'asunto' => 'required|string|max:255',
                 'mensaje' => 'required|string',
@@ -240,7 +243,7 @@ class JustificacionController extends Controller
                 return ApiResponse::validation($validator->errors()->toArray());
             }
 
-            $justificacion = DB::table('justificaciones')->where('id', $request->id_justificacion)->first();
+            $justificacion = DB::table('justificaciones')->where('asistencia_id', $request->id_asistencia)->first();
             // Verificar si la justificación existe
             if (!$justificacion) {
                 return ApiResponse::error('No se encontró la justificación.');
@@ -276,7 +279,7 @@ class JustificacionController extends Controller
             );
 
             DB::table('justificaciones')
-                ->where('id', $request->id_justificacion)
+                ->where('id', $justificacion->id)
                 ->update([
                     'contenido_html' => $contenido,
                     'asunto' => $request->asunto,
@@ -305,13 +308,15 @@ class JustificacionController extends Controller
             $archivos = DB::table('media_archivos')->where('asistencia_id', $id_asistencia)->get();
 
             // Enviar notificaciones
-            if ($request->id_notificacion)
-                NotificacionController::marcarLeido($request->id_notificacion);
+            if ($id_asistencia)
+                NotificacionController::marcarLeido(0, $id_asistencia);
 
             NotificacionController::crear([
+                'tipo_notificacion' => 0,
+                'asignado_id' => $id_asistencia,
                 'user_id' => $justificacion->user_id,
                 'is_admin' => 1,
-                'tipo_notificacion' => 2,
+                'titulo_id' => 2,
                 'descripcion_id' => 4,
                 'ruta_id' => 1,
                 'accion_id' => 2,
@@ -351,9 +356,7 @@ class JustificacionController extends Controller
             }
 
             // Verifica si ya existe una justificación para esa fecha
-            $yaJustificada = DB::table('justificaciones')->where('user_id', $asistencia->user_id)
-                ->where('fecha', $asistencia->fecha)
-                ->exists();
+            $yaJustificada = DB::table('justificaciones')->where('asistencia_id', $id)->exists();
 
             if ($yaJustificada) {
                 return ApiResponse::success('Ya existe una justificación para esa fecha.');
@@ -365,6 +368,7 @@ class JustificacionController extends Controller
             DB::beginTransaction();
             // Crea la justificación
             DB::table('justificaciones')->insert([
+                'asistencia_id' => $id,
                 'user_id' => $asistencia->user_id,
                 'fecha' => $asistencia->fecha,
                 'tipo_asistencia' => 7,
@@ -375,12 +379,15 @@ class JustificacionController extends Controller
             ]);
 
             NotificacionController::crear([
+                'tipo_notificacion' => 0,
+                'asignado_id' => $id,
                 'user_id' => $asistencia->user_id,
-                'tipo_notificacion' => 1,
+                'fecha' => $asistencia->fecha,
+                'titulo_id' => 1,
                 'descripcion_id' => 1,
                 'ruta_id' => 2,
                 'accion_id' => 1,
-                'payload_accion' => $asistencia->id,
+                'payload_accion' => $id,
                 'limite_show' => 'derivado'
             ]);
             DB::commit();

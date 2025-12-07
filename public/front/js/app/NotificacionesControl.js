@@ -87,7 +87,7 @@ class Notificaciones {
         if (lista.length) {
             let notificaionesPendientes = [];
             lista.forEach(n => {
-                const titulo = this.TITULOS[n.tipo_notificacion] ?? 'Notificación';
+                const titulo = this.TITULOS[n.titulo_id] ?? 'Notificación';
                 const sigla = (n.is_admin == 0) ? '<i class="fas fa-user-tie"></i>' : n.sigla ?? '??';
                 const descripcion = this.DESCRIPCION[n.descripcion_id] ?? '';
                 const desc = descripcion.replace(':personal', n.nombre);

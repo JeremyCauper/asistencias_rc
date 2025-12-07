@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
+    public $strFecha;
     public $horaLimitePuntual;
     public $horaLimiteDerivado;
     public $limitePuntual;
@@ -22,17 +23,17 @@ class Controller extends BaseController
 
     public function __construct()
     {
-        $strFecha = 'Y-m-d';
-        $this->horaActual = time();
-        // $this->horaActual = strtotime(date("{$strFecha} H:i:s"));
+        $this->strFecha = 'Y-m-06';
+        // $this->horaActual = time();
+        $this->horaActual = strtotime(date("{$this->strFecha} H:i:s"));
 
         $config_system = DB::table('config_system')->get()->keyBy('config');
 
         $this->horaLimitePuntual = $config_system['horaLimitePuntual']?->values ?? "08:30:59";
         $this->horaLimiteDerivado = $config_system['horaLimiteDerivado']?->values ?? "10:30:00";
 
-        $this->limitePuntual = strtotime(date("{$strFecha} {$this->horaLimitePuntual}"));
-        $this->limiteDerivado = strtotime(date("{$strFecha} {$this->horaLimiteDerivado}"));
+        $this->limitePuntual = strtotime(date("{$this->strFecha} {$this->horaLimitePuntual}"));
+        $this->limiteDerivado = strtotime(date("{$this->strFecha} {$this->horaLimiteDerivado}"));
     }
 
     public function getDay($date)

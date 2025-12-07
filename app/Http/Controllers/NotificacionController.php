@@ -51,9 +51,8 @@ class NotificacionController extends Controller
                 continue;
             }
 
-            $fechaArry = explode(' ', $noti->created_at);
             $limiteShow = match ($noti->limite_show) {
-                'derivado' => strtotime($fechaArry[0] . ' ' . $this->horaLimiteDerivado),
+                'derivado' => strtotime($noti->fecha . ' ' . $this->horaLimiteDerivado),
                 default => null
             };
 
@@ -66,7 +65,7 @@ class NotificacionController extends Controller
             $result[] = [
                 'id' => $noti->id,
                 'user_id' => $noti->user_id,
-                'tipo_notificacion' => $noti->tipo_notificacion,
+                'titulo_id' => $noti->titulo_id,
                 'is_admin' => $noti->is_admin,
                 'descripcion_id' => $noti->descripcion_id,
                 'sigla' => $per->nombre[0] . $per->apellido[0],
@@ -87,9 +86,12 @@ class NotificacionController extends Controller
     {
         // sanitiza y valida según convenga
         DB::table('notificaciones')->insert([
-            'user_id' => $data['user_id'],
-            'is_admin' => $data['is_admin'] ?? 0,
             'tipo_notificacion' => $data['tipo_notificacion'],
+            'asignado_id' => $data['asignado_id'],
+            'user_id' => $data['user_id'],
+            'fecha' => $data['fecha'] ?? now()->format('Y-m-d'),
+            'is_admin' => $data['is_admin'] ?? 0,
+            'titulo_id' => $data['titulo_id'],
             'descripcion_id' => $data['descripcion_id'],
             'ruta_id' => $data['ruta_id'],
             'accion_id' => $data['accion_id'] ?? null,
@@ -99,9 +101,9 @@ class NotificacionController extends Controller
         ]);
     }
 
-    public static function marcarLeido($id)
+    public static function marcarLeido($tipo, $asignado)
     {
-        DB::table('notificaciones')->where('id', $id)->update(['leido' => 1]);
+        DB::table('notificaciones')->where(['leido' => 0, 'tipo_notificacion' => $tipo, 'asignado_id' => $asignado])->update(['leido' => 1]);
     }
 
     public function borrar($id)

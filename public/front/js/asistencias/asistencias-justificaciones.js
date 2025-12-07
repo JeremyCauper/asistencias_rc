@@ -1,9 +1,6 @@
 $(document).ready(function () {
     const quillRespJustificacion = new EditorJustificacion('#respuesta-justificacion');
-    const quilleditorJustificar = new EditorJustificacion('#editor-justificar', {
-        noPasteImg: true,
-        botones: ['link', 'camera']
-    });
+    const quilleditorJustificar = new EditorJustificacion('#editor-justificar');
 
     $('.modal').on('hidden.bs.modal', function () {
         llenarInfoModal('modalJustificacion');
@@ -76,9 +73,7 @@ $(document).ready(function () {
             setMediaUrls('#modalJustificacion [aria-item="contenido_html"]', archivos);
 
             window.currentAsistenciaId = id;
-            window.currentJustificacionId = just.id;
             window.currentJustificacionStatus = just.estatus;
-            window.currentNotificacionId = noti.extractId('verJustificacion');
         } catch (error) {
             fMananger.formModalLoding('modalJustificacion', 'hide');
             console.error(error);
@@ -141,9 +136,7 @@ $(document).ready(function () {
                     "X-CSRF-TOKEN": __token
                 },
                 body: JSON.stringify({
-                    id_justificacion: window.currentJustificacionId,
                     id_asistencia: window.currentAsistenciaId,
-                    id_notificacion: window.currentNotificacionId,
                     estatus,
                     mensaje,
                     archivos: archivos_data
@@ -174,28 +167,51 @@ $(document).ready(function () {
         }
     };
 
-    window.justificarAsistencia = async (id, user_id, fecha, entrada, tipo_asistencia) => {
+    window.justificarAsistencia = async (id) => {
         try {
+            boxAlert.loading();
+            const endpoint = await fetch(`${__url}/asistencias-diarias/mostrar/${id}`);
+            const response = await endpoint.json();
+            const data = response.data;
+            const just = data.justificacion;
+
+            if (!response?.data) {
+                return boxAlert.box({
+                    i: 'error',
+                    t: 'No se pudo obtener la información',
+                    h: response.message || 'No se encontraron datos de la asistencia seleccionada.'
+                });
+            }
+
+            if (just && [10].includes(just?.estatus) && data.tipo_asistencia == 0) {
+                updateTable();
+                return boxAlert.box({
+                    i: 'info',
+                    h: 'Ya existe una justificación pendiente de derivación directa.'
+                });
+            }
+
+            Swal.close();
             $('#modalJustificar').modal('show');
             fMananger.formModalLoding('modalJustificar', 'show');
 
-            let tasistencia = tipoAsistencia.find(s => s.id == tipo_asistencia)
+            let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
                 || { descripcion: 'Pendiente', color: '#9fa6b2' };
             window.tasistencia = tasistencia;
 
             llenarInfoModal('modalJustificar', {
-                fecha: `${fecha} ${(entrada || '')}`,
+                fecha: `${data.fecha} ${(data.entrada || '')}`,
                 estado: `<span class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</span>`,
             });
             window.tasistencia = tasistencia;
 
-            window.user_id = user_id;
-            window.fecha = fecha;
-            window.tipo_asistencia = tipo_asistencia;
+            window.user_id = data.user_id;
+            window.tipo_asistencia = data.tipo_asistencia;
             window.currentAsistenciaId = id;
             fMananger.formModalLoding('modalJustificar', 'hide');
         } catch (e) {
-            console.log(e);
+            Swal.close();
+            console.error(e);
         }
     }
 
@@ -227,7 +243,6 @@ $(document).ready(function () {
             const body = JSON.stringify({
                 id_asistencia: window.currentAsistenciaId,
                 user_id: window.user_id,
-                fecha: window.fecha,
                 tipo_asistencia: window.tipo_asistencia,
                 asunto: $('#asunto').val(),
                 contenido: mensaje,

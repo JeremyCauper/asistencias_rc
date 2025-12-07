@@ -281,7 +281,7 @@
                         <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
                             <i class="fas fa-angle-left"></i>
                         </button>
-                        <input type="date" id="filtro_fecha" class="form-control" value="{{ date('Y-m-d') }}">
+                        <input type="date" id="filtro_fecha" class="form-control" value="{{ date('Y-m-06') }}">
                         <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
                             <i class="fas fa-angle-right"></i>
                         </button>

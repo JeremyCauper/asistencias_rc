@@ -1,6 +1,6 @@
 {
-  "name": "Control de Asistencia RC",
-  "short_name": "Asistencia RC",
+  "name": "Asistencias RC",
+  "short_name": "Asistencias RC",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#3b71ca",
