@@ -43,28 +43,28 @@
             },
             {
                 name: "estado-asistencias",
-                text: "PUNTUALES",
+                text: "Puntuales",
                 color: "success",
                 searchTable: 2,
                 chart: true,
             },
             {
                 name: "estado-faltas",
-                text: "FALTAS",
+                text: "Faltas",
                 color: "danger",
                 searchTable: 1,
                 chart: true,
             },
             {
                 name: "estado-tardanzas",
-                text: "TARDANZAS",
+                text: "Tardanzas",
                 color: "warning",
                 searchTable: 4,
                 chart: true,
             },
             {
                 name: "estado-justificados",
-                text: "JUSTIFICADOS",
+                text: "Justificados",
                 color: "info",
                 searchTable: 3,
                 chart: true,
@@ -220,7 +220,8 @@
                         }
                     },
                     columns: [{
-                            data: 'jornada', render: function(data, type, row) {
+                            data: 'jornada',
+                            render: function(data, type, row) {
                                 let dia = (data || 'domingo');
                                 return dia.charAt(0).toUpperCase() + dia.slice(1);
                             }
