@@ -1,8 +1,6 @@
 <?php
-$version = '1.1';
+$version = 9;
 return [
-    'version_global' => '1', // Por si quieres cambiar todo de golpe
-
     'css' => (object) [
         'mdb_all_min6_0_0' => 'front/vendor/mdboostrap/css/all.min6.0.0.css?v=' . $version,
         'mdb_min7_2_0' => 'front/vendor/mdboostrap/css/mdb.min7.2.0.css?v=' . $version,

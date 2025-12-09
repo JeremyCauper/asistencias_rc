@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Justificacion;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\NotificacionController;
+use App\Http\Controllers\PushController;
 use App\Services\JsonDB;
 use DateTime;
 use Exception;
@@ -322,6 +323,9 @@ class JustificacionController extends Controller
                 'accion_id' => 2,
                 'payload_accion' => $id_asistencia,
             ]);
+
+            PushController::sendForAdmin();
+
             DB::commit();
             return ApiResponse::success(
                 'Justificación respondida correctamente.',
@@ -332,6 +336,7 @@ class JustificacionController extends Controller
                     'archivos' => $archivos ?? []
                 ]
             );
+
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('[JustificacionController@responseJustificacionByUser] ' . $e->getMessage());
@@ -390,6 +395,8 @@ class JustificacionController extends Controller
                 'payload_accion' => $id,
                 'limite_show' => 'derivado'
             ]);
+
+            PushController::sendDerivado($asistencia->user_id);
             DB::commit();
 
             return ApiResponse::success('Se Derivó con exito, falta respuesta por parte del tecnico.');

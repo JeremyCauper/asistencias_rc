@@ -1,13 +1,56 @@
-const CACHE_NAME = "v1.1";
-const OFFLINE_URL = "offline?v=1" ;
+const VERSION_CACHE = 9;
+const CACHE_NAME = "v" + VERSION_CACHE;
+const OFFLINE_URL = "offline?v=1";
 
+// IndexedDB helper (simple y compacto)
+const DB_NAME = "pushCountersDB";
+const STORE_NAME = "countersStore";
+
+function openDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+
+        request.onupgradeneeded = event => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME);
+            }
+        };
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function getCount(tag) {
+    const db = await openDB();
+    return new Promise(resolve => {
+        const tx = db.transaction(STORE_NAME, "readonly");
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.get(tag);
+        req.onsuccess = () => resolve(req.result || 0);
+        req.onerror = () => resolve(0);
+    });
+}
+
+async function setCount(tag, value) {
+    const db = await openDB();
+    return new Promise(resolve => {
+        const tx = db.transaction(STORE_NAME, "readwrite");
+        const store = tx.objectStore(STORE_NAME);
+        store.put(value, tag);
+        tx.oncomplete = () => resolve(true);
+    });
+}
+
+// INSTALACIÓN -----------------------------------------------------
 self.addEventListener("install", event => {
     self.skipWaiting();
 
     event.waitUntil(
         caches.open(CACHE_NAME).then(async cache => {
             let ruta_principal = "front/";
-            let version = 1.1;
+            let version = CACHE_NAME;
 
             let biblioteca_front = [
                 // IMG
@@ -116,7 +159,7 @@ self.addEventListener("fetch", event => {
                 const esHTML =
                     event.request.mode === "navigate" ||
                     (event.request.method === "GET" &&
-                     accept.includes("text/html"));
+                        accept.includes("text/html"));
 
                 if (esHTML) {
                     return caches.match(OFFLINE_URL);
@@ -131,4 +174,90 @@ self.addEventListener("message", event => {
     if (event.data && event.data.action === "SKIP_WAITING") {
         self.skipWaiting();
     }
+});
+
+// NOTIFICACIONES --------------------------------------------------
+self.addEventListener("push", event => {
+    event.waitUntil(handlePush(event));
+});
+
+async function handlePush(event) {
+    const data = event.data.json();
+    const tag = data.tag || "default";
+
+    // Obtener contador persistente
+    let count = await getCount(tag);
+    count++;
+
+    // Guardar nuevo valor
+    await setCount(tag, count);
+
+    // Notificación combinada
+    const title = count === 1
+        ? data.title
+        : `${data.title} (${count})`;
+
+    const body = count === 1
+        ? data.body
+        : `Tienes ${count} notificaciones de ${tag} pendientes.`;
+
+    return self.registration.showNotification(title, {
+        body,
+        icon: data.icon192,
+        badge: data.badge,
+        vibrate: [100, 50, 100],
+        tag,
+        renotify: true,   // combina notificaciones del mismo tag
+        data: {
+            url: data.url,
+            tag,
+            count
+        }
+    });
+}
+
+// Manejador de cierre ----------------------------------------------
+self.addEventListener("notificationclose", event => {
+    const tag = event.notification.data?.tag || "default";
+    
+    setCount(tag, 0);
+});
+
+// Manejador de notificaciones de click -----------------------------
+self.addEventListener("notificationclick", event => {
+    event.notification.close();
+
+    const { url, tag } = event.notification.data || {};
+    if (!url) return;
+
+    setCount(tag || "default", 0);
+
+    event.waitUntil((async () => {
+            const urlToOpen = new URL(url);
+            const clientsList = await clients.matchAll({ type: "window", includeUncontrolled: true });
+
+            for (const client of clientsList) {
+                const clientURL = new URL(client.url);
+
+                // Coincidencia de dominio
+                const sameOrigin = clientURL.origin === urlToOpen.origin;
+
+                if (!sameOrigin) continue;
+
+                // Si el path coincide exacto → lo enfocas
+                if (clientURL.href === urlToOpen.href && "focus" in client) {
+                    return client.focus();
+                }
+
+                // Si es mismo host pero diferente path → lo rediriges dentro del mismo cliente
+                if ("navigate" in client) {
+                    client.navigate(url);
+                    return client.focus();
+                }
+            }
+
+            // No existe ventana → abre PWA o pestaña según corresponda
+            return clients.openWindow(url);
+        })()
+    );
 });

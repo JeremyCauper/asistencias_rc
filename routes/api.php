@@ -12,6 +12,7 @@ use App\Http\Controllers\MantenimientosDeveloper\Menu\MenuController;
 use App\Http\Controllers\MantenimientosDeveloper\Menu\SubMenuController;
 use App\Http\Controllers\MantenimientosDeveloper\TipoAsistencia\TipoAsistenciaController;
 use App\Http\Controllers\MantenimientosDeveloper\TipoModalidad\TipoModalidadController;
+use App\Http\Controllers\PushController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +38,5 @@ Route::put('/personal/{id}/estado', [SyncPersonalController::class, 'actualizarE
 
 Route::post('/asistencias/sincronizar', [SyncAsistenciasController::class, 'sincronizar']);
 Route::get('/asistencias/crearAsistenciasPorDia', [SyncAsistenciasController::class, 'crearAsistenciasPorDia']);
-
 
 Route::get('/asistencias/exportar-mensual', [ExcelAsistenciaController::class, 'listarAsistenciasMensual']);

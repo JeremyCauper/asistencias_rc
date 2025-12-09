@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Login;
 
 use App\Http\Controllers\Controller;
+use App\Models\PushSubscription;
 use App\Services\JsonDB;
 use Exception;
 use Illuminate\Http\Request;
@@ -51,8 +52,9 @@ class LoginController extends Controller
         $modulos = $this->obtenerModulos(Auth::user()->rol_system, Auth::user()->sistema);
         $nombres = $this->formatearNombre(Auth::user()->nombre, Auth::user()->apellido);
         $acceso = JsonDB::table('tipo_personal')->where('id', Auth::user()->rol_system)->first();
-        
+
         $request->session()->regenerate();
+
         session([
             'customModulos' => $modulos->menus,
             'rutaRedirect' => $modulos->ruta,
@@ -76,10 +78,12 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('/');
+        Auth::guard('web')->logout(); // Especifica el guard si usas varios, o simplemente Auth::logout();
+
+        $request->session()->invalidate(); // ESTA LÍNEA ES CRUCIAL
+        $request->session()->regenerateToken(); // También importante para seguridad
+
+        return redirect('/'); // O la ruta a la que quieras redirigir
     }
 
     public function actualizarPassword(Request $request)

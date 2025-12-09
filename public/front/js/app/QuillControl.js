@@ -211,22 +211,37 @@ class EditorJustificacion {
             return boxAlert.box({ i: "warning", h: "Acción disponible solo en dispositivos móviles." });
         }
 
-        const permiso = await navigator.permissions.query({ name: "camera" });
-        if (permiso.state === "denied") {
-            return boxAlert.box({ i: "warning", h: "Acceso a la cámara denegado, debe desbloquearlo del los ajustes del navegador." });
-        }
+        const permiso = await navigator.permissions.query({
+            name: "camera"
+        });
 
         if (permiso.state === "prompt") {
-            const ok = await this.solicitarPermisoCamara();
-            if (!ok) {
-                return boxAlert.box({ i: "warning", h: "Se denegó el acceso a la cámara." }); // si no lo otorga, detenemos
+            const ok = await solicitarPermisoCamara();
+
+            // Revisar nuevamente el estado después de pedir permiso  
+            const post = await navigator.permissions.query({
+                name: "camera"
+            });
+
+            if (!ok || post.state === "denied") {
+                return boxAlert.box({
+                    i: "warning",
+                    h: "Se denegó el acceso a la cámara."
+                });
             }
+        }
+
+        if (permiso.state === "denied") {
+            return boxAlert.box({
+                i: "warning",
+                h: "Acceso a la cámara denegado, debe desbloquearlo desde los ajustes del navegador."
+            });
         }
 
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = "image/*";
-        input.capture = "user"; // abre cámara (Android directo, iPhone por menú)
+        input.capture = "environment";
 
         const tiempoApertura = Date.now();  // Marca cuando abriste la cámara
 

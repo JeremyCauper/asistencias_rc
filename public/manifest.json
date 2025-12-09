@@ -2,6 +2,11 @@
   "name": "Asistencias RC",
   "short_name": "Asistencias RC",
   "start_url": "./",
+  "url_handlers": [
+    {
+      "origin": "https://iqzdk6m1vf8y8z3l.xpos.to"
+    }
+  ],
   "display": "standalone",
   "background_color": "#3b71ca",
   "theme_color": "#000000",

@@ -9,6 +9,7 @@ use App\Http\Controllers\Justificacion\JustificacionController;
 use App\Http\Controllers\Mantenimientos\AreaPersonal\AreaPersonalController;
 use App\Http\Controllers\MantenimientosDeveloper\Menu\MenuController;
 use App\Http\Controllers\MantenimientosDeveloper\TipoPersonal\TipoPersonalController;
+use App\Http\Controllers\PushController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConsultaController;
 use App\Http\Controllers\Controller;
@@ -177,6 +178,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/notificaciones/listar', [NotificacionController::class, 'listar']);
 
+    Route::post('/push/subscribe', [PushController::class, 'subscribe']);
 });
 
 Route::get('/obtener_modulos/{tipo}/{accesso}', [Controller::class, 'obtenerModulos']);
