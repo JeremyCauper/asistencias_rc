@@ -19,10 +19,6 @@ class PushController extends Controller
             ->where('origin', '!=', $request->origin)
             ->delete();
 
-        Log::info('Push subscription recibida', [
-            'encoding' => $request->contentEncoding
-        ]);
-
         PushSubscription::updateOrCreate(
             [
                 'endpoint' => $request->endpoint,
@@ -132,13 +128,11 @@ class PushController extends Controller
 
     public function test($id)
     {
-        Log::info("TEST PUSH ejecutado", ['id' => $id]);
-
         // self::sendForAdmin();
         self::send($id, [
-            'title' => 'Nueva justificación registrada',
-            'body' => 'Tiene una nueva justificación pendiente de revisión.',
-            'url' => secure_url('/asistencias-diarias'),
+            'title' => 'Nueva Notificación',
+            'body' => 'Tiene una nueva de prueba.',
+            'url' => secure_url('/'),
             'tag' => 'justificaciones',
         ]);
     }

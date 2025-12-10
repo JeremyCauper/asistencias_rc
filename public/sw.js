@@ -50,7 +50,7 @@ self.addEventListener("install", event => {
     event.waitUntil(
         caches.open(CACHE_NAME).then(async cache => {
             let ruta_principal = "front/";
-            let version = CACHE_NAME;
+            let version = VERSION_CACHE;
 
             let biblioteca_front = [
                 // IMG
@@ -149,22 +149,45 @@ self.addEventListener("activate", event => {
 
 // FETCH -----------------------------------------------------------
 self.addEventListener("fetch", event => {
+    const req = event.request;
+    const url = new URL(req.url);
+
+    // 1. Ignorar NO-GET (POST, PUT…), APIs, sockets, storage
+    if (
+        req.method !== "GET" ||
+        url.pathname.startsWith("/api") ||
+        url.pathname.startsWith("/broadcasting") ||
+        url.pathname.includes("socket.io") ||
+        url.pathname.startsWith("/storage")
+    ) {
+        return; // deja que la red lo maneje
+    }
+
+    // 2. HTML: estrategia network-first
+    const accept = req.headers.get("accept") || "";
+    const esHTML =
+        req.mode === "navigate" ||
+        (req.method === "GET" && accept.includes("text/html"));
+
+    if (esHTML) {
+        event.respondWith(
+            fetch(req)
+                .then(resp => resp)
+                .catch(() => caches.match(OFFLINE_URL))
+        );
+        return;
+    }
+
+    // 3. Assets estáticos: cache-first, pero solo si existe en cache
     event.respondWith(
-        caches.match(event.request).then(cached => {
+        caches.match(req).then(cached => {
             if (cached) return cached;
 
-            return fetch(event.request).catch(() => {
-                const accept = event.request.headers.get("accept") || "";
-
-                const esHTML =
-                    event.request.mode === "navigate" ||
-                    (event.request.method === "GET" &&
-                        accept.includes("text/html"));
-
-                if (esHTML) {
-                    return caches.match(OFFLINE_URL);
-                }
-            });
+            return fetch(req)
+                .then(resp => resp)
+                .catch(() => {
+                    // Opcional: no hacemos fallback aquí
+                });
         })
     );
 });

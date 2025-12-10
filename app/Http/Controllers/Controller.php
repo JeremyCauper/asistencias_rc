@@ -23,7 +23,7 @@ class Controller extends BaseController
 
     public function __construct()
     {
-        $this->strFecha = 'Y-m-06';
+        $this->strFecha = 'Y-m-d';
         // $this->horaActual = time();
         $this->horaActual = strtotime(date("{$this->strFecha} H:i:s"));
 
