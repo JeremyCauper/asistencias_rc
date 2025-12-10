@@ -110,6 +110,10 @@ class JustificacionController extends Controller
                     'tipo_asistencia' => $tipoAsistencia,
                     'entrada' => $entrada
                 ]);
+
+                if ($request->tipo_asistencia == 4) {
+                    DB::table('descuentos_asistencia')->where('asistencia_id', $id_asistencia)->delete();
+                }
             }
 
             if (!empty($request->archivos)) {
@@ -207,6 +211,10 @@ class JustificacionController extends Controller
                 DB::table('asistencias')->where('id', $id_asistencia)->update([
                     'tipo_asistencia' => $tipoAsistencia,
                 ]);
+            }
+
+            if ($justificacion->tipo_asistencia == 4 && $estatus == 1) {
+                DB::table('descuentos_asistencia')->where('asistencia_id', $id_asistencia)->delete();
             }
 
             if (!empty($request->archivos)) {
