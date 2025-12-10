@@ -15,7 +15,13 @@ class PushController extends Controller
     {
         $userId = Auth::user()->user_id;
 
-        PushSubscription::whereNot('origin', $request->origin)->delete();
+        PushSubscription::where('user_id', $userId)
+            ->where('origin', '!=', $request->origin)
+            ->delete();
+
+        Log::info('Push subscription recibida', [
+            'encoding' => $request->contentEncoding
+        ]);
 
         PushSubscription::updateOrCreate(
             [
@@ -27,7 +33,7 @@ class PushController extends Controller
                 'origin' => $request->origin,
                 'public_key' => $request->keys['p256dh'],
                 'auth_token' => $request->keys['auth'],
-                'content_encoding' => $request->contentEncoding,
+                'content_encoding' => $request->contentEncoding ?? 'aesgcm',
             ]
         );
 
@@ -63,7 +69,16 @@ class PushController extends Controller
                 ])));
             }
 
+            Log::info("PUSH debug: iniciando flush()", ['count' => $subscriptions->count()]);
+
             foreach ($webPush->flush() as $report) {
+                Log::info('PUSH DEBUG', [
+                    'endpoint' => $report->getRequest()->getUri()->__toString(),
+                    'success' => $report->isSuccess(),
+                    'statusCode' => $report->getResponse()->getStatusCode(),
+                    'reason' => $report->getReason(),
+                ]);
+
                 $endpoint = $report->getRequest()->getUri()->__toString();
 
                 // Si NO tuvo éxito, lo borramos
@@ -76,6 +91,11 @@ class PushController extends Controller
 
             return true;
         } catch (\Exception $e) {
+            Log::error("PUSH ERROR GENERAL", [
+                'msg' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ]);
             return false;
         }
     }
@@ -98,12 +118,6 @@ class PushController extends Controller
                 'tag' => 'justificaciones',
             ]);
         }
-        // EnviarPushAdminsJob::dispatch($ids, [
-        //     'title' => 'Justificación pendiente',
-        //     'body' => 'Tiene una nueva justificación pendiente de revisión.',
-        //     'url' => secure_url('/asistencias-diarias'),
-        //     'tag' => 'justificaciones',
-        // ]);
     }
 
     public static function sendDerivado($id)
@@ -114,16 +128,12 @@ class PushController extends Controller
             'url' => secure_url('/asistencias/misasistencias'),
             'tag' => 'derivaciones',
         ]);
-        // EnviarPushJob::dispatch($id, [
-        //     'title' => 'Derivación pendiente',
-        //     'body' => 'Se registró una derivación, por favor subir su evidencia.',
-        //     'url' => secure_url('/asistencias/misasistencias'),
-        //     'tag' => 'derivaciones',
-        // ]);
     }
 
     public function test($id)
     {
+        Log::info("TEST PUSH ejecutado", ['id' => $id]);
+
         // self::sendForAdmin();
         self::send($id, [
             'title' => 'Nueva justificación registrada',
