@@ -178,6 +178,7 @@ self.addEventListener("message", event => {
 
 // NOTIFICACIONES --------------------------------------------------
 self.addEventListener("push", event => {
+    console.log("push recibido", event.data.text());
     event.waitUntil(handlePush(event));
 });
 
@@ -219,7 +220,7 @@ async function handlePush(event) {
 // Manejador de cierre ----------------------------------------------
 self.addEventListener("notificationclose", event => {
     const tag = event.notification.data?.tag || "default";
-    
+
     setCount(tag, 0);
 });
 
@@ -233,31 +234,31 @@ self.addEventListener("notificationclick", event => {
     setCount(tag || "default", 0);
 
     event.waitUntil((async () => {
-            const urlToOpen = new URL(url);
-            const clientsList = await clients.matchAll({ type: "window", includeUncontrolled: true });
+        const urlToOpen = new URL(url);
+        const clientsList = await clients.matchAll({ type: "window", includeUncontrolled: true });
 
-            for (const client of clientsList) {
-                const clientURL = new URL(client.url);
+        for (const client of clientsList) {
+            const clientURL = new URL(client.url);
 
-                // Coincidencia de dominio
-                const sameOrigin = clientURL.origin === urlToOpen.origin;
+            // Coincidencia de dominio
+            const sameOrigin = clientURL.origin === urlToOpen.origin;
 
-                if (!sameOrigin) continue;
+            if (!sameOrigin) continue;
 
-                // Si el path coincide exacto → lo enfocas
-                if (clientURL.href === urlToOpen.href && "focus" in client) {
-                    return client.focus();
-                }
-
-                // Si es mismo host pero diferente path → lo rediriges dentro del mismo cliente
-                if ("navigate" in client) {
-                    client.navigate(url);
-                    return client.focus();
-                }
+            // Si el path coincide exacto → lo enfocas
+            if (clientURL.href === urlToOpen.href && "focus" in client) {
+                return client.focus();
             }
 
-            // No existe ventana → abre PWA o pestaña según corresponda
-            return clients.openWindow(url);
-        })()
+            // Si es mismo host pero diferente path → lo rediriges dentro del mismo cliente
+            if ("navigate" in client) {
+                client.navigate(url);
+                return client.focus();
+            }
+        }
+
+        // No existe ventana → abre PWA o pestaña según corresponda
+        return clients.openWindow(url);
+    })()
     );
 });
