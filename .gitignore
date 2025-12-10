@@ -5,6 +5,7 @@
 /public/storage
 /public/asistencias_rc
 /storage/*.key
+/storage/config/jsons/ajustes.json
 /vendor
 .env
 .env.backup

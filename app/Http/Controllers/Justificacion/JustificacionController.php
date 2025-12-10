@@ -414,7 +414,7 @@ class JustificacionController extends Controller
 
     private function createBodyMessage($id_tasistencia, $mensaje = '', $contenido = '', $timestamp, $title = '')
     {
-        $config = session()->get('config');
+        $config = config('ajustes.config');
         $mensaje_decodificado = $mensaje ? "<hr><div>{$this->base64ToUtf8($mensaje)}</div>" : '';
         $contenido_decodificado = $contenido ? $this->base64ToUtf8($contenido) : '';
 

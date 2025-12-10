@@ -25,5 +25,11 @@ class AppServiceProvider extends ServiceProvider
         View::share('ft_js', config('front_assets.js'));
         View::share('ft_json', config('front_assets.json'));
         View::share('ft_img', config('front_assets.img'));
+
+        View::composer('*', function ($view) {
+            $view->with('customModulos', config('ajustes.customModulos'));
+            $view->with('tipo_sistema', config('ajustes.tipo_sistema'));
+            $view->with('config', config('ajustes.config'));
+        });
     }
 }

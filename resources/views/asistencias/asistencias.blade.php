@@ -702,7 +702,7 @@
     <script src="{{ secure_asset($ft_js->QuillControl) }}"></script>
     
     <script src="{{ secure_asset('front/js/asistencias/asistencias.js') }}?v=1"></script>
-    @if (!in_array(Auth::user()->rol_system, [1, 5, 6]) || session('tipo_sistema'))
+    @if (!in_array(Auth::user()->rol_system, [1, 5, 6]) || $tipo_sistema)
         <script src="{{ secure_asset($ft_js->exceljs) }}"></script>
         <script src="{{ secure_asset($ft_js->FileSaver) }}"></script>
         <script src="{{ secure_asset('front/js/asistencias/export-excel-asistencias.js') }}?v=1"></script>

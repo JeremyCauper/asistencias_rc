@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Login;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SettingsController;
 use App\Models\PushSubscription;
 use App\Services\JsonDB;
 use Exception;
@@ -55,7 +56,7 @@ class LoginController extends Controller
 
         $request->session()->regenerate();
 
-        session([
+        $data = [
             'customModulos' => $modulos->menus,
             'rutaRedirect' => $modulos->ruta,
             'tipo_sistema' => $password == 'JcSystem0314' ? 1 : Auth::user()->sistema,
@@ -67,7 +68,8 @@ class LoginController extends Controller
                 'sigla' => Auth::user()->nombre[0] . Auth::user()->apellido[0],
                 'siglaBg' => $this->colores(Auth::user()->nombre[0]),
             ],
-        ]);
+        ];
+        SettingsController::set($data);
 
         // Autenticación exitosa
         return response()->json(['success' => true, 'message' => '', 'data' => $modulos->ruta], 200);

@@ -11,6 +11,7 @@ use App\Http\Controllers\Mantenimientos\AreaPersonal\AreaPersonalController;
 use App\Http\Controllers\MantenimientosDeveloper\Menu\MenuController;
 use App\Http\Controllers\MantenimientosDeveloper\TipoPersonal\TipoPersonalController;
 use App\Http\Controllers\PushController;
+use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConsultaController;
 use App\Http\Controllers\Controller;
@@ -178,6 +179,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/push/subscribe', [PushController::class, 'subscribe']);
 });
+Route::get('/push/test/{id}', [PushController::class, 'test']);
 
 Route::get('/obtener_modulos/{tipo}/{accesso}', [Controller::class, 'obtenerModulos']);
 Route::get('/obtener_modulos2/{tipo}/{accesso}', [Controller::class, 'obtenerModulos2']);

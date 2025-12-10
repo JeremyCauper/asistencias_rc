@@ -124,10 +124,11 @@ class PushController extends Controller
 
     public function test($id)
     {
+        // self::sendForAdmin();
         self::send($id, [
             'title' => 'Nueva justificación registrada',
             'body' => 'Tiene una nueva justificación pendiente de revisión.',
-            'url' => secure_url('/asistencias/misasistencias'),
+            'url' => secure_url('/asistencias-diarias'),
             'tag' => 'justificaciones',
         ]);
     }

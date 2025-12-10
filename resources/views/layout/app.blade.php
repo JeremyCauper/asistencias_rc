@@ -6,7 +6,7 @@
         <script>
             const url_base_logeo = '{{ secure_url('') }}';
 
-            if (0 == {{ session('tipo_sistema') }}) {
+            if (0 == {{ $tipo_sistema }}) {
                 (async function() {
                     let abierto = false;
                     let consultando = false;
@@ -119,24 +119,24 @@
             <!-- Body -->
             <div class="sidebar__body">
 
-                @foreach (session('customModulos') as $menu)
-                    <div class="sidebar__item" {{ !empty($menu->submenu) ? 'data-collapse="false"' : '' }}>
-                        <a class="sidebar__link{{ !empty($menu->submenu) ? ' sidebar__link-menu' : '' }}"
-                            {{ empty($menu->submenu) ? 'data-mdb-ripple-init' : '' }}
-                            href="{{ !empty($menu->submenu) ? 'javascript:void(0)' : url($menu->ruta) }}"
-                            @if (!empty($menu->submenu)) data-menu="{{ $menu->ruta }}" @endif>
+                @foreach ($customModulos as $menu)
+                    <div class="sidebar__item" {{ !empty($menu['submenu']) ? 'data-collapse="false"' : '' }}>
+                        <a class="sidebar__link{{ !empty($menu['submenu']) ? ' sidebar__link-menu' : '' }}"
+                            {{ empty($menu['submenu']) ? 'data-mdb-ripple-init' : '' }}
+                            href="{{ !empty($menu['submenu']) ? 'javascript:void(0)' : url($menu['ruta']) }}"
+                            @if (!empty($menu['submenu'])) data-menu="{{ $menu['ruta'] }}" @endif>
                             <div class="sidebar__link-icon">
-                                <i class="{{ $menu->icon }}"></i>
+                                <i class="{{ $menu['icon'] }}"></i>
                             </div>
                             <div class="sidebar__link-text">
-                                <div class="truncate">{{ $menu->descripcion }}</div>
+                                <div class="truncate">{{ $menu['descripcion'] }}</div>
                             </div>
                         </a>
 
-                        @if (!empty($menu->submenu))
+                        @if (!empty($menu['submenu']))
                             <ul class="sidebar__submenu">
-                                @foreach ($menu->submenu as $categoria => $submenus)
-                                    @if ($categoria !== 'sin_categoria' || count($menu->submenu) > 1)
+                                @foreach ($menu['submenu'] as $categoria => $submenus)
+                                    @if ($categoria !== 'sin_categoria' || count($menu['submenu']) > 1)
                                         <li class="sidebar__submenu-title">
                                             {{ $categoria === 'sin_categoria' ? 'Otros' : $categoria }}
                                         </li>
@@ -144,8 +144,8 @@
                                     @foreach ($submenus as $submenu)
                                         <li class="sidebar__submenu-item">
                                             <a class="sidebar__submenu-link" data-mdb-ripple-init
-                                                href="{{ url($submenu->ruta) }}" data-ruta="{{ $menu->ruta }}">
-                                                {{ $submenu->descripcion }}
+                                                href="{{ url($submenu['ruta']) }}" data-ruta="{{ $menu['ruta'] }}">
+                                                {{ $submenu['descripcion'] }}
                                             </a>
                                         </li>
                                     @endforeach
@@ -162,29 +162,29 @@
                 <button class="sidebar__footer-user hover-layout" data-mdb-dropdown-init data-mdb-ripple-init
                     aria-expanded="false" data-mdb-dropdown-animation="off">
                     <div class="sidebar__footer-user-sigla"
-                        style="background-color: {{ session()->get('config')->siglaBg }};">
-                        {{ session()->get('config')->sigla }}
+                        style="background-color: {{ $config->siglaBg }};">
+                        {{ $config->sigla }}
                     </div>
                     <div class="sidebar__footer-user-text">
-                        <h5>{{ session()->get('config')->nombre_perfil }}</h5>
-                        <h6>{{ session()->get('config')->acceso }}</h6>
+                        <h5>{{ $config->nombre_perfil }}</h5>
+                        <h6>{{ $config->acceso }}</h6>
                     </div>
                 </button>
                 <ul class="dropdown-menu py-2 px-1" style="width: 15.25rem !important;">
                     <li>
                         <div class="dropdown-header align-items-center d-flex" style="user-select: none">
                             <div class="align-items-center d-flex justify-content-center rounded-circle text-white"
-                                style="width: 2rem; height: 2rem; background-color: {{ session()->get('config')->siglaBg }};">
-                                {{ session()->get('config')->sigla }}
+                                style="width: 2rem; height: 2rem; background-color: {{ $config->siglaBg }};">
+                                {{ $config->sigla }}
                             </div>
                             <div class="dropdown-header__text ms-2">
-                                <span>{{ session()->get('config')->nombre_perfil }}</span>
-                                <p class="fw-bold mb-0 mt-2 text-secondary">{{ session()->get('config')->acceso }}</p>
+                                <span>{{ $config->nombre_perfil }}</span>
+                                <p class="fw-bold mb-0 mt-2 text-secondary">{{ $config->acceso }}</p>
                             </div>
                         </div>
                         <hr class="mx-2 mt-0 mb-1">
                     </li>
-                    <li><a class="dropdown-item rounded" href="{{ secure_url('/logout') }}">
+                    <li><a class="dropdown-item rounded" href="{{ secure_url('/logout') }}" onclick="boxAlert.loading()">
                             <i class="fas fa-arrow-right-from-bracket me-2"></i> Cerrar sesión
                         </a>
                     </li>
@@ -229,8 +229,8 @@
                             <button class="btn-notification hover-layout" data-mdb-dropdown-init data-mdb-ripple-init
                                 aria-expanded="false" data-mdb-dropdown-animation="off">
                                 <div class="sigla"
-                                    style="background-color: {{ session()->get('config')->siglaBg }};">
-                                    {{ session()->get('config')->sigla }}
+                                    style="background-color: {{ $config->siglaBg }};">
+                                    {{ $config->sigla }}
                                 </div>
                             </button>
                             <ul class="dropdown-menu pt-1 pb-2 px-1">
@@ -238,15 +238,15 @@
                                     <div class="dropdown-header p-0" style="user-select: none">
                                         <div class="text-center rounded py-3 px-2">
                                             <div class="align-items-center d-flex justify-content-center rounded-circle text-white mx-auto"
-                                                style="width: 3.5rem; height: 3.5rem; font-size: 1.5rem; background-color: {{ session()->get('config')->siglaBg }};">
-                                                {{ session()->get('config')->sigla }}
+                                                style="width: 3.5rem; height: 3.5rem; font-size: 1.5rem; background-color: {{ $config->siglaBg }};">
+                                                {{ $config->sigla }}
                                             </div>
-                                            <p class="fw-bold mb-0 mt-2 text-secondary">{{ session()->get('config')->nombre_perfil }}</p>
-                                            <small>{{ session()->get('config')->acceso }}</small>
+                                            <p class="fw-bold mb-0 mt-2 text-secondary">{{ $config->nombre_perfil }}</p>
+                                            <small>{{ $config->acceso }}</small>
                                         </div>
                                     </div>
                                 </li>
-                                <li class="px-2"><a class="dropdown-item rounded" href="{{ secure_url('/logout') }}">
+                                <li class="px-2"><a class="dropdown-item rounded" href="{{ secure_url('/logout') }}" onclick="boxAlert.loading()">
                                         <i class="fas fa-arrow-right-from-bracket me-2"></i> Cerrar sesión
                                     </a>
                                 </li>

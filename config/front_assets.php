@@ -1,5 +1,5 @@
 <?php
-$version = 9;
+$version = 1;
 return [
     'css' => (object) [
         'mdb_all_min6_0_0' => 'front/vendor/mdboostrap/css/all.min6.0.0.css?v=' . $version,
