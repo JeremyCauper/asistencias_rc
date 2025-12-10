@@ -112,7 +112,7 @@ class AsistenciaController extends Controller
 
                 $tipoAsistencias = JsonDB::table('tipo_asistencia')->select('id', 'descripcion', 'color')->get()->keyBy('id');
 
-                $fechaActual = date('Y-m-d') == $fecha;
+                $fechaActual = date($this->strFecha) == $fecha;
                 $mesActual = date('Y-m') == date('Y-m', $strtoTime);
 
                 foreach ($personal as $p) {
@@ -132,22 +132,17 @@ class AsistenciaController extends Controller
 
                     $descuento = $descuentos->get($p->user_id) ?? null;
                     $justificacion = $justificaciones->get($p->user_id) ?? null;
-
                     $notificacion = false;
-                    $entrada = $asistencia?->entrada ?? null;
-                    $tipo_asistencia = $asistencia?->tipo_asistencia ?? 0;
                     $asistencia_id = $asistencia?->id ?? null;
+                    $entrada = $asistencia?->entrada ?? null;
 
                     // Si aún no tiene registro pero debería asistir
-                    if (
-                        (
-                            (!$entrada || $entrada) && in_array($tipo_modalidad, [1, 2]) && $tipo_asistencia == 1 && $this->horaActual < $this->limitePuntual ||
-                            $justificacion && in_array($justificacion->estatus, [0, 10])
-                        ) &&
-                        $fechaActual
-                    ) {
-                        $tipo_asistencia = 0;
-                    }
+                    $tipo_asistencia = match (true) {
+                        (empty($entrada) && in_array($tipo_modalidad, [1, 2]) && ($asistencia?->tipo_asistencia ?? 0) == 1 && $this->horaActual < $this->limitePuntual) => 0,
+                        (!empty($justificacion) && in_array($justificacion?->estatus, [10]) && $this->horaActual < $this->limiteDerivado) => 0,
+                        (!empty($justificacion) && in_array($justificacion?->estatus, [0]) && $this->horaActual > $this->limiteDerivado) => 0,
+                        default => $asistencia?->tipo_asistencia ?? 0,
+                    };
 
                     // Acciones dinámicas
                     $acciones = [];
@@ -195,12 +190,12 @@ class AsistenciaController extends Controller
                     ) {
                         $tipoAsistencia = $tipoAsistencias->get($tipo_asistencia);
                         $acciones[] = [
-                            'funcion' => "justificarAsistencia({$asistencia_id}, {$p->user_id}, '{$fecha}', '{$entrada}', {$tipo_asistencia})",
+                            'funcion' => "justificarAsistencia({$asistencia_id})",
                             'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencia->color . ';"></i>Justificar ' . $tipoAsistencia->descripcion
                         ];
                     }
 
-                    $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object)['color' => '#9fa6b2', 'descripcion' => 'Pendiente'];
+                    $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object) ['color' => '#9fa6b2', 'descripcion' => 'Pendiente'];
 
                     $listado[] = [
                         'tipo_personal' => $p->rol_system,
@@ -271,30 +266,24 @@ class AsistenciaController extends Controller
                 ->where('asistencia_id', $asistencia->id)
                 ->get();
 
-            $tipo_asistencia = $asistencia?->tipo_asistencia;
-            $fechaActual = date('Y-m-d') == $asistencia->fecha;
+            $entrada = $asistencia?->entrada;
+            $tipo_modalidad = $asistencia?->tipo_modalidad;
+            $fechaActual = date($this->strFecha) == $asistencia?->fecha;
 
-            if (
-                !$asistencia->entrada &&
-                in_array($asistencia->tipo_modalidad, [1, 2]) &&
-                $tipo_asistencia == 1 &&
-                $this->horaActual < $this->limitePuntual &&
-                $fechaActual
-            ) {
-                $tipo_asistencia = 0;
-            }
-
-            if ($justificacion && $justificacion->estatus == 10 && $this->horaActual < $this->limiteDerivado) {
-                $tipo_asistencia = 7;
-            }
+            $tipo_asistencia = match (true) {
+                (empty($entrada) && in_array($tipo_modalidad, [1, 2]) && ($asistencia?->tipo_asistencia ?? 0) == 1 && $this->horaActual < $this->limitePuntual) => 0,
+                (!empty($justificacion) && in_array($justificacion?->estatus, [10]) && $this->horaActual < $this->limiteDerivado) => 0,
+                (!empty($justificacion) && in_array($justificacion?->estatus, [0]) && $this->horaActual > $this->limiteDerivado) => 0,
+                default => $asistencia?->tipo_asistencia ?? 0,
+            };
 
             // Agregar los datos adicionales a la respuesta
             $detalle = [
                 'id' => $asistencia->id,
                 'user_id' => $asistencia->user_id,
                 'fecha' => $asistencia->fecha,
-                'entrada' => $asistencia->entrada,
-                'tipo_modalidad' => $asistencia->tipo_modalidad,
+                'entrada' => $entrada,
+                'tipo_modalidad' => $tipo_modalidad,
                 'tipo_asistencia' => $tipo_asistencia,
                 'personal' => $personal,
                 'descuento' => $descuento,

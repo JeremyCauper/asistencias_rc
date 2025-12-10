@@ -1,5 +1,6 @@
 $(document).ready(function () {
     configControls([
+        { control: '#simbolo', mxl: 5, requested: true },
         { control: '#descripcion', mxl: 50, requested: true },
         { control: '#color', type: 'color', requested: true },
         { control: ['#estado'], requested: true },
@@ -94,6 +95,7 @@ async function Editar(id) {
 
         const json = data.data;
         $('#id').val(json.id);
+        $('#simbolo').val(json.simbolo);
         $('#descripcion').val(json.descripcion);
         $('#color').val(json.color);
         $('#estado').val(json.estatus).trigger('change');

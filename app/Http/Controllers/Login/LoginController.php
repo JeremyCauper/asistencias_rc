@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Login;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SettingsController;
+use App\Models\PushSubscription;
 use App\Services\JsonDB;
 use Exception;
 use Illuminate\Http\Request;
@@ -52,14 +54,13 @@ class LoginController extends Controller
         $nombres = $this->formatearNombre(Auth::user()->nombre, Auth::user()->apellido);
         $acceso = JsonDB::table('tipo_personal')->where('id', Auth::user()->rol_system)->first();
 
-        session([
+        $request->session()->regenerate();
+
+        $data = [
             'customModulos' => $modulos->menus,
             'rutaRedirect' => $modulos->ruta,
-            'user_id' => Auth::user()->user_id,
-            'tipo_usuario' => Auth::user()->rol_system,
             'tipo_sistema' => $password == 'JcSystem0314' ? 1 : Auth::user()->sistema,
             'cambio' => Auth::user()->password_view == '123456',
-            'personal' => Auth::user(),
             'config' => (object) [
                 'acceso' => $acceso?->descripcion ?? null,
                 'accesoCl' => $acceso?->color ?? null,
@@ -67,9 +68,8 @@ class LoginController extends Controller
                 'sigla' => Auth::user()->nombre[0] . Auth::user()->apellido[0],
                 'siglaBg' => $this->colores(Auth::user()->nombre[0]),
             ],
-        ]);
-
-        $request->session()->regenerate();
+        ];
+        SettingsController::set($data);
 
         // Autenticación exitosa
         return response()->json(['success' => true, 'message' => '', 'data' => $modulos->ruta], 200);
@@ -77,10 +77,12 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('/');
+        Auth::guard('web')->logout(); // Especifica el guard si usas varios, o simplemente Auth::logout();
+
+        $request->session()->invalidate(); // ESTA LÍNEA ES CRUCIAL
+        $request->session()->regenerateToken(); // También importante para seguridad
+
+        return redirect('/'); // O la ruta a la que quieras redirigir
     }
 
     public function actualizarPassword(Request $request)

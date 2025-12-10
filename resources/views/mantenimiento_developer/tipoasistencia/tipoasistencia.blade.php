@@ -6,7 +6,7 @@
     <script src="{{ secure_asset('front/vendor/multiselect/bootstrap_multiselect.js') }}?v=1.0.0"></script>
     <script src="{{ secure_asset('front/vendor/multiselect/form_multiselect.js') }}?v=1.0.0"></script>
     <script>
-        const tipoModalidad = <?= $tipoModalidad ?>;
+        const tipoModalidad = @json($tipoModalidad);
     </script>
 @endsection
 @section('content')
@@ -34,6 +34,7 @@
                             <thead>
                                 <tr class="text-bg-primary text-center">
                                     <th>#</th>
+                                    <th>Simbolo</th>
                                     <th>Descripcion</th>
                                     <th>Color</th>
                                     <th>Registrado</th>
@@ -61,6 +62,9 @@
                                 },
                                 columns: [{
                                         data: 'id'
+                                    },
+                                    {
+                                        data: 'simbolo'
                                     },
                                     {
                                         data: 'descripcion'
@@ -112,6 +116,9 @@
                     <div class="row">
                         <input type="hidden" name="id" id="id">
                         <div class="col-6 mb-2">
+                            <input class="form-control" id="simbolo">
+                        </div>
+                        <div class="col-6 mb-2">
                             <input class="form-control" id="descripcion">
                         </div>
                         <div class="col-6 col-md-3 mb-2">
@@ -138,5 +145,5 @@
 
 @section('scripts')
     <script></script>
-    <script src="{{ secure_asset('front/js/mantenimiento_dev/tipoasistencia/tipoasistencia.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/js/mantenimiento_dev/tipoasistencia/tipoasistencia.js') }}?v=1"></script>
 @endsection

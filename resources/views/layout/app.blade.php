@@ -6,7 +6,7 @@
         <script>
             const url_base_logeo = '{{ secure_url('') }}';
 
-            if (0 == {{ session('tipo_sistema') }}) {
+            if (0 == {{ $tipo_sistema }}) {
                 (async function() {
                     let abierto = false;
                     let consultando = false;
@@ -51,40 +51,41 @@
     @endif
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="manifest" href="{{ secure_asset('manifest.json') }}?v=1.0.0">
+    <link rel="manifest" href="{{ secure_asset($ft_json->manifest) }}">
     <meta name="theme-color" content="#000000">
 
-    <link rel="shortcut icon" href="{{ secure_asset('front/images/app/icons/icon.png') }}?v=1.0.0" />
+    <link rel="shortcut icon" href="{{ secure_asset($ft_img->icon) }}" />
     <title>@yield('title')</title>
     <!-- Font Awesome -->
-    <link href="{{ secure_asset('front/vendor/mdboostrap/css/all.min6.0.0.css') }}?v=1.0.0" rel="stylesheet">
+    <link href="{{ secure_asset($ft_css->mdb_all_min6_0_0) }}" rel="stylesheet">
     <!-- MDB -->
-    <link href="{{ secure_asset('front/vendor/mdboostrap/css/mdb.min7.2.0.css') }}?v=1.0.0" rel="stylesheet">
+    <link href="{{ secure_asset($ft_css->mdb_min7_2_0) }}" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ secure_asset('front/vendor/sweetalert/animate.min.css') }}?v=1.0.0">
-    <link rel="stylesheet" href="{{ secure_asset('front/vendor/sweetalert/default.css') }}?v=1.0.0">
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->select2) }}">
+
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->sweet_animate) }}">
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->sweet_default) }}">
     <!-- Google Fonts -->
-    <link rel="stylesheet" href="{{ secure_asset('front/vendor/fontGoogle/fonts.css') }}?v=1.0.0" />
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->fonts) }}" />
     <!-- Home -->
-    <link href="{{ secure_asset('front/layout/layout.css') }}?v=1.0.0" rel="stylesheet">
-    <link href="{{ secure_asset('front/css/app.css') }}?v=1.0.0" rel="stylesheet">
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->layout) }}">
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->app) }}">
     <script>
         const __url = "{{ secure_url('') }}";
         const __asset = "{{ secure_asset('front/') }}";
         const __token = "{{ csrf_token() }}";;
     </script>
     <!-- JQuery -->
-    <script src="{{ secure_asset('front/vendor/jquery/jquery.min.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset($ft_js->jquery) }}"></script>
     @if (session('cambio') && env('APP_ENV') == 'produccion')
-        <script id="cambioPass" src="{{ secure_asset('front/js/actualizarPassword.js') }}?v=1.0.0"></script>
+        <script id="cambioPass" src="{{ secure_asset($ft_js->actualizarPassword) }}"></script>
     @endif
-    <script src="{{ secure_asset('front/vendor/sweetalert/sweetalert2@11.js') }}?v=1.0.0"></script>
-    <link href="{{ secure_asset('front/vendor/select/select2.min.css') }}?v=1.0.0" rel="stylesheet">
-    <script src="{{ secure_asset('front/vendor/select/select2.min.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/vendor/select/form_select2.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/js/app/AlertMananger.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/vendor/dataTable/jquery.dataTables.min.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/js/app.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset($ft_js->sweet_sweetalert2) }}"></script>
+    <script src="{{ secure_asset($ft_js->select2) }}"></script>
+    <script src="{{ secure_asset($ft_js->form_select2) }}"></script>
+    <script src="{{ secure_asset($ft_js->AlertMananger) }}"></script>
+    <script src="{{ secure_asset($ft_js->jquery_dataTables) }}"></script>
+    <script src="{{ secure_asset($ft_js->app) }}"></script>
 
     @yield('cabecera')
 </head>
@@ -118,24 +119,24 @@
             <!-- Body -->
             <div class="sidebar__body">
 
-                @foreach (session('customModulos') as $menu)
-                    <div class="sidebar__item" {{ !empty($menu->submenu) ? 'data-collapse="false"' : '' }}>
-                        <a class="sidebar__link{{ !empty($menu->submenu) ? ' sidebar__link-menu' : '' }}"
-                            {{ empty($menu->submenu) ? 'data-mdb-ripple-init' : '' }}
-                            href="{{ !empty($menu->submenu) ? 'javascript:void(0)' : url($menu->ruta) }}"
-                            @if (!empty($menu->submenu)) data-menu="{{ $menu->ruta }}" @endif>
+                @foreach ($customModulos as $menu)
+                    <div class="sidebar__item" {{ !empty($menu['submenu']) ? 'data-collapse="false"' : '' }}>
+                        <a class="sidebar__link{{ !empty($menu['submenu']) ? ' sidebar__link-menu' : '' }}"
+                            {{ empty($menu['submenu']) ? 'data-mdb-ripple-init' : '' }}
+                            href="{{ !empty($menu['submenu']) ? 'javascript:void(0)' : url($menu['ruta']) }}"
+                            @if (!empty($menu['submenu'])) data-menu="{{ $menu['ruta'] }}" @endif>
                             <div class="sidebar__link-icon">
-                                <i class="{{ $menu->icon }}"></i>
+                                <i class="{{ $menu['icon'] }}"></i>
                             </div>
                             <div class="sidebar__link-text">
-                                <div class="truncate">{{ $menu->descripcion }}</div>
+                                <div class="truncate">{{ $menu['descripcion'] }}</div>
                             </div>
                         </a>
 
-                        @if (!empty($menu->submenu))
+                        @if (!empty($menu['submenu']))
                             <ul class="sidebar__submenu">
-                                @foreach ($menu->submenu as $categoria => $submenus)
-                                    @if ($categoria !== 'sin_categoria' || count($menu->submenu) > 1)
+                                @foreach ($menu['submenu'] as $categoria => $submenus)
+                                    @if ($categoria !== 'sin_categoria' || count($menu['submenu']) > 1)
                                         <li class="sidebar__submenu-title">
                                             {{ $categoria === 'sin_categoria' ? 'Otros' : $categoria }}
                                         </li>
@@ -143,8 +144,8 @@
                                     @foreach ($submenus as $submenu)
                                         <li class="sidebar__submenu-item">
                                             <a class="sidebar__submenu-link" data-mdb-ripple-init
-                                                href="{{ url($submenu->ruta) }}" data-ruta="{{ $menu->ruta }}">
-                                                {{ $submenu->descripcion }}
+                                                href="{{ url($submenu['ruta']) }}" data-ruta="{{ $menu['ruta'] }}">
+                                                {{ $submenu['descripcion'] }}
                                             </a>
                                         </li>
                                     @endforeach
@@ -154,36 +155,6 @@
                     </div>
                 @endforeach
 
-                {{-- <div class="sidebar__item">
-                    <a class="sidebar__link" data-mdb-ripple-init href="javascript:void(0)">
-                        <div class="sidebar__link-icon">
-                            <i class="fas fa-magnifying-glass"></i>
-                        </div>
-                        <div class="sidebar__link-text">
-                            <div class="truncate">Buscar chats</div>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="sidebar__item" data-collapse="false">
-                    <a class="sidebar__link sidebar__link-menu is-active" href="javascript:void(0)">
-                        <div class="sidebar__link-icon">
-                            <i class="far fa-images"></i>
-                        </div>
-                        <div class="sidebar__link-text">
-                            <div class="truncate">Biblioteca</div>
-                        </div>
-                    </a>
-                    <ul class="sidebar__submenu">
-                        <li class="sidebar__submenu-title">Biblioteca Titulo</li>
-                        <li class="sidebar__submenu-item"><a class="sidebar__submenu-link is-active"
-                                data-mdb-ripple-init>Biblioteca 1</a>
-                        </li>
-                        <li class="sidebar__submenu-item"><a class="sidebar__submenu-link"
-                                data-mdb-ripple-init>Biblioteca 2</a></li>
-                    </ul>
-                </div> --}}
-
             </div>
 
             <!-- Footer -->
@@ -191,29 +162,29 @@
                 <button class="sidebar__footer-user hover-layout" data-mdb-dropdown-init data-mdb-ripple-init
                     aria-expanded="false" data-mdb-dropdown-animation="off">
                     <div class="sidebar__footer-user-sigla"
-                        style="background-color: {{ session()->get('config')->siglaBg }};">
-                        {{ session()->get('config')->sigla }}
+                        style="background-color: {{ $config->siglaBg }};">
+                        {{ $config->sigla }}
                     </div>
                     <div class="sidebar__footer-user-text">
-                        <h5>{{ session()->get('config')->nombre_perfil }}</h5>
-                        <h6>{{ session()->get('config')->acceso }}</h6>
+                        <h5>{{ $config->nombre_perfil }}</h5>
+                        <h6>{{ $config->acceso }}</h6>
                     </div>
                 </button>
-                <ul class="dropdown-menu py-2 px-1">
+                <ul class="dropdown-menu py-2 px-1" style="width: 15.25rem !important;">
                     <li>
                         <div class="dropdown-header align-items-center d-flex" style="user-select: none">
                             <div class="align-items-center d-flex justify-content-center rounded-circle text-white"
-                                style="width: 2rem; height: 2rem; background-color: {{ session()->get('config')->siglaBg }};">
-                                {{ session()->get('config')->sigla }}
+                                style="width: 2rem; height: 2rem; background-color: {{ $config->siglaBg }};">
+                                {{ $config->sigla }}
                             </div>
                             <div class="dropdown-header__text ms-2">
-                                <span>{{ session()->get('config')->nombre_perfil }}</span>
-                                <p class="fw-bold mb-0 mt-2 text-secondary">{{ session()->get('config')->acceso }}</p>
+                                <span>{{ $config->nombre_perfil }}</span>
+                                <p class="fw-bold mb-0 mt-2 text-secondary">{{ $config->acceso }}</p>
                             </div>
                         </div>
                         <hr class="mx-2 mt-0 mb-1">
                     </li>
-                    <li><a class="dropdown-item rounded" href="{{ secure_url('/logout') }}">
+                    <li><a class="dropdown-item rounded" href="{{ secure_url('/logout') }}" onclick="boxAlert.loading()">
                             <i class="fas fa-arrow-right-from-bracket me-2"></i> Cerrar sesión
                         </a>
                     </li>
@@ -223,20 +194,14 @@
         <!-- MAIN CONTENT -->
         <main class="flex-grow-1">
             <!-- Navbar -->
-            <nav class="navbar pe-3 ps-1">
+            <nav class="navbar pe-3" style="padding-left: 16px;">
                 <div class="navbar-brand mb-0 p-0">
                     <div class="logo_rci"></div>
                 </div>
                 <div class="navbar-brand mb-0 p-0">
-                    <div>
-                        <link href="{{ secure_asset('front/layout/swicth_layout.css') }}?v=1.0.0" rel="stylesheet">
-                        <input id="check" type="checkbox">
-                        <label for="check" class="check-trail">
-                            <span class="check-handler"></span>
-                        </label>
-                        <script src="{{ secure_asset('front/layout/swicth_layout.js') }}?v=1.0.0"></script>
-                    </div>
-                    <!-- Notifications -->
+                    {{-- Switch Layout --}}
+                    @include('layout.partials.swicth_layout')
+                    {{-- Notifications --}}
                     <div class="ms-1">
                         <div class="dropdown" id="contenedor-notificaciones">
                             <button data-mdb-dropdown-init class="btn-notification hover-layout" role="button"
@@ -254,25 +219,39 @@
                                     <div class="dropdown-text text-center text-muted py-3">
                                         Sin notificaciones
                                     </div>
-                                    {{-- <div class="dropdown-item p-2 my-1 rounded" role="button">
-                                        <small class="noti-hora">2025-11-12 12:00:00</small>
-                                        <div class="noti-contenido d-flex align-items-center mt-2">
-                                            <span class="img-xs rounded-circle text-white acronimo"
-                                                style="background-color:#7367F0;">
-                                                JB
-                                            </span>
-
-                                            <div class="mx-2">
-                                                <p class="fw-bold mb-1 titulo">Justificación de derivación.
-                                                </p>
-                                                <small class="text-muted mb-0 descripcion">Jair Buitron C.</small>
-                                            </div>
-                                        </div>
-                                    </div> --}}
                                 </div>
                             </div>
                         </div>
-                        <script src="{{ secure_asset('front/js/app/NotificacionesControl.js') }}?v=1.0.0"></script>
+                        <script src="{{ secure_asset($ft_js->NotificacionesControl) }}"></script>
+                    </div>
+                    <div class="ms-1">
+                        <div class="dropdown" id="contenedor-sigla">
+                            <button class="btn-notification hover-layout" data-mdb-dropdown-init data-mdb-ripple-init
+                                aria-expanded="false" data-mdb-dropdown-animation="off">
+                                <div class="sigla"
+                                    style="background-color: {{ $config->siglaBg }};">
+                                    {{ $config->sigla }}
+                                </div>
+                            </button>
+                            <ul class="dropdown-menu pt-1 pb-2 px-1">
+                                <li class="p-2">
+                                    <div class="dropdown-header p-0" style="user-select: none">
+                                        <div class="text-center rounded py-3 px-2">
+                                            <div class="align-items-center d-flex justify-content-center rounded-circle text-white mx-auto"
+                                                style="width: 3.5rem; height: 3.5rem; font-size: 1.5rem; background-color: {{ $config->siglaBg }};">
+                                                {{ $config->sigla }}
+                                            </div>
+                                            <p class="fw-bold mb-0 mt-2 text-secondary">{{ $config->nombre_perfil }}</p>
+                                            <small>{{ $config->acceso }}</small>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="px-2"><a class="dropdown-item rounded" href="{{ secure_url('/logout') }}" onclick="boxAlert.loading()">
+                                        <i class="fas fa-arrow-right-from-bracket me-2"></i> Cerrar sesión
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="ms-1">
                         <button class="sidebar-close__navbar hover-layout" type="button"
@@ -289,7 +268,7 @@
             </div>
 
         </main>
-        <script src="{{ secure_asset('front/layout/toggle_template.js') }}?v=1.0.0"></script>
+        <script src="{{ secure_asset($ft_js->toggle_template) }}"></script>
     </div>
 
     <script>
@@ -301,43 +280,11 @@
         }, 1000);
     </script>
     <!-- MDB -->
-    <script type="text/javascript" src="{{ secure_asset('front/vendor/mdboostrap/js/mdb.umd.min7.2.0.js') }}?v=1.0.0">
-    </script>
-    <script src="{{ secure_asset('front/layout/template.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/js/app/FormMananger.js') }}?v=1.0.0"></script>
-    <!-- plugins:js -->
-    <script>
-        if ("serviceWorker" in navigator) {
-            // 1. Registramos el Service Worker
-            navigator.serviceWorker.register("{{ secure_asset('sw.js') }}?v=1.0.1");
+    <script type="text/javascript" src="{{ secure_asset($ft_js->mdb_umd_min7_2_0) }}"></script>
+    <script src="{{ secure_asset($ft_js->template) }}"></script>
+    <script src="{{ secure_asset($ft_js->FormMananger) }}"></script>
 
-            // 2. Variable para evitar que la página se recargue en bucle infinito
-            let refreshing = false;
-
-            // 3. Escuchamos el evento "controllerchange"
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                if (refreshing) return;
-                refreshing = true;
-
-                // 4. Mostramos la Alerta de SweetAlert
-                Swal.fire({
-                    title: '<h6>¡Actualización Disponible!</h6>',
-                    text: 'Hay una nueva versión del sistema. Es necesario recargar para aplicar los cambios.',
-                    icon: 'info',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, recargar',
-                    cancelButtonText: 'Más tarde',
-                    allowOutsideClick: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.reload();
-                    }
-                });
-            });
-        }
-    </script>
+    @include('layout.partials.service_worker')
     @yield('scripts')
 </body>
 

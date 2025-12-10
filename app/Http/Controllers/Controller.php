@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
+    public $strFecha;
     public $horaLimitePuntual;
     public $horaLimiteDerivado;
     public $limitePuntual;
@@ -22,17 +23,17 @@ class Controller extends BaseController
 
     public function __construct()
     {
-        $strFecha = 'Y-m-d';
-        $this->horaActual = time();
-        // $this->horaActual = strtotime(date("{$strFecha} H:i:s"));
+        $this->strFecha = 'Y-m-06';
+        // $this->horaActual = time();
+        $this->horaActual = strtotime(date("{$this->strFecha} H:i:s"));
 
         $config_system = DB::table('config_system')->get()->keyBy('config');
 
         $this->horaLimitePuntual = $config_system['horaLimitePuntual']?->values ?? "08:30:59";
         $this->horaLimiteDerivado = $config_system['horaLimiteDerivado']?->values ?? "10:30:00";
 
-        $this->limitePuntual = strtotime(date("{$strFecha} {$this->horaLimitePuntual}"));
-        $this->limiteDerivado = strtotime(date("{$strFecha} {$this->horaLimiteDerivado}"));
+        $this->limitePuntual = strtotime(date("{$this->strFecha} {$this->horaLimitePuntual}"));
+        $this->limiteDerivado = strtotime(date("{$this->strFecha} {$this->horaLimiteDerivado}"));
     }
 
     public function getDay($date)
@@ -101,6 +102,12 @@ class Controller extends BaseController
         $tipo_menu = [0];
         if ($tipo_acceso == 5) {
             array_push($tipo_menu, 1);
+        }
+
+        $inventario_asignado = DB::table('inventario_vehicular_asignado')->where('user_id', Auth::user()->user_id)->exists();
+
+        if (in_array(Auth::user()->rol_system, [2, 4 ,7]) || $inventario_asignado || Auth::user()->sistema == 1) {
+            $filteredIds[6] = [];
         }
 
         // Obtener y filtrar los menús del JSON

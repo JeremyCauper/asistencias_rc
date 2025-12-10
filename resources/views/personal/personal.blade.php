@@ -2,72 +2,80 @@
 @section('title', 'Control del Personal')
 
 @section('cabecera')
-    <link rel="stylesheet" href="{{ secure_asset('front/css/app/personal/personal.css') }}?v=1.0.0">
+    <link rel="stylesheet" href="{{ secure_asset('front/css/app/personal/personal.css') }}?v=1">
     <script>
         const empresa = @json($empresa);
         const areas = @json($areas);
         const tipoModalidad = @json($tipoModalidad);
         const tipoPersonal = @json($tipoPersonal);
     </script>
-    <script src="{{ secure_asset('front/vendor/full-calendar/index.global.min.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset($ft_js->full_calendar) }}"></script>
 @endsection
 
 @section('content')
     <!-- 🔹 Resumen contable -->
-    <div class="row mb-4">
-        <div class="col-xxl-3 col-sm-6 p-1">
-            <div class="card">
-                <div class="card-body card-resumen">
-                    <div class="d-flex align-items-center">
-                        <i class="fa-solid fa-users text-primary fa-2x ps-1 pe-3"></i>
-                        <div class="ms-3 w-100">
-                            <p class="fw-bold mb-1">Sincronizados</p>
-                            <p class="text-muted mb-0" id="totalSync">0</p>
+    <section class="card mb-3">
+        <div class="card-body py-lg-2 px-md-3">
+            <div class="row gx-lg-5">
+                <div class="col-md-3 col-6 my-2 py-2">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-shrink-0">
+                            <div class="p-3 rounded-4" style="background-color: #e2eaf7">
+                                <i class="fa-solid fa-users text-primary fa-fw"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-2">
+                            <p class="fw-bold mb-1">Total</p>
+                            <p class="text-muted mb-0 fs-4" id="totalSync">0</p>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-xxl-3 col-sm-6 p-1">
-            <div class="card">
-                <div class="card-body card-resumen">
-                    <div class="d-flex align-items-center">
-                        <i class="fa-solid fa-cloud-arrow-up text-success fa-2x ps-1 pe-3"></i>
-                        <div class="ms-3 w-100">
-                            <p class="fw-bold mb-1">Creando en sensor</p>
-                            <p class="text-muted mb-0" id="totalCreando">0</p>
+
+                <div class="col-md-3 col-6 my-2 py-2">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-shrink-0">
+                            <div class="p-3 rounded-4" style="background-color: #e2eaf7">
+                                <i class="fa-solid fa-cloud-arrow-up text-primary fa-fw"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-2">
+                            <p class="fw-bold mb-1">Sincronizando</p>
+                            <p class="text-muted mb-0 fs-4" id="totalCreando">0</p>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-xxl-3 col-sm-6 p-1">
-            <div class="card">
-                <div class="card-body card-resumen">
-                    <div class="d-flex align-items-center">
-                        <i class="fa-solid fa-pen-to-square text-warning fa-2x ps-1 pe-3"></i>
-                        <div class="ms-3 w-100">
+
+                <div class="col-md-3 col-6 my-2 py-2">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-shrink-0">
+                            <div class="p-3 rounded-4" style="background-color: #e2eaf7">
+                                <i class="fa-solid fa-pen-to-square text-primary fa-fw"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-2">
                             <p class="fw-bold mb-1">Modificando</p>
-                            <p class="text-muted mb-0" id="totalModificando">0</p>
+                            <p class="text-muted mb-0 fs-4" id="totalModificando">0</p>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-xxl-3 col-sm-6 p-1">
-            <div class="card">
-                <div class="card-body card-resumen">
-                    <div class="d-flex align-items-center">
-                        <i class="fa-solid fa-exclamation-triangle text-danger fa-2x ps-1 pe-3"></i>
-                        <div class="ms-3 w-100">
+
+                <div class="col-md-3 col-6 my-2 py-2">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-shrink-0">
+                            <div class="p-3 rounded-4" style="background-color: #e2eaf7">
+                                <i class="fa-solid fa-exclamation-triangle text-primary fa-fw"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-2">
                             <p class="fw-bold mb-1">Eliminando</p>
-                            <p class="text-muted mb-0" id="totalEliminando">0</p>
+                            <p class="text-muted mb-0 fs-4" id="totalEliminando">0</p>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- 🔹 Tabla -->
     <div class="card">
@@ -378,10 +386,10 @@
             </div>
         </div>
     </div>
-    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}?v=1"></script>
 
 
     <!-- 🔹 Scripts -->
-    <script src="{{ secure_asset('front/vendor/inputmask/jquery.inputmask.bundle.min.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/js/personal/personal.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset($ft_js->jquery_inputmask_bundle) }}"></script>
+    <script src="{{ secure_asset('front/js/personal/personal.js') }}?v=1"></script>
 @endsection

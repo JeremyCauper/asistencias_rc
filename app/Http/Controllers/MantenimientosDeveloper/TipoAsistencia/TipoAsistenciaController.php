@@ -16,6 +16,7 @@ class TipoAsistenciaController extends Controller
     {
         JsonDB::schema('tipo_asistencia', [
             'id'          => 'int|primary_key|auto_increment',
+            'simbolo'     => 'string|unique:"Simbolo"',
             'descripcion' => 'string|unique:"Descripcion"',
             'color'       => 'string|unique:"Color"',
             'estatus'     => 'int|default:1',
@@ -48,6 +49,7 @@ class TipoAsistenciaController extends Controller
                 ->map(function ($val) {
                     return [
                         'id'          => $val->id,
+                        'simbolo'     => $val->simbolo,
                         'descripcion' => $val->descripcion,
                         'color'       => $val->color,
                         'estado'      => $this->formatEstado($val->estatus),
@@ -74,6 +76,7 @@ class TipoAsistenciaController extends Controller
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'simbolo'     => 'required|string|max:5',
             'descripcion' => 'required|string|max:50',
             'color'       => 'required|string|max:20',
             'estado'      => 'required|integer|in:0,1',
@@ -85,6 +88,7 @@ class TipoAsistenciaController extends Controller
 
         try {
             JsonDB::table('tipo_asistencia')->insert([
+                'simbolo'     => $request->simbolo,
                 'descripcion' => $request->descripcion,
                 'color'       => $request->color,
                 'estatus'     => $request->estado,
@@ -118,6 +122,7 @@ class TipoAsistenciaController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'id'          => 'required|integer',
+            'simbolo'     => 'required|string|max:5',
             'descripcion' => 'required|string|max:50',
             'color'       => 'required|string|max:20',
             'estado'      => 'required|integer|in:0,1',
@@ -129,6 +134,7 @@ class TipoAsistenciaController extends Controller
 
         try {
             JsonDB::table('tipo_asistencia')->where('id', $request->id)->update([
+                'simbolo'     => $request->simbolo,
                 'descripcion' => $request->descripcion,
                 'color'       => $request->color,
                 'estatus'     => $request->estado,

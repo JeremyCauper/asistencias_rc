@@ -2,6 +2,7 @@
     {
         "id": 1,
         "descripcion": "Falta",
+        "simbolo": "FA",
         "color": "#dc3545",
         "estatus": 1,
         "selected": 0,
@@ -12,6 +13,7 @@
     {
         "id": 2,
         "descripcion": "Puntual",
+        "simbolo": "P",
         "color": "#28a745",
         "estatus": 1,
         "selected": 0,
@@ -44,6 +46,7 @@
     {
         "id": 5,
         "descripcion": "No Aplica",
+        "simbolo": "NA",
         "color": "#262626",
         "estatus": 1,
         "selected": 0,
@@ -76,6 +79,7 @@
     {
         "id": 8,
         "descripcion": "Vacaciones",
+        "simbolo": "V",
         "color": "#00b6a9",
         "estatus": 1,
         "selected": 0,

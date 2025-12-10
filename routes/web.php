@@ -5,10 +5,13 @@ use App\Http\Controllers\Api\Syncs\SyncPersonalController;
 use App\Http\Controllers\Asistencia\AsistenciaController;
 use App\Http\Controllers\Asistencia\ExcelAsistenciaController;
 use App\Http\Controllers\Asistencia\MisAsistenciaController;
+use App\Http\Controllers\InventarioVehicular\InventarioVehicularController;
 use App\Http\Controllers\Justificacion\JustificacionController;
 use App\Http\Controllers\Mantenimientos\AreaPersonal\AreaPersonalController;
 use App\Http\Controllers\MantenimientosDeveloper\Menu\MenuController;
 use App\Http\Controllers\MantenimientosDeveloper\TipoPersonal\TipoPersonalController;
+use App\Http\Controllers\PushController;
+use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConsultaController;
 use App\Http\Controllers\Controller;
@@ -20,23 +23,12 @@ use App\Http\Controllers\MantenimientosDeveloper\TipoModalidad\TipoModalidadCont
 use App\Http\Controllers\MediaArchivo\MediaArchivoController;
 use App\Http\Controllers\NotificacionController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
 Route::get('/', function () {
     return redirect('/inicio');
 });
 
 Route::get('/inicio', [LoginController::class, 'view'])->name('login')->middleware('guest:web');
-Route::post('/iniciar', [LoginController::class, 'login']);
+Route::post('/iniciar', [LoginController::class, 'login'])->middleware('web');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/offline', function () {
     return view('offline');
@@ -175,9 +167,19 @@ Route::middleware('auth')->group(function () {
             Route::post('/eliminar', 'delete')->name('delete');
         });
 
+    Route::controller(InventarioVehicularController::class)
+        ->prefix('inventario-vehicular')
+        ->as('inventariovehicular.')
+        ->group(function () {
+            Route::get('/', 'view')->name('view');
+            Route::get('/listar', 'listar')->name('listar');
+        });
+
     Route::get('/notificaciones/listar', [NotificacionController::class, 'listar']);
 
+    Route::post('/push/subscribe', [PushController::class, 'subscribe']);
 });
+Route::get('/push/test/{id}', [PushController::class, 'test']);
 
 Route::get('/obtener_modulos/{tipo}/{accesso}', [Controller::class, 'obtenerModulos']);
 Route::get('/obtener_modulos2/{tipo}/{accesso}', [Controller::class, 'obtenerModulos2']);

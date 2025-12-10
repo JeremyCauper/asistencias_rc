@@ -3,7 +3,7 @@
 
 @section('cabecera')
     <script>
-        let menus = <?= $menus ?>;
+        let menus = @json($menus);
     </script>
 @endsection
 @section('content')
@@ -150,5 +150,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ secure_asset('front/js/mantenimiento_dev/menu/submenu.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/js/mantenimiento_dev/menu/submenu.js') }}?v=1"></script>
 @endsection

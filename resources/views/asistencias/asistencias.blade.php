@@ -2,18 +2,18 @@
 @section('title', 'Asistencias del personal')
 
 @section('cabecera')
-    <link href="{{ secure_asset('front/vendor/quill/quill.snow.css') }}?v=1.0.0" rel="stylesheet">
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->quill_show) }}">
+    <link rel="stylesheet" type="text/css" href="{{ secure_asset($ft_css->daterangepicker) }}">
 
-    <script type="text/javascript" src="{{ secure_asset('front/vendor/daterangepicker/moment.min.js') }}?v=1.0.0"></script>
-    <script type="text/javascript" src="{{ secure_asset('front/vendor/daterangepicker/daterangepicker.min.js') }}?v=1.0.0"></script>
-    <link rel="stylesheet" type="text/css" href="{{ secure_asset('front/vendor/daterangepicker/daterangepicker.css') }}?v=1.0.0">
+    <script type="text/javascript" src="{{ secure_asset($ft_js->daterangepicker_moment) }}"></script>
+    <script type="text/javascript" src="{{ secure_asset($ft_js->daterangepicker) }}"></script>
 
-    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap.bundle.min.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap_multiselect.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/vendor/multiselect/form_multiselect.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset($ft_js->bootstrap_bundle) }}"></script>
+    <script src="{{ secure_asset($ft_js->bootstrap_multiselect) }}"></script>
+    <script src="{{ secure_asset($ft_js->form_multiselect) }}"></script>
 
-    <script src="{{ secure_asset('front/vendor/echartjs/echarts.min.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/js/app/ChartMananger.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset($ft_js->echarts) }}"></script>
+    <script src="{{ secure_asset($ft_js->ChartMananger) }}"></script>
     <script>
         const tipoAsistencia = @json($tipoAsistencia);
         const tipoPersonal = @json($tipoPersonal);
@@ -59,44 +59,44 @@
 
         let incidencia_estados = [{
                 name: "estado-total",
-                text: "Total",
-                color: "purple",
+                text: "Total de Asistencias",
+                color: "secondary",
                 searchTable: 0,
                 chart: false,
             },
             {
                 name: "estado-asistencias",
-                text: "PUNTUALES",
+                text: "Puntuales",
                 color: "success",
                 searchTable: 2,
                 chart: true,
             },
             {
                 name: "estado-faltas",
-                text: "FALTAS",
+                text: "Faltas",
                 color: "danger",
                 searchTable: 1,
                 chart: true,
             },
             {
                 name: "estado-tardanzas",
-                text: "TARDANZAS",
+                text: "Tardanzas",
                 color: "warning",
                 searchTable: 4,
                 chart: true,
             },
             {
                 name: "estado-justificados",
-                text: "JUSTIFICADOS",
+                text: "Justificados",
                 color: "info",
                 searchTable: 3,
                 chart: true,
             },
             {
-                name: "estado-noaplica",
-                text: "NO APLICA",
-                color: "dark",
-                searchTable: 6,
+                name: "estado-derivados",
+                text: "Derivados",
+                color: "purple",
+                searchTable: 7,
                 chart: true,
             },
         ];
@@ -154,8 +154,7 @@
             }
         });
 
-        function setEstados(obj_estado) {
-            let total = obj_estado.reduce((acc, item) => acc + item.value, 0);
+        function setEstados(obj_estado, total) {
             $('#count-estado-total').text(total);
 
             obj_estado.forEach((e, i) => {
@@ -239,7 +238,7 @@
                     </select>
                 </div>
                 <div class="col-md-5 col-6 my-1">
-                    @if (in_array(session('tipo_usuario'), [5, 6]))
+                    @if (in_array(Auth::user()->rol_system, [5, 6]))
                         <label class="form-label-filter" for="areas">Area</label>
                         <div class="form-control">{{ $areas[0]->descripcion }}</div>
                         <input type="hidden" id="areas" name="areas" value="{{ $areas[0]->id }}">
@@ -248,7 +247,7 @@
                         <select id="areas" name="areas" multiple="multiple" class="multiselect-select-all">
                             @foreach ($areas as $v)
                                 <option
-                                    {{ in_array(session('tipo_usuario'), [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
+                                    {{ in_array(Auth::user()->rol_system, [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
                                     value="{{ $v->id }}">
                                     {{ $v->descripcion }}
                                 </option>
@@ -282,7 +281,7 @@
                         <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
                             <i class="fas fa-angle-left"></i>
                         </button>
-                        <input type="date" id="filtro_fecha" class="form-control" value="{{ date('Y-m-d') }}">
+                        <input type="date" id="filtro_fecha" class="form-control" value="{{ date('Y-m-06') }}">
                         <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
                             <i class="fas fa-angle-right"></i>
                         </button>
@@ -297,7 +296,7 @@
                     <tr class="text-bg-primary text-center">
                         <th>Personal</th>
                         <th>Area</th>
-                        <th>Tipo</th>
+                        <th>Tipo Personal</th>
                         <th>Modalidad</th>
                         <th>Estado</th>
                         <th>Entrada</th>
@@ -336,7 +335,6 @@
                                 `<b>${feriado.tipo}:</b> ${feriado.nombre}` : '');
 
                             let lista = json.data?.listado || [];
-                            // cargarNotificaciones(lista)
                             let estadosAsistencias = [{
                                     name: "estado-faltas",
                                     value: lista.filter(a => a.tipo_asistencia === 1).length
@@ -354,11 +352,11 @@
                                     value: lista.filter(a => a.tipo_asistencia === 4).length
                                 },
                                 {
-                                    name: "estado-noaplica",
-                                    value: lista.filter(a => a.tipo_asistencia === 6).length
+                                    name: "estado-derivados",
+                                    value: lista.filter(a => a.tipo_asistencia === 7).length
                                 },
                             ];
-                            setEstados(estadosAsistencias);
+                            setEstados(estadosAsistencias, lista.length);
                             return lista;
                         },
                         error: function(xhr, error, thrown) {
@@ -658,7 +656,7 @@
                             <select id="tipoArea" name="tipoArea" multiple="multiple" class="multiselect-select-all">
                                 @foreach ($areas as $v)
                                     <option
-                                        {{ in_array(session('tipo_usuario'), [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
+                                        {{ in_array(Auth::user()->rol_system, [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
                                         value="{{ $v->id }}">
                                         {{ $v->descripcion }}
                                     </option>
@@ -698,18 +696,16 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ secure_asset('front/js/app/MediaViewerControl.js') }}?v=1.0.0"></script>
-    <!-- Librería Browser Image Compression -->
-    <script src="{{ secure_asset('front/vendor/compression/compressor.min.js') }}?v=1.0.0"></script>
-    <!-- Incluye ExcelJS desde CDN -->
-    <script src="{{ secure_asset('front/vendor/quill/quill.min.js') }}?v=1.0.0"></script>
-
-    <script src="{{ secure_asset('front/js/app/QuillControl.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/js/asistencias/asistencias.js') }}?v=1.0.0"></script>
-    @if (!in_array(session('tipo_usuario'), [1, 5, 6]) || session('tipo_sistema'))
-        <script src="{{ secure_asset('front/vendor/exceljs/exceljs.min.js') }}?v=1.0.0"></script>
-        <script src="{{ secure_asset('front/vendor/exceljs/FileSaver.min.js') }}?v=1.0.0"></script>
-        <script src="{{ secure_asset('front/js/asistencias/export-excel-asistencias.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset($ft_js->MediaViewerControl) }}"></script>
+    <script src="{{ secure_asset($ft_js->compressor) }}"></script>
+    <script src="{{ secure_asset($ft_js->quill) }}"></script>
+    <script src="{{ secure_asset($ft_js->QuillControl) }}"></script>
+    
+    <script src="{{ secure_asset('front/js/asistencias/asistencias.js') }}?v=1"></script>
+    @if (!in_array(Auth::user()->rol_system, [1, 5, 6]) || $tipo_sistema)
+        <script src="{{ secure_asset($ft_js->exceljs) }}"></script>
+        <script src="{{ secure_asset($ft_js->FileSaver) }}"></script>
+        <script src="{{ secure_asset('front/js/asistencias/export-excel-asistencias.js') }}?v=1"></script>
     @endif
-    <script src="{{ secure_asset('front/js/asistencias/asistencias-justificaciones.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/js/asistencias/asistencias-justificaciones.js') }}?v=1.1"></script>
 @endsection
