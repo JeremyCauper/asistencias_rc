@@ -115,6 +115,7 @@
         })();
 
         (async () => {
+            if (!("serviceWorker" in navigator)) return;
             const solicitarPermisoCamara = async () => {
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({

@@ -104,6 +104,12 @@ class Controller extends BaseController
             array_push($tipo_menu, 1);
         }
 
+        $inventario_asignado = DB::table('inventario_vehicular_asignado')->where('user_id', Auth::user()->user_id)->exists();
+
+        if (in_array(Auth::user()->rol_system, [2, 4 ,7]) || $inventario_asignado || Auth::user()->sistema == 1) {
+            $filteredIds[6] = [];
+        }
+
         // Obtener y filtrar los menús del JSON
         $menu = JsonDB::table('menu')->get()
             ->filter(function ($item) use ($tipo_menu, $filteredIds) {

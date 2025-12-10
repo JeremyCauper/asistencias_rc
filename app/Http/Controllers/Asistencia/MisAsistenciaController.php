@@ -45,7 +45,7 @@ class MisAsistenciaController extends Controller
     {
         try {
             $fecha = $request->query('fecha', date('Y-m'));
-            $user_id = session('user_id');
+            $user_id = Auth::user()->user_id;
             $fechaIni = date("Y-m-01", strtotime($fecha));
             $fechaFin = date("Y-m-t", strtotime($fecha));
 

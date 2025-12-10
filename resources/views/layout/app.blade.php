@@ -155,36 +155,6 @@
                     </div>
                 @endforeach
 
-                {{-- <div class="sidebar__item">
-                    <a class="sidebar__link" data-mdb-ripple-init href="javascript:void(0)">
-                        <div class="sidebar__link-icon">
-                            <i class="fas fa-magnifying-glass"></i>
-                        </div>
-                        <div class="sidebar__link-text">
-                            <div class="truncate">Buscar chats</div>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="sidebar__item" data-collapse="false">
-                    <a class="sidebar__link sidebar__link-menu is-active" href="javascript:void(0)">
-                        <div class="sidebar__link-icon">
-                            <i class="far fa-images"></i>
-                        </div>
-                        <div class="sidebar__link-text">
-                            <div class="truncate">Biblioteca</div>
-                        </div>
-                    </a>
-                    <ul class="sidebar__submenu">
-                        <li class="sidebar__submenu-title">Biblioteca Titulo</li>
-                        <li class="sidebar__submenu-item"><a class="sidebar__submenu-link is-active"
-                                data-mdb-ripple-init>Biblioteca 1</a>
-                        </li>
-                        <li class="sidebar__submenu-item"><a class="sidebar__submenu-link"
-                                data-mdb-ripple-init>Biblioteca 2</a></li>
-                    </ul>
-                </div> --}}
-
             </div>
 
             <!-- Footer -->
@@ -200,7 +170,7 @@
                         <h6>{{ session()->get('config')->acceso }}</h6>
                     </div>
                 </button>
-                <ul class="dropdown-menu py-2 px-1">
+                <ul class="dropdown-menu py-2 px-1" style="width: 15.25rem !important;">
                     <li>
                         <div class="dropdown-header align-items-center d-flex" style="user-select: none">
                             <div class="align-items-center d-flex justify-content-center rounded-circle text-white"
@@ -224,7 +194,7 @@
         <!-- MAIN CONTENT -->
         <main class="flex-grow-1">
             <!-- Navbar -->
-            <nav class="navbar pe-3 ps-1">
+            <nav class="navbar pe-3" style="padding-left: 16px;">
                 <div class="navbar-brand mb-0 p-0">
                     <div class="logo_rci"></div>
                 </div>
@@ -253,6 +223,35 @@
                             </div>
                         </div>
                         <script src="{{ secure_asset($ft_js->NotificacionesControl) }}"></script>
+                    </div>
+                    <div class="ms-1">
+                        <div class="dropdown" id="contenedor-sigla">
+                            <button class="btn-notification hover-layout" data-mdb-dropdown-init data-mdb-ripple-init
+                                aria-expanded="false" data-mdb-dropdown-animation="off">
+                                <div class="sigla"
+                                    style="background-color: {{ session()->get('config')->siglaBg }};">
+                                    {{ session()->get('config')->sigla }}
+                                </div>
+                            </button>
+                            <ul class="dropdown-menu pt-1 pb-2 px-1">
+                                <li class="p-2">
+                                    <div class="dropdown-header p-0" style="user-select: none">
+                                        <div class="text-center rounded py-3 px-2">
+                                            <div class="align-items-center d-flex justify-content-center rounded-circle text-white mx-auto"
+                                                style="width: 3.5rem; height: 3.5rem; font-size: 1.5rem; background-color: {{ session()->get('config')->siglaBg }};">
+                                                {{ session()->get('config')->sigla }}
+                                            </div>
+                                            <p class="fw-bold mb-0 mt-2 text-secondary">{{ session()->get('config')->nombre_perfil }}</p>
+                                            <small>{{ session()->get('config')->acceso }}</small>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="px-2"><a class="dropdown-item rounded" href="{{ secure_url('/logout') }}">
+                                        <i class="fas fa-arrow-right-from-bracket me-2"></i> Cerrar sesión
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="ms-1">
                         <button class="sidebar-close__navbar hover-layout" type="button"

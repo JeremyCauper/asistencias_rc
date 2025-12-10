@@ -238,7 +238,7 @@
                     </select>
                 </div>
                 <div class="col-md-5 col-6 my-1">
-                    @if (in_array(session('tipo_usuario'), [5, 6]))
+                    @if (in_array(Auth::user()->rol_system, [5, 6]))
                         <label class="form-label-filter" for="areas">Area</label>
                         <div class="form-control">{{ $areas[0]->descripcion }}</div>
                         <input type="hidden" id="areas" name="areas" value="{{ $areas[0]->id }}">
@@ -247,7 +247,7 @@
                         <select id="areas" name="areas" multiple="multiple" class="multiselect-select-all">
                             @foreach ($areas as $v)
                                 <option
-                                    {{ in_array(session('tipo_usuario'), [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
+                                    {{ in_array(Auth::user()->rol_system, [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
                                     value="{{ $v->id }}">
                                     {{ $v->descripcion }}
                                 </option>
@@ -656,7 +656,7 @@
                             <select id="tipoArea" name="tipoArea" multiple="multiple" class="multiselect-select-all">
                                 @foreach ($areas as $v)
                                     <option
-                                        {{ in_array(session('tipo_usuario'), [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
+                                        {{ in_array(Auth::user()->rol_system, [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
                                         value="{{ $v->id }}">
                                         {{ $v->descripcion }}
                                     </option>
@@ -702,7 +702,7 @@
     <script src="{{ secure_asset($ft_js->QuillControl) }}"></script>
     
     <script src="{{ secure_asset('front/js/asistencias/asistencias.js') }}?v=1"></script>
-    @if (!in_array(session('tipo_usuario'), [1, 5, 6]) || session('tipo_sistema'))
+    @if (!in_array(Auth::user()->rol_system, [1, 5, 6]) || session('tipo_sistema'))
         <script src="{{ secure_asset($ft_js->exceljs) }}"></script>
         <script src="{{ secure_asset($ft_js->FileSaver) }}"></script>
         <script src="{{ secure_asset('front/js/asistencias/export-excel-asistencias.js') }}?v=1"></script>

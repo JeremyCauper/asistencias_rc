@@ -81,7 +81,6 @@ class MenuController extends Controller
         $validator = Validator::make($request->all(), [
             'descripcion' => 'required|string|max:50',
             'icono'       => 'required|string',
-            'color'       => 'required|string|max:20',
             'ruta'        => 'required|string|max:255',
             'submenu'     => 'required|integer',
             'desarrollo'  => 'required|integer',
@@ -135,7 +134,6 @@ class MenuController extends Controller
             'id'          => 'required|integer',
             'descripcion' => 'required|string|max:50',
             'icono'       => 'required|string',
-            'color'       => 'required|string|max:20',
             'ruta'        => 'required|string|max:255',
             'submenu'     => 'required|integer',
             'desarrollo'  => 'required|integer',

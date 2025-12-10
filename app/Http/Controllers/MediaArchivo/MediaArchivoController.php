@@ -76,8 +76,94 @@ class MediaArchivoController extends Controller
                 'nombre_archivo' => $nombre_archivo,
             ]);
         } catch (Exception $e) {
-            Log::error('[MisAsistenciaController@uploadMedia] ' . $e->getMessage());
+            Log::error('[MediaArchivoController@uploadMedia] ' . $e->getMessage());
             return ApiResponse::error('No se pudo subir el archivo.');
+        }
+    }
+
+    public static function uploadFileS3($nombresArchivos, int $asistenciaId)
+    {
+        // Obtener los registros desde la BD
+        $archivos = DB::table('media_archivos')
+            ->whereIn('nombre_archivo', $nombresArchivos)
+            ->get();
+
+        if ($archivos->isEmpty()) {
+            throw new Exception("No se encontraron archivos en media_archivos.");
+        }
+
+        foreach ($archivos as $archivo) {
+            try {
+                $path_archivo = $archivo->path_archivo;
+                $nombre_archivo = $archivo->nombre_archivo;
+                $rutaLocal = public_path($path_archivo);
+
+                $dirname = pathinfo($path_archivo, PATHINFO_DIRNAME); // solo la carpeta
+                $filename = pathinfo($path_archivo, PATHINFO_BASENAME); // nombre + extensión
+
+                if (!file_exists($rutaLocal)) {
+                    Log::error("Archivo no encontrado: {$rutaLocal}");
+                    throw new Exception("No se encontró el archivo local: {$nombre_archivo}");
+                }
+
+                $rutaS3 = Storage::disk('s3')->putFileAs(
+                    $dirname,
+                    new \Illuminate\Http\File($rutaLocal),
+                    $filename
+                );
+
+                if (!$rutaS3) {
+                    throw new Exception("Error al subir a S3: {$nombre_archivo}");
+                }
+
+                $urlS3 = Storage::disk('s3')->url($rutaS3);
+
+                DB::table('media_archivos')->where('id', $archivo->id)
+                    ->update([
+                        'asistencia_id' => $asistenciaId,
+                        'estatus' => 1,
+                        'url_publica' => $urlS3
+                    ]);
+
+                // ELIMINAR ARCHIVO LOCAL SOLO SI TODO SALIÓ BIEN
+                try {
+                    unlink($rutaLocal);
+                } catch (\Throwable $t) {
+                    // Si falla la eliminación local, no debe romper todo el proceso
+                    Log::warning("No se pudo eliminar archivo local: {$rutaLocal}. Error: {$t->getMessage()}");
+                }
+            } catch (Exception $e) {
+                Log::error('[MediaArchivoController@uploadFileS3] Archivo: {$archivo->nombre_archivo}: ' . $e->getMessage());
+                // Lanzar nuevamente para que el método principal haga rollback
+                throw $e;
+            }
+        }
+    }
+
+    public function deleteFile()
+    {
+        try {
+            $ruta = 'asistencias_rc/justificaciones/2025/11/1763710725_59a36764f39fcba1.webp';
+
+            $eliminado = Storage::disk('s3')->delete($ruta);
+
+            if (!$eliminado) {
+                return response()->json([
+                    'ok' => false,
+                    'mensaje' => 'El archivo no existe o no se pudo eliminar.'
+                ]);
+            }
+
+            return response()->json([
+                'ok' => true,
+                'mensaje' => 'Archivo eliminado correctamente.'
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'ok' => false,
+                'error' => $e->getMessage()
+            ]);
         }
     }
 }

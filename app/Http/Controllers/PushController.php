@@ -57,7 +57,6 @@ class PushController extends Controller
                     'authToken' => $sub->auth_token,
                     'contentEncoding' => $sub->content_encoding,
                 ]);
-
                 $webPush->queueNotification($subscription, json_encode(array_merge($payload, [
                     'icon192' => secure_asset('front/images/app/icons/icon-192.png'),
                     'badge' => secure_asset('front/images/app/icons/icon-badge.png')
@@ -75,9 +74,9 @@ class PushController extends Controller
                 }
             }
 
-            return 'Notificaciones enviadas.';
+            return true;
         } catch (\Exception $e) {
-            return false ? "" : "❌ Error al enviar: " . $e->getMessage();
+            return false;
         }
     }
 
@@ -88,7 +87,8 @@ class PushController extends Controller
         $ids = User::whereIn('rol_system', [5, 6])
             ->where('area_id', $area)
             ->orWhereIn('rol_system', [2, 4, 7])
-            ->pluck('user_id');
+            ->pluck('user_id')
+            ->toArray();
 
         foreach ($ids as $id) {
             self::send($id, [
@@ -98,31 +98,37 @@ class PushController extends Controller
                 'tag' => 'justificaciones',
             ]);
         }
+        // EnviarPushAdminsJob::dispatch($ids, [
+        //     'title' => 'Justificación pendiente',
+        //     'body' => 'Tiene una nueva justificación pendiente de revisión.',
+        //     'url' => secure_url('/asistencias-diarias'),
+        //     'tag' => 'justificaciones',
+        // ]);
     }
 
     public static function sendDerivado($id)
     {
-        self::send(
-            $id,
-            [
-                'title' => 'Derivación pendiente',
-                'body' => 'Se registró una derivación, por favor subir su evidencia.',
-                'url' => secure_url('/asistencias/misasistencias'),
-                'tag' => 'derivaciones',
-            ]
-        );
+        self::send($id, [
+            'title' => 'Derivación pendiente',
+            'body' => 'Se registró una derivación, por favor subir su evidencia.',
+            'url' => secure_url('/asistencias/misasistencias'),
+            'tag' => 'derivaciones',
+        ]);
+        // EnviarPushJob::dispatch($id, [
+        //     'title' => 'Derivación pendiente',
+        //     'body' => 'Se registró una derivación, por favor subir su evidencia.',
+        //     'url' => secure_url('/asistencias/misasistencias'),
+        //     'tag' => 'derivaciones',
+        // ]);
     }
 
     public function test($id)
     {
-        $this::send(
-            $id,
-            [
-                'title' => 'Nueva justificación registrada',
-                'body' => 'Tiene una nueva justificación pendiente de revisión.',
-                'url' => secure_url('/asistencias/misasistencias'),
-                'tag' => 'justificaciones',
-            ]
-        );
+        self::send($id, [
+            'title' => 'Nueva justificación registrada',
+            'body' => 'Tiene una nueva justificación pendiente de revisión.',
+            'url' => secure_url('/asistencias/misasistencias'),
+            'tag' => 'justificaciones',
+        ]);
     }
 }
