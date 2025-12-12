@@ -91,6 +91,7 @@ class Notificaciones {
                 const sigla = (n.is_admin == 0) ? '<i class="fas fa-user-tie"></i>' : n.sigla ?? '??';
                 const descripcion = this.DESCRIPCION[n.descripcion_id] ?? '';
                 const desc = descripcion.replace(':personal', n.nombre);
+                const colorBg = (n.is_admin == 0) ? '#000000' : colores(n.sigla[0]);
 
                 const item = document.createElement('div');
                 item.className = `dropdown-item p-2 my-1 rounded`;
@@ -100,7 +101,7 @@ class Notificaciones {
                 <small class="noti-hora">${n.creado}</small>
                 <div class="noti-contenido d-flex align-items-center">
                     <span class="img-xs rounded-circle text-white acronimo"
-                        style="background-color:#${(n.is_admin == 0) ? '000000' : '7367F0'};">
+                        style="background-color:${colorBg};">
                         ${sigla}
                     </span>
 

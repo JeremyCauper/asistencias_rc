@@ -24,8 +24,8 @@ class Controller extends BaseController
     public function __construct()
     {
         $this->strFecha = 'Y-m-d';
-        // $this->horaActual = time();
-        $this->horaActual = strtotime(date("{$this->strFecha} H:i:s"));
+        $this->horaActual = time();
+        // $this->horaActual = strtotime(date("{$this->strFecha} H:i:s"));
 
         $config_system = DB::table('config_system')->get()->keyBy('config');
 

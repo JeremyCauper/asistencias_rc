@@ -21,6 +21,9 @@
     --root-active-multiselect-bg: #424141;
 }
 
+html {
+    overflow: unset;
+}
 
 body {
     font-size: 1rem;

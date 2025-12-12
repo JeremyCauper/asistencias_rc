@@ -30,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with('customModulos', config('ajustes.customModulos'));
             $view->with('tipo_sistema', config('ajustes.tipo_sistema'));
             $view->with('config', config('ajustes.config'));
+            $view->with('rutaRedirect', config('ajustes.rutaRedirect'));
         });
     }
 }

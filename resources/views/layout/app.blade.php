@@ -50,7 +50,8 @@
         </script>
     @endif
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    {{-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> --}}
     <link rel="manifest" href="{{ secure_asset($ft_json->manifest) }}">
     <meta name="theme-color" content="#000000">
 
@@ -161,8 +162,7 @@
             <div class="sidebar__footer dropup">
                 <button class="sidebar__footer-user hover-layout" data-mdb-dropdown-init data-mdb-ripple-init
                     aria-expanded="false" data-mdb-dropdown-animation="off">
-                    <div class="sidebar__footer-user-sigla"
-                        style="background-color: {{ $config->siglaBg }};">
+                    <div class="sidebar__footer-user-sigla" style="background-color: {{ $config->siglaBg }};">
                         {{ $config->sigla }}
                     </div>
                     <div class="sidebar__footer-user-text">
@@ -184,7 +184,9 @@
                         </div>
                         <hr class="mx-2 mt-0 mb-1">
                     </li>
-                    <li><a class="dropdown-item rounded" href="{{ secure_url('/logout') }}" onclick="boxAlert.loading()">
+                    <li>
+                        <a class="dropdown-item py-3 rounded" href="{{ secure_url('/logout') }}"
+                            onclick="boxAlert.loading()">
                             <i class="fas fa-arrow-right-from-bracket me-2"></i> Cerrar sesión
                         </a>
                     </li>
@@ -209,13 +211,13 @@
                                 <i class="fas fa-bell"></i>
                                 <span class="badge rounded-pill badge-notification bg-danger"></span>
                             </button>
-                            <div class="dropdown-menu dropdown-menu-right py-0 px-1">
+                            <div class="dropdown-menu dropdown-menu-right py-0 ps-2 pb-1">
                                 <div class="dropdown-header d-flex align-items-center justify-content-between px-2">
                                     <h6 class="mb-0" style="user-select: none">Notificaciones</h6>
-                                    <button class="btn btn-light btn-sm px-2" noti-btn="reload"><i
+                                    <button class="btn btn-sm px-2" noti-btn="reload" data-mdb-ripple-init><i
                                             class="fas fa-rotate"></i></button>
                                 </div>
-                                <div class="dropdown-body">
+                                <div class="dropdown-body rounded pe-2">
                                     <div class="dropdown-text text-center text-muted py-3">
                                         Sin notificaciones
                                     </div>
@@ -228,8 +230,7 @@
                         <div class="dropdown" id="contenedor-sigla">
                             <button class="btn-notification hover-layout" data-mdb-dropdown-init data-mdb-ripple-init
                                 aria-expanded="false" data-mdb-dropdown-animation="off">
-                                <div class="sigla"
-                                    style="background-color: {{ $config->siglaBg }};">
+                                <div class="sigla" style="background-color: {{ $config->siglaBg }};">
                                     {{ $config->sigla }}
                                 </div>
                             </button>
@@ -241,12 +242,15 @@
                                                 style="width: 3.5rem; height: 3.5rem; font-size: 1.5rem; background-color: {{ $config->siglaBg }};">
                                                 {{ $config->sigla }}
                                             </div>
-                                            <p class="fw-bold mb-0 mt-2 text-secondary">{{ $config->nombre_perfil }}</p>
+                                            <p class="fw-bold mb-0 mt-2 text-secondary">{{ $config->nombre_perfil }}
+                                            </p>
                                             <small>{{ $config->acceso }}</small>
                                         </div>
                                     </div>
                                 </li>
-                                <li class="px-2"><a class="dropdown-item rounded" href="{{ secure_url('/logout') }}" onclick="boxAlert.loading()">
+                                <li class="px-2">
+                                    <a class="dropdown-item py-3 rounded" href="{{ secure_url('/logout') }}"
+                                        onclick="boxAlert.loading()">
                                         <i class="fas fa-arrow-right-from-bracket me-2"></i> Cerrar sesión
                                     </a>
                                 </li>
@@ -284,8 +288,9 @@
     <script src="{{ secure_asset($ft_js->template) }}"></script>
     <script src="{{ secure_asset($ft_js->FormMananger) }}"></script>
 
-    @include('layout.partials.service_worker')
     @yield('scripts')
+    
+    @include('layout.partials.service_worker')
 </body>
 
 </html>

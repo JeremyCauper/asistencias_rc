@@ -1,47 +1,7 @@
-const VERSION_CACHE = 1;
+const VERSION_CACHE = 1234568; // <-- ¡Incrementa la versión!
 const CACHE_NAME = "v" + VERSION_CACHE;
-const OFFLINE_URL = "offline?v=1";
-
-// IndexedDB helper (simple y compacto)
-const DB_NAME = "pushCountersDB";
-const STORE_NAME = "countersStore";
-
-function openDB() {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, 1);
-
-        request.onupgradeneeded = event => {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains(STORE_NAME)) {
-                db.createObjectStore(STORE_NAME);
-            }
-        };
-
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-    });
-}
-
-async function getCount(tag) {
-    const db = await openDB();
-    return new Promise(resolve => {
-        const tx = db.transaction(STORE_NAME, "readonly");
-        const store = tx.objectStore(STORE_NAME);
-        const req = store.get(tag);
-        req.onsuccess = () => resolve(req.result || 0);
-        req.onerror = () => resolve(0);
-    });
-}
-
-async function setCount(tag, value) {
-    const db = await openDB();
-    return new Promise(resolve => {
-        const tx = db.transaction(STORE_NAME, "readwrite");
-        const store = tx.objectStore(STORE_NAME);
-        store.put(value, tag);
-        tx.oncomplete = () => resolve(true);
-    });
-}
+const OFFLINE_URL = "offline";
+const PRELOAD_URL = "bienvenido"; // Corresponde a tu Route::get('/bienvenido', ...)
 
 // INSTALACIÓN -----------------------------------------------------
 self.addEventListener("install", event => {
@@ -49,15 +9,16 @@ self.addEventListener("install", event => {
 
     event.waitUntil(
         caches.open(CACHE_NAME).then(async cache => {
-            let ruta_principal = "front/";
+            let ruta_principal = "front/"; // Prefijo para assets como CSS/JS
             let version = VERSION_CACHE;
 
-            let biblioteca_front = [
+            let biblioteca_assets = [
                 // IMG
                 { file: 'images/app/icons/icon.png' },
-                { file: "images/app/icons/icon-192.png" },
-                { file: "images/app/icons/icon-512.png" },
-
+                { file: 'images/app/icons/icon-96.png' },
+                { file: 'images/app/icons/icon-192.png' },
+                { file: 'images/app/icons/icon-512.png' },
+                
                 // CSS
                 { file: 'vendor/mdboostrap/css/all.min6.0.0.css' },
                 { file: 'vendor/mdboostrap/css/mdb.min7.2.0.css' },
@@ -102,21 +63,23 @@ self.addEventListener("install", event => {
                 { file: 'vendor/inputmask/jquery.inputmask.bundle.min.js' },
             ];
 
-            // Construir URLs con versión
-            let archivos_finales = biblioteca_front.map(b =>
-                `${ruta_principal}${b.file}?v=${version}`
-            );
+            // Inicia con las rutas de HTML (PRELOAD y OFFLINE) con la barra inicial y el parámetro de versión
+            let archivos_a_cachear = [
+                `/${PRELOAD_URL}?v=${version}`,
+                `/${OFFLINE_URL}?v=${version}`
+            ];
 
-            // Página offline
-            archivos_finales.push(OFFLINE_URL);
+            // Ahora añade los assets con el prefijo ruta_principal y el parámetro de versión
+            biblioteca_assets.forEach(b => {
+                archivos_a_cachear.push(`${ruta_principal}${b.file}?v=${version}`);
+            });
 
             console.log("⏳ Intentando cachear archivos...");
 
-            // Mejorado: evita que un archivo que falla tumbe todo addAll
             await Promise.all(
-                archivos_finales.map(url =>
+                archivos_a_cachear.map(url =>
                     cache.add(url).catch(err =>
-                        console.warn("No se pudo cachear:", url)
+                        console.warn(`No se pudo cachear: ${url}`, err)
                     )
                 )
             );
@@ -163,22 +126,39 @@ self.addEventListener("fetch", event => {
         return; // deja que la red lo maneje
     }
 
-    // 2. HTML: estrategia network-first
+    // 2. HTML: estrategia cache-first para PRELOAD_URL, network-first para otros HTML
     const accept = req.headers.get("accept") || "";
-    const esHTML =
-        req.mode === "navigate" ||
-        (req.method === "GET" && accept.includes("text/html"));
+    const esHTML = req.mode === "navigate" || (req.method === "GET" && accept.includes("text/html"));
 
     if (esHTML) {
-        event.respondWith(
-            fetch(req)
-                .then(resp => resp)
-                .catch(() => caches.match(OFFLINE_URL))
-        );
-        return;
+        // Si la solicitud es para PRELOAD_URL (bienvenido), usamos cache-first
+        // NOTA: req.url ya incluye el protocolo y dominio, url.pathname solo la ruta.
+        // Asegúrate de que la comparación coincida con cómo se solicita la URL.
+        // Para rutas de Laravel como '/bienvenido', url.pathname es lo correcto.
+        if (url.pathname === `/${PRELOAD_URL}` || url.pathname.startsWith(`/${PRELOAD_URL}?`)) {
+            event.respondWith(
+                caches.match(req).then(cachedResponse => {
+                    if (cachedResponse) {
+                        return cachedResponse; // Servir el splash desde caché inmediatamente
+                    }
+                    // Si no está en caché (primera vez), ir a la red
+                    return fetch(req).catch(() => caches.match(`/${OFFLINE_URL}?v=${VERSION_CACHE}`)); // Fallback al offline cacheado
+                })
+            );
+            return;
+        } else {
+            // Para todas las demás solicitudes HTML (ej. /inicio, /dashboard), usa network-first
+            event.respondWith(
+                fetch(req)
+                    .then(resp => resp)
+                    .catch(() => caches.match(`/${OFFLINE_URL}?v=${VERSION_CACHE}`)) // Fallback al offline cacheado
+            );
+            return;
+        }
     }
 
     // 3. Assets estáticos: cache-first, pero solo si existe en cache
+    // Esta parte está bien para assets que se pre-cachean.
     event.respondWith(
         caches.match(req).then(cached => {
             if (cached) return cached;
@@ -186,18 +166,60 @@ self.addEventListener("fetch", event => {
             return fetch(req)
                 .then(resp => resp)
                 .catch(() => {
-                    // Opcional: no hacemos fallback aquí
+                    // Si un asset no está en caché y falla la red, no hacemos fallback.
+                    // Se podría añadir un fallback a una imagen placeholder para iconos rotos, etc.
                 });
         })
     );
 });
 
-// MANTENIMIENTO ---------------------------------------------------
+// MANTENIMIENTO y NOTIFICACIONES (tu código IndexedDB y Push está bien, lo mantuve)
 self.addEventListener("message", event => {
     if (event.data && event.data.action === "SKIP_WAITING") {
         self.skipWaiting();
     }
 });
+
+// IndexedDB helper (simple y compacto)
+const DB_NAME = "pushCountersDB";
+const STORE_NAME = "countersStore";
+
+function openDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+
+        request.onupgradeneeded = event => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME);
+            }
+        };
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function getCount(tag) {
+    const db = await openDB();
+    return new Promise(resolve => {
+        const tx = db.transaction(STORE_NAME, "readonly");
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.get(tag);
+        req.onsuccess = () => resolve(req.result || 0);
+        req.onerror = () => resolve(0);
+    });
+}
+
+async function setCount(tag, value) {
+    const db = await openDB();
+    return new Promise(resolve => {
+        const tx = db.transaction(STORE_NAME, "readwrite");
+        const store = tx.objectStore(STORE_NAME);
+        store.put(value, tag);
+        tx.oncomplete = () => resolve(true);
+    });
+}
 
 // NOTIFICACIONES --------------------------------------------------
 self.addEventListener("push", event => {

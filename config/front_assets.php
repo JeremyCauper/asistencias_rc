@@ -1,5 +1,5 @@
 <?php
-$version = 1;
+$version = 1234568;
 return [
     'css' => (object) [
         'mdb_all_min6_0_0' => 'front/vendor/mdboostrap/css/all.min6.0.0.css?v=' . $version,
@@ -58,5 +58,8 @@ return [
 
     'img' => (object) [
         'icon' => 'front/images/app/icons/icon.png?v=' . $version,
+        'icon_96' => 'front/images/app/icons/icon-96.png?v=' . $version,
+        'icon_192' => 'front/images/app/icons/icon-192.png?v=' . $version,
+        'icon_512' => 'front/images/app/icons/icon-512.png?v=' . $version,
     ]
 ];
