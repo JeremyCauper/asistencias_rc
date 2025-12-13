@@ -99,10 +99,11 @@ class JustificacionController extends Controller
 
             // Procesar asistencia solo cuando corresponde
             if ($estatus == 1) {
-                $entrada = $request->entrada ?? null;
+                $entrada = $request->entrada ?? date('H:i:s');
+                $puntualidad = strtotime(date("$this->strFecha $entrada")) < $this->limitePuntual;
                 $tipoAsistencia = match (true) {
-                    empty($entrada) => 3,  // sin entrada -> asistencia normal/otro estado
-                    strtotime(date("$this->strFecha $entrada")) > $this->limitePuntual => 4, // tiene entrada y es tarde
+                    empty($entrada) && in_array($tipo_asistencia, [1, 4]) => 3,  // sin entrada -> asistencia normal/otro estado
+                    !$puntualidad => 4, // tiene entrada y es tarde
                     default => 2  // tiene entrada y es puntual
                 };
 
@@ -111,8 +112,14 @@ class JustificacionController extends Controller
                     'entrada' => $entrada
                 ]);
 
-                if ($request->tipo_asistencia == 4) {
+                if ($tipoAsistencia == 3) {
                     DB::table('descuentos_asistencia')->where('asistencia_id', $id_asistencia)->delete();
+                } else if ($tipoAsistencia == 4 && $tipo_asistencia == 2) {
+                    DB::table('descuentos_asistencia')->insert([
+                        'asistencia_id' => $id_asistencia,
+                        'user_id' => $user_id,
+                        'fecha' => $asistencia->fecha,
+                    ]);
                 }
             }
 
@@ -256,7 +263,9 @@ class JustificacionController extends Controller
                 return ApiResponse::validation($validator->errors()->toArray());
             }
 
-            $justificacion = DB::table('justificaciones')->where('asistencia_id', $request->id_asistencia)->first();
+            $id_asistencia = $request->id_asistencia;
+
+            $justificacion = DB::table('justificaciones')->where('asistencia_id', $id_asistencia)->first();
             // Verificar si la justificación existe
             if (!$justificacion) {
                 return ApiResponse::error('No se encontró la justificación.');
@@ -271,7 +280,6 @@ class JustificacionController extends Controller
                 return ApiResponse::error('Solo se puede responder la drivación hasta las ' . $this->horaLimiteDerivado);
             }
 
-            $id_asistencia = $request->id_asistencia;
             $estatus = $estatusOriginal == 10 ? 0 : $estatusOriginal;
             $now = now();
 

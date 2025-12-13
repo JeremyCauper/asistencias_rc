@@ -1,7 +1,7 @@
 {
   "name": "Asistencias RC",
   "short_name": "Asistencias RC",
-  "start_url": "./bienvenido",
+  "start_url": "front/index.html",
   "display": "standalone",
   "background_color": "#3b71ca",
   "theme_color": "#000000",

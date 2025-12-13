@@ -1,6 +1,7 @@
 <?php
-$version = 1234568;
+$version = '1.0.7';
 return [
+    'version' => $version,
     'css' => (object) [
         'mdb_all_min6_0_0' => 'front/vendor/mdboostrap/css/all.min6.0.0.css?v=' . $version,
         'mdb_min7_2_0' => 'front/vendor/mdboostrap/css/mdb.min7.2.0.css?v=' . $version,

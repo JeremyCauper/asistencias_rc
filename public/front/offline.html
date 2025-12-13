@@ -7,11 +7,11 @@
     <title>Sin Conexión</title>
 
     <!-- Favicon -->
-    <link rel="icon" href="front/images/app/icons/icon-192.png">
+    <link rel="icon" href="images/app/icons/icon-192.png">
 
     <!-- CSS necesarios (versión estática para PWA) -->
-    <link rel="stylesheet" href="front/vendor/mdboostrap/css/all.min6.0.0.css">
-    <link rel="stylesheet" href="front/vendor/mdboostrap/css/mdb.min7.2.0.css">
+    <link rel="stylesheet" href="vendor/mdboostrap/css/all.min6.0.0.css">
+    <link rel="stylesheet" href="vendor/mdboostrap/css/mdb.min7.2.0.css">
 
     <style>
         body {
@@ -38,14 +38,20 @@
 
 <body>
     <div>
-        <img src="front/images/app/icons/icon-192.png" alt="App Icon" class="icon-offline">
+        <img src="images/app/icons/icon-192.png" alt="App Icon" class="icon-offline">
 
         <h3 class="mb-3">Conexión no disponible</h3>
         <p>Revisa tu conexión a Internet y vuelve a intentarlo.</p>
 
-        <button class="btn btn-secondary" onclick="window.location.reload()">
+        <button class="btn btn-secondary" onclick="reloadPage()">
             Reintentar
         </button>
+        <script>
+            function reloadPage() {
+                let loader = location.href.replaceAll('offline.html', '').replaceAll('front/', '');
+                window.location.href = loader;
+            }
+        </script>
     </div>
 </body>
 

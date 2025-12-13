@@ -23,12 +23,15 @@ use App\Http\Controllers\MantenimientosDeveloper\TipoModalidad\TipoModalidadCont
 use App\Http\Controllers\MediaArchivo\MediaArchivoController;
 use App\Http\Controllers\NotificacionController;
 
-Route::get('/', function () {
-    return redirect()->route('login');
+Route::get('/check-session', function () {
+    return response()->json([
+        'auth' => Auth::check(),
+        'redirect' => Auth::check() ? secure_url(config('ajustes.rutaRedirect')) : secure_url('/inicio'), // Cambia por tu ruta real
+    ]);
 });
 
-Route::get('/bienvenido', function () {
-    return view('bienvenido');
+Route::get('/', function () {
+    return response()->file(public_path('front/index.html'));
 });
 
 Route::get('/inicio', [LoginController::class, 'view'])->name('login')->middleware('guest:web');

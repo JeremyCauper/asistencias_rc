@@ -81,11 +81,15 @@ class MisAsistenciaController extends Controller
                 $entrada = $a?->entrada;
 
                 // Si aún no tiene registro pero debería asistir
+                $previo = $a?->tipo_asistencia ?? 0;
+                $just = $justificacion?->estatus ?? null;
+
                 $tipo_asistencia = match (true) {
-                    (empty($entrada) && in_array($tipo_modalidad, [1, 2]) && ($a?->tipo_asistencia ?? 0) == 1 && $this->horaActual < $this->limitePuntual) => 0,
-                    (!empty($justificacion) && in_array($justificacion?->estatus, [10]) && $this->horaActual < $this->limiteDerivado) => 0,
-                    (!empty($justificacion) && in_array($justificacion?->estatus, [0]) && $this->horaActual > $this->limiteDerivado) => 0,
-                    default => $a?->tipo_asistencia ?? 0,
+                    empty($entrada) && in_array($tipo_modalidad, [1]) && $previo == 1 && $this->horaActual < $this->limitePuntual => 0,
+                    empty($entrada) && in_array($tipo_modalidad, [2]) && $previo == 1 && $this->horaActual < strtotime(date('Y-m-d 17:00:00')) => 0,
+                    $just === 10 && $this->horaActual < $this->limiteDerivado => 0,
+                    $just === 0 && $this->horaActual > $this->limiteDerivado => 0,
+                    default => $previo,
                 };
 
                 // Acciones dinámicas

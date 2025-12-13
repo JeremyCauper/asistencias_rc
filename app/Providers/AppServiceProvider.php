@@ -21,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Compartimos la configuración como una variable $front
+        View::share('ft_version', config('front_assets.version'));
         View::share('ft_css', config('front_assets.css'));
         View::share('ft_js', config('front_assets.js'));
         View::share('ft_json', config('front_assets.json'));

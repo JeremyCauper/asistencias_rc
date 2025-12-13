@@ -1,53 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>Material Design for Bootstrap</title>
-    <!-- MDB icon -->
-    <link rel="icon" href="img/mdb-favicon.ico" type="image/x-icon" />
-    <!-- Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <!-- Google Fonts Roboto -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap"
-    />
-    <!-- MDB -->
-    <link rel="stylesheet" href="css/mdb.min.css" />
-  </head>
-  <body>
-    <!-- Start your project here-->
-    <div class="container">
-      <div class="d-flex justify-content-center align-items-center" style="height: 100vh">
-        <div class="text-center">
-          <img
-            class="mb-4"
-            src="https://mdbootstrap.com/img/logo/mdb-transparent-250px.png"
-            style="width: 250px; height: 90px"
-          />
-          <h5 class="mb-3">Thank you for using our product. We're glad you're with us.</h5>
-          <p class="mb-3">MDB Team</p>
-          <a
-            class="btn btn-primary btn-lg"
-            data-mdb-ripple-init
-            href="https://mdbootstrap.com/docs/standard/getting-started/"
-            target="_blank"
-            role="button"
-            >Start MDB tutorial</a
-          >
-        </div>
-      </div>
-    </div>
-    <!-- End your project here-->
+<html lang="es">
 
-    <!-- MDB -->
-    <script type="text/javascript" src="js/mdb.umd.min.js"></script>
-    <!-- Custom scripts -->
-    <script type="text/javascript"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Cargando...</title>
+  <link rel="icon" href="../front/images/app/icons/icon-192.png">
+
+  <style>
+    @keyframes l13 {
+      100% {
+        transform: rotate(1turn)
+      }
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #3b71ca;
+      font-family: Arial, sans-serif;
+    }
+
+    .loader {
+      position: relative;
+    }
+
+    /* HTML: <div class="loader"></div> */
+    .loader::after {
+      --bg: #f4f4f4;
+      --ancho: 10px;
+      content: '';
+      position: absolute;
+      width: 171px;
+      top: -18px;
+      left: -18px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(farthest-side, var(--bg) 94%, #0000) top / var(--ancho) var(--ancho) no-repeat, conic-gradient(#0000 30%, var(--bg));
+      -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - var(--ancho)), #000 0);
+      animation: l13 .6s infinite linear;
+    }
+
+    .logo-container {
+      width: 96px;
+      height: 96px;
+      object-fit: cover;
+      border-radius: 50%;
+      /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); */
+      padding: 20px;
+      z-index: 2;
+      position: relative;
+      display: block;
+    }
+
+    .logo-img {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="loader">
+    <div class="logo-container">
+      <img src="../front/images/app/icons/icon-192.png" class="logo-img" alt="Logo">
+    </div>
+  </div>
+
+  <script>
+    // Espera que cargue la animación
+    window.addEventListener('load', () => {
+      // Llamada mínima al servidor para saber si hay sesión
+      let check = location.href.replaceAll('index.html', '').replaceAll('front/', '') + 'check-session';
+      fetch(check, { cache: "no-store" })
+        .then(r => r.json())
+        .then(d => {
+          // Según tu sistema, ajusta la ruta de redirección
+          window.location.href = d.redirect;
+        })
+        .catch(() => {
+          // Si falla todo, igual redirige a inicio
+          window.location.href = '../front/offline.html';
+        });
+    });
+  </script>
+</body>
+
 </html>
