@@ -4,9 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#000000">
 
     <title>Cargando...</title>
-    <link rel="icon" href="front/images/app/icons/icon-192.png">
+    <link rel="icon" href="./front/images/app/icons/icon-192.png?v=1.0.13">
 
     <style>
         @keyframes l13 {
@@ -67,29 +69,17 @@
 <body>
     <div class="loader">
         <div class="logo-container">
-            <img src="front/images/app/icons/icon-192.png" class="logo-img" alt="Logo">
+            <img src="./front/images/app/icons/icon-192.png?v=1.0.13" class="logo-img" alt="Logo">
         </div>
     </div>
-
     <script>
-        // Espera que cargue la animación
         window.addEventListener('load', () => {
-
-            // Llamada mínima al servidor para saber si hay sesión
-            fetch('/check-session', { cache: "no-store" })
-                .then(r => r.json())
-                .then(d => {
-                    // Según tu sistema, ajusta la ruta de redirección
-                    if (d.auth === true) {
-                        window.location.href = d.redirect ?? '/dashboard';
-                    } else {
-                        window.location.href = '/inicio';
-                    }
-                })
-                .catch(() => {
-                    // Si falla todo, igual redirige a inicio
-                    // window.location.href = '/inicio';
+            if ("serviceWorker" in navigator) {
+                navigator.serviceWorker.register("./sw.js?v=1.0.13").then(() => {
+                    console.log('Service Worker registrado');
+                    window.location.href = location.href + 'inicio';
                 });
+            }
         });
     </script>
 </body>

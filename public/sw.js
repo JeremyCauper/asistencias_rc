@@ -1,20 +1,49 @@
 // =======================================================
 // CONFIGURACIÓN
 // =======================================================
-const VERSION = "1.0.7";
-const CACHE_NAME = "pwa-cache-v" + VERSION;
+const VERSION = "1.0.13";
+const CACHE_STATIC_NAME = "pwa-static-v" + VERSION;
+const CACHE_INMUTABLE_NAME = "pwa-inmutable-v1";
+const CACHE_DYNAMIC_NAME = "pwa-dynamic-v1";
 
 // RUTAS DE TU SISTEMA
 const RUTA_FRONT = "front/";
-const RUTA_BIENVENIDO = "front/index.html";
-const RUTA_OFFLINE = "front/offline.html";
+const RUTA_BIENVENIDO = "index.html";
+const RUTA_OFFLINE = "offline.html";
 
 // Lista de archivos que quieres precachear
-const PRECACHE_FILES = [
+const PRECACHE_STATIC_FILES = [
+
+    { file: "index.html" },
+    { file: "offline.html" },
+    // IMG
     { file: "images/app/icons/icon.png" },
+    { file: "images/app/icons/icon-badge.png" },
     { file: "images/app/icons/icon-96.png" },
     { file: "images/app/icons/icon-192.png" },
     { file: "images/app/icons/icon-512.png" },
+
+    // CSS
+    { file: "css/app.css" },
+    { file: "layout/layout.css" },
+    { file: "layout/swicth_layout.css" },
+
+    // JS
+    { file: "js/app.js" },
+    { file: "layout/swicth_layout.js" },
+    { file: "layout/toggle_template.js" },
+    { file: "layout/template.js" },
+];
+
+const PRECACHE_INMUTABLE_FILES = [
+    // IMG
+    { file: "images/app/logo_pdf.png" },
+    { file: "images/app/logo_tittle_rc_white.png" },
+    { file: "images/app/LogoRC.png" },
+    { file: "images/app/LogoRC_TBlanco.png" },
+    { file: "images/app/LogoRC_TNegro.png" },
+    { file: "images/app/LogoRC_WBlanco.webp" },
+    { file: "images/app/LogoRC_WNormal.webp" },
 
     // CSS
     { file: "vendor/mdboostrap/css/all.min6.0.0.css" },
@@ -23,15 +52,26 @@ const PRECACHE_FILES = [
     { file: "vendor/sweetalert/animate.min.css" },
     { file: "vendor/sweetalert/default.css" },
     { file: "vendor/fontGoogle/fonts.css" },
-    { file: "layout/layout.css" },
-    { file: "css/app.css" },
 
     // JS
-    { file: "js/app.js" },
     { file: "vendor/jquery/jquery.min.js" },
     { file: "vendor/mdboostrap/js/mdb.umd.min7.2.0.js" },
     { file: "vendor/dataTable/jquery.dataTables.min.js" },
     { file: "vendor/sweetalert/sweetalert2@11.js" },
+    { file: "vendor/select/select2.min.js" },
+    { file: "vendor/select/form_select2.js" },
+    { file: "vendor/daterangepicker/moment.min.js" },
+    { file: "vendor/daterangepicker/daterangepicker.min.js" },
+    { file: "vendor/multiselect/bootstrap.bundle.min.js" },
+    { file: "vendor/multiselect/bootstrap_multiselect.js" },
+    { file: "vendor/multiselect/form_multiselect.js" },
+    { file: "vendor/echartjs/echarts.min.js" },
+    { file: "vendor/compression/compressor.min.js" },
+    { file: "vendor/quill/quill.min.js" },
+    { file: "vendor/exceljs/exceljs.min.js" },
+    { file: "vendor/exceljs/FileSaver.min.js" },
+    { file: "vendor/full-calendar/full-calendar.min.js" },
+    { file: "vendor/inputmask/jquery.inputmask.bundle.min.js" },
 ];
 
 // =======================================================
@@ -40,62 +80,71 @@ const PRECACHE_FILES = [
 self.addEventListener("install", (event) => {
     self.skipWaiting();
 
-    event.waitUntil(
-        caches.open(CACHE_NAME).then(async (cache) => {
-            let CACHE_URLS = [RUTA_BIENVENIDO, RUTA_OFFLINE];
+    const cacheProm = caches.open(CACHE_STATIC_NAME).then(async cache => {
+        let CACHE_STATIC_URLS = ['./'];
 
-            PRECACHE_FILES.forEach((b) => {
-                CACHE_URLS.push(`${RUTA_FRONT}${b.file}?v=${VERSION}`);
-            });
+        PRECACHE_STATIC_FILES.forEach(b => CACHE_STATIC_URLS.push(`${RUTA_FRONT}${b.file}?v=${VERSION}`));
+        await Promise.all(
+            CACHE_STATIC_URLS.map(async url => {
+                try {
+                    await cache.add(url);
+                } catch (e) {
+                    console.warn('Static no cacheado:', url);
+                }
+            })
+        );
+    });
 
-            console.log("⏳ Precargando archivos...");
+    const cacheInmutable = caches.open(CACHE_INMUTABLE_NAME).then(async cache => {
+        let CACHE_INMUTABLE_URLS = PRECACHE_INMUTABLE_FILES.map(b => `${RUTA_FRONT}${b.file}`);
 
-            // ESTA ES LA PARTE IMPORTANTE:
-            // precachea uno por uno, sin romper la instalación.
-            await Promise.all(
-                CACHE_URLS.map((url) =>
-                    cache.add(url).catch((err) => {
-                        console.warn("⚠ No se pudo cachear:", url, err);
-                    })
-                )
-            );
+        await Promise.all(
+            CACHE_INMUTABLE_URLS.map(async url => {
+                try {
+                    await cache.add(url);
+                } catch (e) {
+                    console.warn('Inmutable no cacheado:', url);
+                }
+            })
+        );
+    });
 
-            console.log("✅ Instalación completada");
-        })
-    );
+    event.waitUntil(Promise.all([cacheProm, cacheInmutable]));
 });
 
 // =======================================================
 // ACTIVACIÓN Y LIMPIEZA
 // =======================================================
-self.addEventListener("activate", (event) => {
-    event.waitUntil(
-        caches
-            .keys()
-            .then((keys) =>
-                Promise.all(
-                    keys
-                        .filter((key) => key !== CACHE_NAME)
-                        .map((key) => caches.delete(key))
-                )
-            )
-            .then(() => self.clients.claim())
-    );
+self.addEventListener("activate", event => {
+    const cacheWhitelist = [CACHE_STATIC_NAME, CACHE_INMUTABLE_NAME];
+    const clearOldCaches = caches.keys().then(cacheNames =>
+        Promise.all(
+            cacheNames.map(cacheName => {
+                if (!cacheWhitelist.includes(cacheName)) {
+                    console.log("🗑️ Eliminando caché antigua:", cacheName);
+                    return caches.delete(cacheName);
+                }
+            })
+        )
+    ).then(() => {
+        console.log("Clients claimed. Control total activo.");
+        return self.clients.claim();
+    });
+
+    event.waitUntil(clearOldCaches);
 });
 
 // =======================================================
 // ESTRATEGIAS DE FETCH
 // =======================================================
-self.addEventListener("fetch", (event) => {
+self.addEventListener("fetch", event => {
     const req = event.request;
     const url = new URL(req.url);
 
-    // ❗ Ignorar URLs con esquemas no http/https como chrome-extension://
     if (!url.protocol.startsWith("http")) {
         return;
     }
 
-    // No cachear APIs ni storage
     if (
         req.method !== "GET" ||
         url.pathname.startsWith("/api") ||
@@ -106,249 +155,49 @@ self.addEventListener("fetch", (event) => {
         return;
     }
 
-    const accept = req.headers.get("accept") || "";
-    const esHTML =
-        req.mode === "navigate" || accept.includes("text/html");
+    const respuesta = caches.match(event.request)
+        .then((res) => {
+            // Si la url consultada esta en cache, lo retorna
+            if (res) return res;
 
-    // 1️⃣ HTML → NETWORK FIRST
-    if (esHTML) {
-        if (url.pathname === `/${RUTA_BIENVENIDO}` || url.pathname.startsWith(`/${RUTA_BIENVENIDO}?`)) {
-            event.respondWith(
-                caches.match(req).then(cachedResponse => {
-                    if (cachedResponse) {
-                        return cachedResponse;
+            return fetch(event.request)
+                .then(newResp => {
+                    // Clonar la respuesta antes de cachear
+                    const clonedResponse = newResp.clone();
+
+                    caches.delete(CACHE_DYNAMIC_NAME);
+                    caches.open(CACHE_DYNAMIC_NAME)
+                        .then(cache => {
+                            cache.put(event.request, clonedResponse);
+                        });
+
+                    return newResp;
+                })
+                .catch(error => {
+                    // Manejar diferentes tipos de errores
+                    console.error('Error en fetch:', error);
+
+                    // Si es una navegación (página), mostrar página offline
+                    if (event.request.mode === 'navigate') {
+                        return caches.match(RUTA_FRONT + RUTA_OFFLINE)
+                            .then(offlinePage => {
+                                if (offlinePage) {
+                                    return offlinePage;
+                                }
+                            });
                     }
 
-                    return fetch(req).catch(() => caches.match(RUTA_OFFLINE));
-                })
-            );
-            return;
-        } else {
-            event.respondWith(
-                fetch(req)
-                    .then(resp => resp)
-                    .catch(() => caches.match(RUTA_OFFLINE))
-            );
-            return;
-        }
-    }
+                    // Respuesta genérica de error
+                    return new Response('Sin conexión a internet', {
+                        status: 503,
+                        statusText: 'Service Unavailable'
+                    });
+                });
+        });
 
-
-    // 2️⃣ ASSETS → CACHE FIRST
-    if (
-        url.pathname.startsWith(RUTA_FRONT) ||
-        accept.includes("text/css") ||
-        accept.includes("javascript") ||
-        req.destination === "style" ||
-        req.destination === "script" ||
-        req.destination === "image" ||
-        req.destination === "font"
-    ) {
-        event.respondWith(
-            caches.match(req).then((cached) => {
-                if (cached) return cached;
-
-                return fetch(req)
-                    .then(async (networkResp) => {
-                        try {
-                            // Evita cachear extensiones o respuestas inválidas
-                            if (
-                                req.url.startsWith("chrome-extension://") ||
-                                !networkResp ||
-                                networkResp.status === 0 ||
-                                networkResp.type === "opaque"
-                            ) {
-                                return networkResp;
-                            }
-
-                            const cache = await caches.open(CACHE_NAME);
-                            cache.put(req, networkResp.clone());
-                        } catch (e) {
-                            // Evita romper el SW
-                            console.warn("No se pudo cachear:", req.url, e);
-                        }
-
-                        return networkResp;
-                    })
-                    .catch(() => undefined);
-            })
-        );
-        return;
-    }
-
-    // 3️⃣ OTROS → NETWORK -> CACHE
-    event.respondWith(
-        fetch(req)
-            .then((resp) => resp)
-            .catch(() => caches.match(req))
-    );
+    event.respondWith(respuesta);
 });
 
-// const VERSION_CACHE = '1.0.1';
-// const CACHE_NAME = "v" + VERSION_CACHE;
-// const OFFLINE_URL = "offline";
-// const PRELOAD_URL = "bienvenido";
-
-// // INSTALACIÓN -----------------------------------------------------
-// self.addEventListener("install", event => {
-//     self.skipWaiting();
-
-//     event.waitUntil(
-//         caches.open(CACHE_NAME).then(async cache => {
-//             let ruta_principal = "front/";
-//             let version = VERSION_CACHE;
-
-//             let biblioteca_assets = [
-//                 // IMG
-//                 { file: 'images/app/icons/icon.png' },
-//                 { file: 'images/app/icons/icon-96.png' },
-//                 { file: 'images/app/icons/icon-192.png' },
-//                 { file: 'images/app/icons/icon-512.png' },
-
-//                 // CSS
-//                 { file: 'vendor/mdboostrap/css/all.min6.0.0.css' },
-//                 { file: 'vendor/mdboostrap/css/mdb.min7.2.0.css' },
-//                 { file: 'vendor/select/select2.min.css' },
-//                 { file: 'vendor/sweetalert/animate.min.css' },
-//                 { file: 'vendor/sweetalert/default.css' },
-//                 { file: 'vendor/fontGoogle/fonts.css' },
-//                 { file: 'layout/layout.css' },
-//                 { file: 'css/app.css' },
-//                 { file: 'layout/swicth_layout.css' },
-//                 { file: 'vendor/quill/quill.snow.css' },
-//                 { file: 'vendor/daterangepicker/daterangepicker.css' },
-
-//                 // JS
-//                 { file: 'js/app.js' },
-//                 { file: 'js/app/AlertMananger.js' },
-//                 { file: 'js/app/NotificacionesControl.js' },
-//                 { file: 'js/app/FormMananger.js' },
-//                 { file: 'js/app/ChartMananger.js' },
-//                 { file: 'js/app/MediaViewerControl.js' },
-//                 { file: 'js/app/QuillControl.js' },
-//                 { file: 'layout/swicth_layout.js' },
-//                 { file: 'layout/toggle_template.js' },
-//                 { file: 'layout/template.js' },
-//                 { file: 'vendor/jquery/jquery.min.js' },
-//                 { file: 'vendor/mdboostrap/js/mdb.umd.min7.2.0.js' },
-//                 { file: 'vendor/dataTable/jquery.dataTables.min.js' },
-//                 { file: 'vendor/sweetalert/sweetalert2@11.js' },
-//                 { file: 'vendor/select/select2.min.js' },
-//                 { file: 'vendor/select/form_select2.js' },
-//                 { file: 'vendor/daterangepicker/moment.min.js' },
-//                 { file: 'vendor/daterangepicker/daterangepicker.min.js' },
-//                 { file: 'vendor/multiselect/bootstrap.bundle.min.js' },
-//                 { file: 'vendor/multiselect/bootstrap_multiselect.js' },
-//                 { file: 'vendor/multiselect/form_multiselect.js' },
-//                 { file: 'vendor/echartjs/echarts.min.js' },
-//                 { file: 'vendor/compression/compressor.min.js' },
-//                 { file: 'vendor/quill/quill.min.js' },
-//                 { file: 'vendor/exceljs/exceljs.min.js' },
-//                 { file: 'vendor/exceljs/FileSaver.min.js' },
-//                 { file: 'vendor/full-calendar/full-calendar.min.js' },
-//                 { file: 'vendor/inputmask/jquery.inputmask.bundle.min.js' },
-//             ];
-
-//             let archivos_a_cachear = [
-//                 `/${PRELOAD_URL}?v=${version}`,
-//                 `/${OFFLINE_URL}?v=${version}`
-//             ];
-
-//             biblioteca_assets.forEach(b => {
-//                 archivos_a_cachear.push(`${ruta_principal}${b.file}?v=${version}`);
-//             });
-
-//             console.log("⏳ Intentando cachear archivos...");
-
-//             await Promise.all(
-//                 archivos_a_cachear.map(url =>
-//                     cache.add(url).catch(err =>
-//                         console.warn(`No se pudo cachear: ${url}`, err)
-//                     )
-//                 )
-//             );
-
-//             console.log("✅ Instalación completada");
-//         })
-//     );
-// });
-
-// // ACTIVACIÓN Y LIMPIEZA -------------------------------------------
-// self.addEventListener("activate", event => {
-//     const cacheWhitelist = [CACHE_NAME];
-
-//     event.waitUntil(
-//         caches.keys().then(cacheNames =>
-//             Promise.all(
-//                 cacheNames.map(cacheName => {
-//                     if (!cacheWhitelist.includes(cacheName)) {
-//                         console.log("🗑️ Eliminando caché antigua:", cacheName);
-//                         return caches.delete(cacheName);
-//                     }
-//                 })
-//             )
-//         ).then(() => {
-//             console.log("Clients claimed. Control total activo.");
-//             return self.clients.claim();
-//         })
-//     );
-// });
-
-// // FETCH -----------------------------------------------------------
-// self.addEventListener("fetch", event => {
-//     const req = event.request;
-//     const url = new URL(req.url);
-
-//     if (
-//         req.method !== "GET" ||
-//         url.pathname.startsWith("/api") ||
-//         url.pathname.startsWith("/broadcasting") ||
-//         url.pathname.includes("socket.io") ||
-//         url.pathname.startsWith("/storage")
-//     ) {
-//         return;
-//     }
-
-//     const accept = req.headers.get("accept") || "";
-//     const esHTML = req.mode === "navigate" || (req.method === "GET" && accept.includes("text/html"));
-
-//     if (esHTML) {
-//         if (url.pathname === `/${PRELOAD_URL}` || url.pathname.startsWith(`/${PRELOAD_URL}?`)) {
-//             event.respondWith(
-//                 caches.match(req).then(cachedResponse => {
-//                     if (cachedResponse) {
-//                         return cachedResponse;
-//                     }
-
-//                     return fetch(req).catch(() => caches.match(`/${OFFLINE_URL}?v=${VERSION_CACHE}`));
-//                 })
-//             );
-//             return;
-//         } else {
-//             event.respondWith(
-//                 fetch(req)
-//                     .then(resp => resp)
-//                     .catch(() => caches.match(`/${OFFLINE_URL}?v=${VERSION_CACHE}`))
-//             );
-//             return;
-//         }
-//     }
-
-//     // 3. Assets estáticos: cache-first, pero solo si existe en cache
-//     // Esta parte está bien para assets que se pre-cachean.
-//     event.respondWith(
-//         caches.match(req).then(cached => {
-//             if (cached) return cached;
-
-//             return fetch(req)
-//                 .then(resp => resp)
-//                 .catch(() => {
-//                     // Si un asset no está en caché y falla la red, no hacemos fallback.
-//                     // Se podría añadir un fallback a una imagen placeholder para iconos rotos, etc.
-//                 });
-//         })
-//     );
-// });
 
 // MANTENIMIENTO y NOTIFICACIONES (tu código IndexedDB y Push está bien, lo mantuve)
 self.addEventListener("message", event => {

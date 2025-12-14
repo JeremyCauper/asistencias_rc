@@ -9,7 +9,7 @@
 
                 Swal.fire({
                     html: `
-                        <h4 style="margin: 0;margin-top:8px;">Actualización disponible</h4><p style="font-size: .8rem">v{{$ft_version}}</p>
+                        <h4 style="margin: 0;margin-top:8px;">Actualización disponible</h4><p style="font-size: .8rem">v{{ $ft_version }}</p>
                         <div style="text-align:left">
                             <p>Hemos lanzado una nueva versión de nuestro sistema para mejorar tu experiencia.</p>
                             <p style="margin: 0;">Esta actualización incluye:</p>
@@ -95,93 +95,93 @@
 @if (Auth::check())
     <script>
         (async () => {
-            if (!("serviceWorker" in navigator)) return;
-            // Espera a que exista un service worker ACTIVO
-            const reg = await navigator.serviceWorker.ready;
+                if (!("serviceWorker" in navigator)) return;
+                // Espera a que exista un service worker ACTIVO
+                const reg = await navigator.serviceWorker.ready;
 
-            // Pedir permiso
-            const permiso = await Notification.requestPermission();
-            if (permiso !== "granted") return;
+                // Pedir permiso
+                const permiso = await Notification.requestPermission();
+                if (permiso !== "granted") return;
 
-            // Convertir clave VAPID
-            function urlBase64ToUint8Array(base64String) {
-                const padding = '='.repeat((4 - base64String.length % 4) % 4);
-                const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-                const rawData = atob(base64);
-                const outputArray = new Uint8Array(rawData.length);
-                for (let i = 0; i < rawData.length; ++i) {
-                    outputArray[i] = rawData.charCodeAt(i);
+                // Convertir clave VAPID
+                function urlBase64ToUint8Array(base64String) {
+                    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+                    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+                    const rawData = atob(base64);
+                    const outputArray = new Uint8Array(rawData.length);
+                    for (let i = 0; i < rawData.length; ++i) {
+                        outputArray[i] = rawData.charCodeAt(i);
+                    }
+                    return outputArray;
                 }
-                return outputArray;
-            }
 
-            const clave = urlBase64ToUint8Array("{{ env('VAPID_PUBLIC_KEY') }}");
+                const clave = urlBase64ToUint8Array("{{ env('VAPID_PUBLIC_KEY') }}");
 
-            // Crear suscripción
-            const sub = await reg.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: clave
-            });
+                // Crear suscripción
+                const sub = await reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: clave
+                });
 
-            // Enviar al backend
-            await fetch(__url + "/push/subscribe", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    'X-CSRF-TOKEN': __token,
-                },
-                body: JSON.stringify({
-                    ...sub.toJSON(),
-                    origin: window.location.origin
-                })
-            });
+                // Enviar al backend
+                await fetch(__url + "/push/subscribe", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        'X-CSRF-TOKEN': __token,
+                    },
+                    body: JSON.stringify({
+                        ...sub.toJSON(),
+                        origin: window.location.origin
+                    })
+                });
 
-            console.log("Push registrado ✔");
-        })();
+                console.log("Push registrado ✔");
+            })();
 
-        (async () => {
-            if (!("serviceWorker" in navigator)) return;
-            const solicitarPermisoCamara = async () => {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({
-                        video: true
-                    });
-                    stream.getTracks().forEach(t => t.stop());
-                    return true;
-                } catch (err) {
-                    return false;
+            (async () => {
+                if (!("serviceWorker" in navigator)) return;
+                const solicitarPermisoCamara = async () => {
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({
+                            video: true
+                        });
+                        stream.getTracks().forEach(t => t.stop());
+                        return true;
+                    } catch (err) {
+                        return false;
+                    }
                 }
-            }
 
-            const permiso = await navigator.permissions.query({
-                name: "camera"
-            });
-
-            if (permiso.state === "prompt") {
-                const ok = await solicitarPermisoCamara();
-
-                // Revisar nuevamente el estado después de pedir permiso  
-                const post = await navigator.permissions.query({
+                const permiso = await navigator.permissions.query({
                     name: "camera"
                 });
 
-                if (!ok || post.state === "denied") {
+                if (permiso.state === "prompt") {
+                    const ok = await solicitarPermisoCamara();
+
+                    // Revisar nuevamente el estado después de pedir permiso  
+                    const post = await navigator.permissions.query({
+                        name: "camera"
+                    });
+
+                    if (!ok || post.state === "denied") {
+                        return boxAlert.box({
+                            i: "warning",
+                            h: "Se denegó el acceso a la cámara."
+                        });
+                    }
+                }
+
+                if (permiso.state === "denied") {
                     return boxAlert.box({
                         i: "warning",
-                        h: "Se denegó el acceso a la cámara."
+                        h: "Acceso a la cámara denegado, debe desbloquearlo desde los ajustes del navegador."
                     });
                 }
-            }
 
-            if (permiso.state === "denied") {
-                return boxAlert.box({
-                    i: "warning",
-                    h: "Acceso a la cámara denegado, debe desbloquearlo desde los ajustes del navegador."
-                });
-            }
-
-            // granted
-            console.log("Permiso otorgado");
-        })();
+                // granted
+                console.log("Permiso otorgado");
+            })();
     </script>
 @endif

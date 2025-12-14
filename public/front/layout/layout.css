@@ -7,8 +7,7 @@
     --root-container-bg: #ffffff;
     --root-border-color: rgb(79, 79, 79, .2);
 
-    --root-is-active-bg: rgb(171 203 255);
-    --root-is-active-color: rgb(29 115 255);
+    --root-is-active-bg: rgb(29 115 255);
 
     --navbar-sigla-container-bg: #e5e5e5;
 }
@@ -20,8 +19,7 @@
     --root-container-bg: #303030;
     --root-border-color: rgb(255, 255, 255, .3);
 
-    --root-is-active-bg: rgb(33 49 70);
-    --root-is-active-color: rgb(0 97 255);
+    --root-is-active-bg: rgb(63 103 169);
 
     --navbar-sigla-container-bg: #303030;
 }
@@ -333,7 +331,7 @@ body * .hover-layout:hover {
 
 .layout-container .sidebar .sidebar__body .sidebar__item .sidebar__link.is-active {
     background-color: var(--root-is-active-bg);
-    color: var(--root-is-active-color);
+    color: white;
     font-weight: 600;
 }
 

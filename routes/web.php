@@ -22,16 +22,14 @@ use App\Http\Controllers\MantenimientosDeveloper\TipoAsistencia\TipoAsistenciaCo
 use App\Http\Controllers\MantenimientosDeveloper\TipoModalidad\TipoModalidadController;
 use App\Http\Controllers\MediaArchivo\MediaArchivoController;
 use App\Http\Controllers\NotificacionController;
-
-Route::get('/check-session', function () {
-    return response()->json([
-        'auth' => Auth::check(),
-        'redirect' => Auth::check() ? secure_url(config('ajustes.rutaRedirect')) : secure_url('/inicio'), // Cambia por tu ruta real
-    ]);
-});
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    return response()->file(public_path('front/index.html'));
+    return view('welcome');
+});
+
+Route::get('/offline', function () {
+    return view('offline');
 });
 
 Route::get('/inicio', [LoginController::class, 'view'])->name('login')->middleware('guest:web');
@@ -188,3 +186,30 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/push/test/{id}', [PushController::class, 'test']);
+
+
+// Route::get('/manifest10.json', function () {
+//     return response()->json([
+//         'name' => 'Asistencias RC',
+//         'short_name' => 'Asistencias RC',
+//         'description' => 'Sistema de control de asistencias',
+//         'start_url' => secure_url('/'),
+//         'scope' => secure_url('/'),
+//         'display' => 'standalone',
+//         'background_color' => '#3b71ca',
+//         'theme_color' => '#000000',
+//         'orientation' => 'portrait',
+//         'icons' => [
+//             [
+//                 'src' => secure_asset('front/images/app/icons/icon-192.png'),
+//                 'sizes' => '192x192',
+//                 'type' => 'image/png'
+//             ],
+//             [
+//                 'src' => secure_asset('front/images/app/icons/icon-512.png'),
+//                 'sizes' => '512x512',
+//                 'type' => 'image/png'
+//             ]
+//         ]
+//     ]);
+// });
