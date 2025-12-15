@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="shortcut icon" href="./front/images/app/icons/icon-192.webp?v=1.1.0.5">
+    <link rel="shortcut icon" href="./front/images/app/icons/icon-192.webp?v=5.6.3">
 
     <!-- PWA Meta Tags -->
-    <link rel="manifest" href="./manifest.json?v=1.1.0.5">
+    <link rel="manifest" href="./manifest.json?v=5.6.3">
     <meta name="theme-color" content="#000000">
 
     <title>Cargando...</title>
@@ -16,10 +16,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Asistencias">
-    <link rel="apple-touch-icon" href="./front/images/app/icons/icon-192.webp?v=1.1.0.5">
+    <link rel="apple-touch-icon" href="./front/images/app/icons/icon-192.webp?v=5.6.3">
 
     <!-- Para Windows -->
-    <meta name="msapplication-TileImage" content="./front/images/app/icons/icon-192.webp?v=1.1.0.5">
+    <meta name="msapplication-TileImage" content="./front/images/app/icons/icon-192.webp?v=5.6.3">
     <meta name="msapplication-TileColor" content="#000000">
 
     <style>
@@ -103,11 +103,11 @@
 <body>
     <div class="loader">
         <div class="logo-container">
-            <img src="./front/images/app/icons/icon-192.webp?v=1.1.0.5" class="logo-img" alt="Logo">
+            <img src="./front/images/app/icons/icon-192.webp?v=5.6.3" class="logo-img" alt="Logo">
         </div>
     </div>
     <div class="info-container">
-        <p class="version">v1.1.0.5</p>
+        <p class="version">v5.6.3</p>
     </div>
     <script>
         window.addEventListener('load', () => {
@@ -116,7 +116,7 @@
             };
 
             if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("./sw.js?v=1.1.0.5")
+                navigator.serviceWorker.register("./sw.js?v=5.6.3")
                     .then(async reg => {
                         console.log("[SW] Registrado correctamente");
                         redirectToHome();
