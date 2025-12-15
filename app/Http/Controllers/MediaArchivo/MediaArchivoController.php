@@ -26,7 +26,7 @@ class MediaArchivoController extends Controller
             $isPdf = str_starts_with($mime, 'application/pdf');
 
             if (!($isImage || $isVideo || $isPdf)) {
-                return ApiResponse::error('El archivo debe ser una imagen, video o PDF.');
+                return ApiResponse::error('Formato de archivo no permitido');
             }
 
             // límites
