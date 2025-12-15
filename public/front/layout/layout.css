@@ -10,6 +10,7 @@
     --root-is-active-bg: rgb(29 115 255);
 
     --navbar-sigla-container-bg: #e5e5e5;
+    --navbar-dropdown-item-hover-bg: rgb(213 213 213);
 }
 
 [data-mdb-theme=dark] {
@@ -22,6 +23,7 @@
     --root-is-active-bg: rgb(63 103 169);
 
     --navbar-sigla-container-bg: #303030;
+    --navbar-dropdown-item-hover-bg: rgb(89 89 89);
 }
 
 
@@ -119,16 +121,21 @@ body * .hover-layout:hover {
     border-radius: 50%;
 }
 
+#contenedor-sigla .dropdown-menu .dropdown-body .dropdown-item:hover {
+    background-color: var(--navbar-dropdown-item-hover-bg);
+}
+
 .navbar .navbar-brand .sidebar-close__navbar {
     display: none;
 }
 
 #contenedor-notificaciones .dropdown-menu {
     width: 28rem;
+    background-color: var(--root-layout-bg);
 }
 
 #contenedor-notificaciones .dropdown-menu .dropdown-header button[noti-btn="reload"] {
-    background-color: var(--navbar-sigla-container-bg);
+    background-color: var(--root-container-bg);
 }
 
 #contenedor-notificaciones .dropdown-menu .dropdown-body {
@@ -144,11 +151,11 @@ body * .hover-layout:hover {
     position: relative;
     user-select: none;
     cursor: pointer;
-    background-color: rgb(var(--mdb-body-color-rgb), 5%);
+    background-color: var(--root-container-bg)
 }
 
 #contenedor-notificaciones .dropdown-menu .dropdown-body .dropdown-item:hover {
-    background-color: rgb(var(--mdb-body-color-rgb), 15%);
+    background-color: var(--navbar-dropdown-item-hover-bg);
 }
 
 #contenedor-notificaciones .dropdown-menu .dropdown-body .dropdown-item .noti-contenido {
@@ -256,7 +263,7 @@ body * .hover-layout:hover {
     background-size: contain !important;
     width: 1.75rem;
     height: 1.75rem;
-    background: url(../../front/images/app/icons/icon.webp?v=1.1.0.3) no-repeat center center;
+    background: url(../../front/images/app/icons/icon.webp?v=1.1.0.5) no-repeat center center;
 }
 
 .layout-container .sidebar .sidebar__header .sidebar-close i::before {
@@ -625,7 +632,7 @@ body * .hover-layout:hover {
     }
 
     .layout-container .navbar .navbar-brand .logo_rci {
-        background: url(../../front/images/app/icons/icon.webp?v=1.1.0.3) no-repeat center center;
+        background: url(../../front/images/app/icons/icon.webp?v=1.1.0.5) no-repeat center center;
         width: 40px;
         height: 40px;
     }

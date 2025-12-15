@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="shortcut icon" href="./front/images/app/icons/icon-192.webp?v=1.1.0.3">
+    <link rel="shortcut icon" href="./front/images/app/icons/icon-192.webp?v=1.1.0.5">
 
     <!-- PWA Meta Tags -->
-    <link rel="manifest" href="./manifest.json?v=1.1.0.3">
+    <link rel="manifest" href="./manifest.json?v=1.1.0.5">
     <meta name="theme-color" content="#000000">
 
     <title>Cargando...</title>
@@ -16,10 +16,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Asistencias">
-    <link rel="apple-touch-icon" href="./front/images/app/icons/icon-192.webp?v=1.1.0.3">
-    
+    <link rel="apple-touch-icon" href="./front/images/app/icons/icon-192.webp?v=1.1.0.5">
+
     <!-- Para Windows -->
-    <meta name="msapplication-TileImage" content="./front/images/app/icons/icon-192.webp?v=1.1.0.3">
+    <meta name="msapplication-TileImage" content="./front/images/app/icons/icon-192.webp?v=1.1.0.5">
     <meta name="msapplication-TileColor" content="#000000">
 
     <style>
@@ -29,11 +29,15 @@
             }
         }
 
+        html {
+            height: 100dvh;
+        }
+
         body {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            min-height: 100dvh;
             margin: 0;
             background-color: #3b71ca;
             font-family: Arial, sans-serif;
@@ -75,22 +79,48 @@
             width: 100%;
             height: 100%;
         }
+
+        .info-container {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 0.9rem;
+            font-family: Arial, sans-serif;
+            z-index: 3;
+            text-align: center;
+        }
+
+        .info-container .version {
+            margin-top: 0.2rem;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
     </style>
 </head>
 
 <body>
     <div class="loader">
         <div class="logo-container">
-            <img src="./front/images/app/icons/icon-192.webp?v=1.1.0.3" class="logo-img" alt="Logo">
+            <img src="./front/images/app/icons/icon-192.webp?v=1.1.0.5" class="logo-img" alt="Logo">
         </div>
+    </div>
+    <div class="info-container">
+        <p class="version">v1.1.0.5</p>
     </div>
     <script>
         window.addEventListener('load', () => {
+            const redirectToHome = () => {
+                window.location.href = location.href + 'inicio';
+            };
+
             if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("./sw.js?v=1.1.0.3").then(() => {
-                    console.log('Service Worker registrado');
-                    window.location.href = location.href + 'inicio';
-                });
+                navigator.serviceWorker.register("./sw.js?v=1.1.0.5")
+                    .then(async reg => {
+                        console.log("[SW] Registrado correctamente");
+                        redirectToHome();
+                    });
             }
         });
     </script>
