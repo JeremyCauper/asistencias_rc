@@ -756,7 +756,10 @@ function generateUrl(baseUrl, params) {
 }
 
 function esCelular() {
-    return /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
+    return (
+        /android|iphone|ipod|ipad|mobile/i.test(navigator.userAgent.toLowerCase()) ||
+        navigator.maxTouchPoints > 1
+    );
 }
 
 // Codificar HTML con emojis Binario y después a Base64

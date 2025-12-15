@@ -355,38 +355,48 @@ class EditorJustificacion {
             }
 
             boxAlert.loading("Subiendo archivo...");
+
             const form = new FormData();
             form.append("file", fileToUpload);
 
             const res = await fetch(`${__url}/media-archivo/upload-media/justificaciones`, {
                 method: "POST",
-                headers: { "X-CSRF-TOKEN": __token },
+                headers: {
+                    "X-CSRF-TOKEN": __token
+                },
                 body: form
             });
 
-            const data = await res.json();
+            const data = await this.parseJsonSafe(res);
 
             if (!res.ok || !data.success) {
-                const mensaje = data.message || 'No se pudo completar la operación.';
-                return boxAlert.box({ i: 'error', t: 'Algo salió mal...', h: mensaje });
+                throw new Error(data.message || "No se pudo completar la operación.");
             }
-
-            if (!data.data?.url) throw new Error(data.message || "Error al subir");
 
             Swal.close();
             const id = data.data.nombre_archivo;
-            const url = `${__url.replaceAll('/public', '')}/${data.data.url}`;
+            const url = (__asset.replaceAll('front', '')) + data.data.url;
 
             const range = this.quill.getSelection(true);
             this.insertFile(tipo, url, last_Modified, id, range.index);
         } catch (error) {
             console.log(error);
             boxAlert.box({
-                i: 'error',
-                t: 'Error en la conexión',
-                h: error.message || 'Ocurrió un problema al procesar la solicitud. Verifica tu conexión e intenta nuevamente.'
+                i: "error",
+                t: "No se pudo subir el archivo",
+                h: error.message || error || "Verifica tu conexión e inténtalo nuevamente."
             });
         }
+    }
+
+    async parseJsonSafe(response) {
+        const contentType = response.headers.get("content-type");
+
+        if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("Respuesta inesperada del servidor");
+        }
+
+        return response.json();
     }
 
     /** ============================
@@ -411,11 +421,16 @@ class EditorJustificacion {
         acc[tipo]?.();
 
         setTimeout(() => {
-            if (tipo == "pdf") return;
+            let etiqueta = {
+                image: 'img',
+                video: 'iframe'
+            }[tipo] || false;
 
-            let archivo = $(this.selector).find(`img[data-id="${id}"]`)[0];
-            const p = archivo.parentElement;
-            p.setAttribute('date-file', date('Y-m-d H:i:s', lastModified));
+            if (!etiqueta) return;
+
+            let archivo = $(this.selector).find(`${etiqueta}[data-id="${id}"]`)[0];
+            const parent = tipo == 'image' ? archivo.parentElement : archivo;
+            parent.setAttribute('date-file', date('Y-m-d H:i:s', lastModified));
         }, 300);
     }
 
