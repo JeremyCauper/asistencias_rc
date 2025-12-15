@@ -1,5 +1,5 @@
 <?php
-$version = '5.6.3';
+$version = '5.6.4';
 return [
     'version' => $version,
     'css' => (object) [
@@ -44,7 +44,7 @@ return [
         'form_multiselect' => 'front/vendor/multiselect/form_multiselect.js',
         'echarts' => 'front/vendor/echartjs/echarts.min.js',
         'compressor' => 'front/vendor/compression/compressor.min.js',
-        'quill' => 'front/vendor/quill/quill.min.js',
+        'quill' => 'front/vendor/quill/quill.js',
         'exceljs' => 'front/vendor/exceljs/exceljs.min.js',
         'FileSaver' => 'front/vendor/exceljs/FileSaver.min.js',
         'full_calendar' => 'front/vendor/full-calendar/full-calendar.min.js',

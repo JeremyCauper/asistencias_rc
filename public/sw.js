@@ -1,7 +1,7 @@
 // =======================================================
 // CONFIGURACIÓN
 // =======================================================
-const VERSION = "5.6.3";
+const VERSION = "5.6.4";
 const CACHE_STATIC_NAME = "pwa-static-v" + VERSION;
 const CACHE_INMUTABLE_NAME = "pwa-inmutable-v1";
 const CACHE_DYNAMIC_NAME = "pwa-dynamic-v1";

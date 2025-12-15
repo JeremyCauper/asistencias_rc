@@ -1219,6 +1219,7 @@
 }
 
 .ql-editor p[date-file],
+.ql-editor iframe[date-file],
 .ql-editor ol li[date-file],
 .ql-editor ul li[date-file] {
   display: inline-block;
@@ -1227,6 +1228,7 @@
 }
 
 .ql-editor p[date-file]::before,
+.ql-editor iframe[date-file]::before,
 .ql-editor ol li[date-file]::after,
 .ql-editor ul li[date-file]::after {
   content: attr(date-file);
