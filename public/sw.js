@@ -1,6 +1,212 @@
-const VERSION_CACHE = 1;
-const CACHE_NAME = "v" + VERSION_CACHE;
-const OFFLINE_URL = "offline?v=1";
+// =======================================================
+// CONFIGURACIÓN
+// =======================================================
+const VERSION = "1.1.0.5";
+const CACHE_STATIC_NAME = "pwa-static-v" + VERSION;
+const CACHE_INMUTABLE_NAME = "pwa-inmutable-v1";
+const CACHE_DYNAMIC_NAME = "pwa-dynamic-v1";
+
+// RUTAS DE TU SISTEMA
+const RUTA_FRONT = "front/";
+const RUTA_BIENVENIDO = "index.html";
+const RUTA_OFFLINE = "offline.html";
+
+// Lista de archivos que quieres precachear
+const PRECACHE_STATIC_FILES = [
+
+    { file: "index.html" },
+    { file: "offline.html" },
+    // IMG
+    { file: "images/app/icons/icon.webp" },
+    { file: "images/app/icons/icon-badge.webp" },
+    { file: "images/app/icons/icon-96.webp" },
+    { file: "images/app/icons/icon-192.webp" },
+    { file: "images/app/icons/icon-512.webp" },
+
+    // CSS
+    { file: "css/app.css" },
+    { file: "layout/layout.css" },
+    { file: "layout/swicth_layout.css" },
+
+    // JS
+    { file: "js/app.js" },
+    { file: "layout/swicth_layout.js" },
+    { file: "layout/toggle_template.js" },
+    { file: "layout/template.js" },
+];
+
+const PRECACHE_INMUTABLE_FILES = [
+    // IMG
+    { file: "images/app/LogoRC.webp" },
+    { file: "images/app/LogoRC_TBlanco.webp" },
+    { file: "images/app/LogoRC_TNegro.webp" },
+    { file: "images/app/LogoRC_WBlanco.webp" },
+    { file: "images/app/LogoRC_WNormal.webp" },
+
+    // CSS
+    { file: "vendor/mdboostrap/css/all.min6.0.0.css" },
+    { file: "vendor/mdboostrap/css/mdb.min7.2.0.css" },
+    { file: "vendor/select/select2.min.css" },
+    { file: "vendor/sweetalert/animate.min.css" },
+    { file: "vendor/sweetalert/default.css" },
+    { file: "vendor/fontGoogle/fonts.css" },
+
+    // JS
+    { file: "vendor/jquery/jquery.min.js" },
+    { file: "vendor/mdboostrap/js/mdb.umd.min7.2.0.js" },
+    { file: "vendor/dataTable/jquery.dataTables.min.js" },
+    { file: "vendor/sweetalert/sweetalert2@11.js" },
+    { file: "vendor/select/select2.min.js" },
+    { file: "vendor/select/form_select2.js" },
+    { file: "vendor/daterangepicker/moment.min.js" },
+    { file: "vendor/daterangepicker/daterangepicker.min.js" },
+    { file: "vendor/multiselect/bootstrap.bundle.min.js" },
+    { file: "vendor/multiselect/bootstrap_multiselect.js" },
+    { file: "vendor/multiselect/form_multiselect.js" },
+    { file: "vendor/echartjs/echarts.min.js" },
+    { file: "vendor/compression/compressor.min.js" },
+    { file: "vendor/quill/quill.min.js" },
+    { file: "vendor/exceljs/exceljs.min.js" },
+    { file: "vendor/exceljs/FileSaver.min.js" },
+    { file: "vendor/full-calendar/full-calendar.min.js" },
+    { file: "vendor/inputmask/jquery.inputmask.bundle.min.js" },
+];
+
+// =======================================================
+// INSTALACIÓN
+// =======================================================
+self.addEventListener("install", (event) => {
+    console.log('Instalando service worker');
+    self.skipWaiting();
+
+    const cacheProm = caches.open(CACHE_STATIC_NAME).then(async cache => {
+        let CACHE_STATIC_URLS = ['./'];
+
+        PRECACHE_STATIC_FILES.forEach(b => CACHE_STATIC_URLS.push(`${RUTA_FRONT}${b.file}?v=${VERSION}`));
+        await Promise.all(
+            CACHE_STATIC_URLS.map(async url => {
+                try {
+                    await cache.add(url);
+                } catch (e) {
+                    console.warn('Static no cacheado:', url);
+                }
+            })
+        );
+    });
+
+    const cacheInmutable = caches.open(CACHE_INMUTABLE_NAME).then(async cache => {
+        let CACHE_INMUTABLE_URLS = PRECACHE_INMUTABLE_FILES.map(b => `${RUTA_FRONT}${b.file}`);
+
+        await Promise.all(
+            CACHE_INMUTABLE_URLS.map(async url => {
+                try {
+                    await cache.add(url);
+                } catch (e) {
+                    console.warn('Inmutable no cacheado:', url);
+                }
+            })
+        );
+    });
+
+    event.waitUntil(Promise.all([cacheProm, cacheInmutable]));
+});
+
+// =======================================================
+// ACTIVACIÓN Y LIMPIEZA
+// =======================================================
+self.addEventListener("activate", event => {
+    const cacheWhitelist = [CACHE_STATIC_NAME, CACHE_INMUTABLE_NAME];
+    const clearOldCaches = caches.keys().then(cacheNames =>
+        Promise.all(
+            cacheNames.map(cacheName => {
+                if (!cacheWhitelist.includes(cacheName)) {
+                    console.log("🗑️ Eliminando caché antigua:", cacheName);
+                    return caches.delete(cacheName);
+                }
+            })
+        )
+    ).then(() => {
+        console.log("Clients claimed. Control total activo.");
+        return self.clients.claim();
+    });
+
+    event.waitUntil(clearOldCaches);
+});
+
+// =======================================================
+// ESTRATEGIAS DE FETCH
+// =======================================================
+self.addEventListener("fetch", event => {
+    const req = event.request;
+    const url = new URL(req.url);
+
+    if (!url.protocol.startsWith("http")) {
+        return;
+    }
+
+    if (
+        req.method !== "GET" ||
+        url.pathname.startsWith("/api") ||
+        url.pathname.startsWith("/broadcasting") ||
+        url.pathname.includes("socket.io") ||
+        url.pathname.startsWith("/storage")
+    ) {
+        return;
+    }
+
+    const respuesta = caches.match(event.request)
+        .then((res) => {
+            // Si la url consultada esta en cache, lo retorna
+            if (res) return res;
+
+            return fetch(event.request)
+                // .then(newResp => {
+                //     // Clonar la respuesta antes de cachear
+                //     const clonedResponse = newResp.clone();
+
+                //     caches.delete(CACHE_DYNAMIC_NAME);
+                //     caches.open(CACHE_DYNAMIC_NAME)
+                //         .then(cache => {
+                //             cache.put(event.request, clonedResponse);
+                //         });
+
+                //     return newResp;
+                // })
+                .catch(error => {
+                    // Manejar diferentes tipos de errores
+                    console.error('Error en fetch:', error);
+
+                    // Si es una navegación (página), mostrar página offline
+                    if (event.request.mode === 'navigate') {
+                        // return caches.match(RUTA_FRONT + RUTA_OFFLINE)
+                        return caches.match(`${RUTA_FRONT}${RUTA_OFFLINE}?v=${VERSION}`)
+                            .then(offlinePage => {
+                                console.log(offlinePage);
+
+                                if (offlinePage) {
+                                    return offlinePage;
+                                }
+                            });
+                    }
+
+                    // Respuesta genérica de error
+                    return new Response('Sin conexión a internet', {
+                        status: 503,
+                        statusText: 'Service Unavailable'
+                    });
+                });
+        });
+
+    event.respondWith(respuesta);
+});
+
+
+// MANTENIMIENTO y NOTIFICACIONES (tu código IndexedDB y Push está bien, lo mantuve)
+self.addEventListener("message", event => {
+    if (event.data && event.data.action === "SKIP_WAITING") {
+        self.skipWaiting();
+    }
+});
 
 // IndexedDB helper (simple y compacto)
 const DB_NAME = "pushCountersDB";
@@ -42,162 +248,6 @@ async function setCount(tag, value) {
         tx.oncomplete = () => resolve(true);
     });
 }
-
-// INSTALACIÓN -----------------------------------------------------
-self.addEventListener("install", event => {
-    self.skipWaiting();
-
-    event.waitUntil(
-        caches.open(CACHE_NAME).then(async cache => {
-            let ruta_principal = "front/";
-            let version = VERSION_CACHE;
-
-            let biblioteca_front = [
-                // IMG
-                { file: 'images/app/icons/icon.png' },
-                { file: "images/app/icons/icon-192.png" },
-                { file: "images/app/icons/icon-512.png" },
-
-                // CSS
-                { file: 'vendor/mdboostrap/css/all.min6.0.0.css' },
-                { file: 'vendor/mdboostrap/css/mdb.min7.2.0.css' },
-                { file: 'vendor/select/select2.min.css' },
-                { file: 'vendor/sweetalert/animate.min.css' },
-                { file: 'vendor/sweetalert/default.css' },
-                { file: 'vendor/fontGoogle/fonts.css' },
-                { file: 'layout/layout.css' },
-                { file: 'css/app.css' },
-                { file: 'layout/swicth_layout.css' },
-                { file: 'vendor/quill/quill.snow.css' },
-                { file: 'vendor/daterangepicker/daterangepicker.css' },
-
-                // JS
-                { file: 'js/app.js' },
-                { file: 'js/app/AlertMananger.js' },
-                { file: 'js/app/NotificacionesControl.js' },
-                { file: 'js/app/FormMananger.js' },
-                { file: 'js/app/ChartMananger.js' },
-                { file: 'js/app/MediaViewerControl.js' },
-                { file: 'js/app/QuillControl.js' },
-                { file: 'layout/swicth_layout.js' },
-                { file: 'layout/toggle_template.js' },
-                { file: 'layout/template.js' },
-                { file: 'vendor/jquery/jquery.min.js' },
-                { file: 'vendor/mdboostrap/js/mdb.umd.min7.2.0.js' },
-                { file: 'vendor/dataTable/jquery.dataTables.min.js' },
-                { file: 'vendor/sweetalert/sweetalert2@11.js' },
-                { file: 'vendor/select/select2.min.js' },
-                { file: 'vendor/select/form_select2.js' },
-                { file: 'vendor/daterangepicker/moment.min.js' },
-                { file: 'vendor/daterangepicker/daterangepicker.min.js' },
-                { file: 'vendor/multiselect/bootstrap.bundle.min.js' },
-                { file: 'vendor/multiselect/bootstrap_multiselect.js' },
-                { file: 'vendor/multiselect/form_multiselect.js' },
-                { file: 'vendor/echartjs/echarts.min.js' },
-                { file: 'vendor/compression/compressor.min.js' },
-                { file: 'vendor/quill/quill.min.js' },
-                { file: 'vendor/exceljs/exceljs.min.js' },
-                { file: 'vendor/exceljs/FileSaver.min.js' },
-                { file: 'vendor/full-calendar/full-calendar.min.js' },
-                { file: 'vendor/inputmask/jquery.inputmask.bundle.min.js' },
-            ];
-
-            // Construir URLs con versión
-            let archivos_finales = biblioteca_front.map(b =>
-                `${ruta_principal}${b.file}?v=${version}`
-            );
-
-            // Página offline
-            archivos_finales.push(OFFLINE_URL);
-
-            console.log("⏳ Intentando cachear archivos...");
-
-            // Mejorado: evita que un archivo que falla tumbe todo addAll
-            await Promise.all(
-                archivos_finales.map(url =>
-                    cache.add(url).catch(err =>
-                        console.warn("No se pudo cachear:", url)
-                    )
-                )
-            );
-
-            console.log("✅ Instalación completada");
-        })
-    );
-});
-
-// ACTIVACIÓN Y LIMPIEZA -------------------------------------------
-self.addEventListener("activate", event => {
-    const cacheWhitelist = [CACHE_NAME];
-
-    event.waitUntil(
-        caches.keys().then(cacheNames =>
-            Promise.all(
-                cacheNames.map(cacheName => {
-                    if (!cacheWhitelist.includes(cacheName)) {
-                        console.log("🗑️ Eliminando caché antigua:", cacheName);
-                        return caches.delete(cacheName);
-                    }
-                })
-            )
-        ).then(() => {
-            console.log("Clients claimed. Control total activo.");
-            return self.clients.claim();
-        })
-    );
-});
-
-// FETCH -----------------------------------------------------------
-self.addEventListener("fetch", event => {
-    const req = event.request;
-    const url = new URL(req.url);
-
-    // 1. Ignorar NO-GET (POST, PUT…), APIs, sockets, storage
-    if (
-        req.method !== "GET" ||
-        url.pathname.startsWith("/api") ||
-        url.pathname.startsWith("/broadcasting") ||
-        url.pathname.includes("socket.io") ||
-        url.pathname.startsWith("/storage")
-    ) {
-        return; // deja que la red lo maneje
-    }
-
-    // 2. HTML: estrategia network-first
-    const accept = req.headers.get("accept") || "";
-    const esHTML =
-        req.mode === "navigate" ||
-        (req.method === "GET" && accept.includes("text/html"));
-
-    if (esHTML) {
-        event.respondWith(
-            fetch(req)
-                .then(resp => resp)
-                .catch(() => caches.match(OFFLINE_URL))
-        );
-        return;
-    }
-
-    // 3. Assets estáticos: cache-first, pero solo si existe en cache
-    event.respondWith(
-        caches.match(req).then(cached => {
-            if (cached) return cached;
-
-            return fetch(req)
-                .then(resp => resp)
-                .catch(() => {
-                    // Opcional: no hacemos fallback aquí
-                });
-        })
-    );
-});
-
-// MANTENIMIENTO ---------------------------------------------------
-self.addEventListener("message", event => {
-    if (event.data && event.data.action === "SKIP_WAITING") {
-        self.skipWaiting();
-    }
-});
 
 // NOTIFICACIONES --------------------------------------------------
 self.addEventListener("push", event => {

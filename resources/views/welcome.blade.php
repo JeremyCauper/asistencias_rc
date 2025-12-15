@@ -1,84 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foto</title>
-</head>
-<body>
-    <input type="file" id="fileInput" accept="image/*" capture="camera">
-</body>
-</html>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="./front/images/app/icons/icon-192.webp?v=1.1.0.5">
 
-{{-- <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8" />
-    <title>Convertir Imagen a WebP</title>
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="./manifest.json?v=1.1.0.5">
+    <meta name="theme-color" content="#000000">
 
-    <!-- Librería Compressor.js -->
-    <script src="https://cdn.jsdelivr.net/npm/compressorjs@1.2.1/dist/compressor.min.js"></script>
+    <title>Cargando...</title>
+
+    <!-- Para iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Asistencias">
+    <link rel="apple-touch-icon" href="./front/images/app/icons/icon-192.webp?v=1.1.0.5">
+
+    <!-- Para Windows -->
+    <meta name="msapplication-TileImage" content="./front/images/app/icons/icon-192.webp?v=1.1.0.5">
+    <meta name="msapplication-TileColor" content="#000000">
 
     <style>
+        @keyframes l13 {
+            100% {
+                transform: rotate(1turn)
+            }
+        }
+
+        html {
+            height: 100dvh;
+        }
+
         body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100dvh;
+            margin: 0;
+            background-color: #3b71ca;
             font-family: Arial, sans-serif;
-            margin: 40px;
         }
-        img {
-            max-width: 300px;
-            margin-top: 20px;
-            border-radius: 10px;
+
+        .loader {
+            position: relative;
         }
-        .msg {
-            margin-top: 15px;
-            font-weight: bold;
+
+        /* HTML: <div class="loader"></div> */
+        .loader::after {
+            --bg: #f4f4f4;
+            --ancho: 10px;
+            content: '';
+            position: absolute;
+            width: 171px;
+            top: -18px;
+            left: -18px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: radial-gradient(farthest-side, var(--bg) 94%, #0000) top / var(--ancho) var(--ancho) no-repeat, conic-gradient(#0000 30%, var(--bg));
+            -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - var(--ancho)), #000 0);
+            animation: l13 .6s infinite linear;
+        }
+
+        .logo-container {
+            width: 96px;
+            height: 96px;
+            object-fit: cover;
+            border-radius: 50%;
+            /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); */
+            padding: 20px;
+            z-index: 2;
+            position: relative;
+            display: block;
+        }
+
+        .logo-img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .info-container {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 0.9rem;
+            font-family: Arial, sans-serif;
+            z-index: 3;
+            text-align: center;
+        }
+
+        .info-container .version {
+            margin-top: 0.2rem;
+            font-size: 0.8rem;
+            opacity: 0.8;
         }
     </style>
 </head>
 
 <body>
-
-    <h2>Convertir Imagen a WebP</h2>
-
-    <input type="file" id="fileInput" accept="image/*">
-
-    <div class="msg" id="msg"></div>
-    <img id="preview">
-
+    <div class="loader">
+        <div class="logo-container">
+            <img src="./front/images/app/icons/icon-192.webp?v=1.1.0.5" class="logo-img" alt="Logo">
+        </div>
+    </div>
+    <div class="info-container">
+        <p class="version">v1.1.0.5</p>
+    </div>
     <script>
-        const input = document.getElementById('fileInput');
-        const msg = document.getElementById('msg');
-        const preview = document.getElementById('preview');
+        window.addEventListener('load', () => {
+            const redirectToHome = () => {
+                window.location.href = location.href + 'inicio';
+            };
 
-        input.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            msg.innerText = "Convirtiendo imagen, espera...";
-            preview.src = URL.createObjectURL(file);
-
-            new Compressor(file, {
-                quality: 0.35,               // Calidad WebP
-                convertTypes: ['image/webp'], // Convertir SIEMPRE a WebP
-                success(result) {
-                    msg.innerText = "Conversión completada ✔";
-
-                    // Descargar el WebP
-                    const a = document.createElement('a');
-                    a.href = URL.createObjectURL(result);
-                    a.download = file.name.replace(/\.[^.]+$/, '') + '.webp';
-                    a.click();
-
-                    // Vista previa del WebP
-                    preview.src = a.href;
-                },
-                error(err) {
-                    msg.innerText = "Ocurrió un error ❌";
-                    console.error(err);
-                },
-            });
+            if ("serviceWorker" in navigator) {
+                navigator.serviceWorker.register("./sw.js?v=1.1.0.5")
+                    .then(async reg => {
+                        console.log("[SW] Registrado correctamente");
+                        redirectToHome();
+                    });
+            }
         });
     </script>
-
 </body>
-</html> --}}
+
+</html>

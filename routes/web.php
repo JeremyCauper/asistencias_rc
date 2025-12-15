@@ -22,9 +22,14 @@ use App\Http\Controllers\MantenimientosDeveloper\TipoAsistencia\TipoAsistenciaCo
 use App\Http\Controllers\MantenimientosDeveloper\TipoModalidad\TipoModalidadController;
 use App\Http\Controllers\MediaArchivo\MediaArchivoController;
 use App\Http\Controllers\NotificacionController;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    return redirect('/inicio');
+    return view('welcome');
+});
+
+Route::get('/offline', function () {
+    return view('offline');
 });
 
 Route::get('/inicio', [LoginController::class, 'view'])->name('login')->middleware('guest:web');
@@ -179,10 +184,5 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/push/subscribe', [PushController::class, 'subscribe']);
 });
-Route::get('/push/test/{id}', [PushController::class, 'test']);
 
-Route::get('/obtener_modulos/{tipo}/{accesso}', [Controller::class, 'obtenerModulos']);
-Route::get('/obtener_modulos2/{tipo}/{accesso}', [Controller::class, 'obtenerModulos2']);
-Route::get('/foto', function () {
-    return view('welcome');
-});
+Route::get('/push/test/{id}', [PushController::class, 'test']);

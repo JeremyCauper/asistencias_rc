@@ -16,23 +16,27 @@ class Controller extends BaseController
     use AuthorizesRequests, ValidatesRequests;
     public $strFecha;
     public $horaLimitePuntual;
+    public $horaLimiteRemoto;
     public $horaLimiteDerivado;
     public $limitePuntual;
     public $limiteDerivado;
+    public $limiteRemoto;
     public $horaActual;
 
     public function __construct()
     {
         $this->strFecha = 'Y-m-d';
-        // $this->horaActual = time();
-        $this->horaActual = strtotime(date("{$this->strFecha} H:i:s"));
+        $this->horaActual = time();
+        // $this->horaActual = strtotime(date("{$this->strFecha} H:i:s"));
 
         $config_system = DB::table('config_system')->get()->keyBy('config');
 
         $this->horaLimitePuntual = $config_system['horaLimitePuntual']?->values ?? "08:30:59";
+        $this->horaLimiteRemoto = $config_system['horaLimiteRemoto']?->values ?? "12:00:00";
         $this->horaLimiteDerivado = $config_system['horaLimiteDerivado']?->values ?? "10:30:00";
 
         $this->limitePuntual = strtotime(date("{$this->strFecha} {$this->horaLimitePuntual}"));
+        $this->limiteRemoto = strtotime(date("{$this->strFecha} {$this->horaLimiteRemoto}"));
         $this->limiteDerivado = strtotime(date("{$this->strFecha} {$this->horaLimiteDerivado}"));
     }
 

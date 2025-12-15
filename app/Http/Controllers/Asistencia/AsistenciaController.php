@@ -137,11 +137,15 @@ class AsistenciaController extends Controller
                     $entrada = $asistencia?->entrada ?? null;
 
                     // Si aún no tiene registro pero debería asistir
+                    $previo = $asistencia?->tipo_asistencia ?? 0;
+                    $just = $justificacion?->estatus ?? null;
+
                     $tipo_asistencia = match (true) {
-                        (empty($entrada) && in_array($tipo_modalidad, [1, 2]) && ($asistencia?->tipo_asistencia ?? 0) == 1 && $this->horaActual < $this->limitePuntual) => 0,
-                        (!empty($justificacion) && in_array($justificacion?->estatus, [10]) && $this->horaActual < $this->limiteDerivado) => 0,
-                        (!empty($justificacion) && in_array($justificacion?->estatus, [0]) && $this->horaActual > $this->limiteDerivado) => 0,
-                        default => $asistencia?->tipo_asistencia ?? 0,
+                        empty($entrada) && in_array($tipo_modalidad, [1]) && $previo == 1 && $this->horaActual < $this->limitePuntual && $fechaActual => 0,
+                        empty($entrada) && in_array($tipo_modalidad, [2]) && $previo == 1 && $this->horaActual < $this->limiteRemoto && $fechaActual => 0,
+                        !empty($justificacion) && $just === 10 && $this->horaActual < $this->limiteDerivado && $fechaActual => 0,
+                        !empty($justificacion) && $just === 0 => 0,
+                        default => $previo,
                     };
 
                     // Acciones dinámicas
@@ -270,11 +274,15 @@ class AsistenciaController extends Controller
             $tipo_modalidad = $asistencia?->tipo_modalidad;
             $fechaActual = date($this->strFecha) == $asistencia?->fecha;
 
+            $previo = $asistencia?->tipo_asistencia ?? 0;
+            $just = $justificacion?->estatus ?? null;
+
             $tipo_asistencia = match (true) {
-                (empty($entrada) && in_array($tipo_modalidad, [1, 2]) && ($asistencia?->tipo_asistencia ?? 0) == 1 && $this->horaActual < $this->limitePuntual) => 0,
-                (!empty($justificacion) && in_array($justificacion?->estatus, [10]) && $this->horaActual < $this->limiteDerivado) => 0,
-                (!empty($justificacion) && in_array($justificacion?->estatus, [0]) && $this->horaActual > $this->limiteDerivado) => 0,
-                default => $asistencia?->tipo_asistencia ?? 0,
+                empty($entrada) && in_array($tipo_modalidad, [1]) && $previo == 1 && $this->horaActual < $this->limitePuntual && $fechaActual => 0,
+                empty($entrada) && in_array($tipo_modalidad, [2]) && $previo == 1 && $this->horaActual < $this->limiteRemoto && $fechaActual => 0,
+                !empty($justificacion) && $just === 10 && $this->horaActual < $this->limiteDerivado && $fechaActual => 0,
+                !empty($justificacion) && $just === 0 && !in_array($tipo_modalidad, [2]) => 0,
+                default => $previo,
             };
 
             // Agregar los datos adicionales a la respuesta
