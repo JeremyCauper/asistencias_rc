@@ -4,11 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="manifest" href="./manifest.json">
+    <link rel="shortcut icon" href="./front/images/app/icons/icon-192.webp?v=1.1.0.3">
+
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="./manifest.json?v=1.1.0.3">
     <meta name="theme-color" content="#000000">
 
     <title>Cargando...</title>
-    <link rel="icon" href="./front/images/app/icons/icon-192.png?v=1.0.13">
+
+    <!-- Para iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Asistencias">
+    <link rel="apple-touch-icon" href="./front/images/app/icons/icon-192.webp?v=1.1.0.3">
+    
+    <!-- Para Windows -->
+    <meta name="msapplication-TileImage" content="./front/images/app/icons/icon-192.webp?v=1.1.0.3">
+    <meta name="msapplication-TileColor" content="#000000">
 
     <style>
         @keyframes l13 {
@@ -69,13 +81,13 @@
 <body>
     <div class="loader">
         <div class="logo-container">
-            <img src="./front/images/app/icons/icon-192.png?v=1.0.13" class="logo-img" alt="Logo">
+            <img src="./front/images/app/icons/icon-192.webp?v=1.1.0.3" class="logo-img" alt="Logo">
         </div>
     </div>
     <script>
         window.addEventListener('load', () => {
             if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("./sw.js?v=1.0.13").then(() => {
+                navigator.serviceWorker.register("./sw.js?v=1.1.0.3").then(() => {
                     console.log('Service Worker registrado');
                     window.location.href = location.href + 'inicio';
                 });

@@ -1,5 +1,5 @@
 <?php
-$version = '1.0.13';
+$version = '1.1.0.3';
 return [
     'version' => $version,
     'css' => (object) [
@@ -58,10 +58,10 @@ return [
     ],
 
     'img' => (object) [
-        'icon' => 'front/images/app/icons/icon.png?v=' . $version,
-        'icon_badge' => 'front/images/app/icons/icon-badge.png?v=' . $version,
-        'icon_96' => 'front/images/app/icons/icon-96.png?v=' . $version,
-        'icon_192' => 'front/images/app/icons/icon-192.png?v=' . $version,
-        'icon_512' => 'front/images/app/icons/icon-512.png?v=' . $version,
+        'icon' => 'front/images/app/icons/icon.webp?v=' . $version,
+        'icon_badge' => 'front/images/app/icons/icon-badge.webp?v=' . $version,
+        'icon_96' => 'front/images/app/icons/icon-96.webp?v=' . $version,
+        'icon_192' => 'front/images/app/icons/icon-192.webp?v=' . $version,
+        'icon_512' => 'front/images/app/icons/icon-512.webp?v=' . $version,
     ]
 ];

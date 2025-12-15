@@ -46,25 +46,54 @@ class JustificacionController extends Controller
                 return ApiResponse::success('Ya existe una justificación para esa fecha.');
             }
 
-            $asistencia = DB::table('asistencias')->select('user_id', 'fecha')->where('id', $id_asistencia)->first();
+            $asistencia = DB::table('asistencias')->select('user_id', 'fecha', 'tipo_modalidad')->where('id', $id_asistencia)->first();
             // Verificar si la asistencia existe
             if (!$asistencia) {
                 return ApiResponse::error('No se encontró la asistencia.');
             }
 
+            $tipo_modalidad = $asistencia->tipo_modalidad;
             $tipo_asistencia = match (true) {
                 $justificacionEstatus == 10 => 1,
-                $request->tipo_asistencia == 0 => 2,
-                default => $request->tipo_asistencia
+                $request->tipo_asistencia == 0 && $tipo_modalidad == 2 => 2,
+                default => $request->tipo_asistencia == 0 ? 1 : $request->tipo_asistencia
             };
             $estatus = match (true) {
                 $request->has('estatus') => $request->estatus,
-                $tipo_asistencia == 2 => 1,
+                $tipo_asistencia == 2 && $tipo_modalidad == 2 => 1,
                 default => 0
             };
             $user_id = $request->has('user_id') ? $request->user_id : Auth::user()->user_id;
 
             DB::beginTransaction();
+
+            // Procesar asistencia solo cuando corresponde
+            if ($estatus == 1) {
+                $entrada = $tipo_modalidad == 2 ? $request->entrada : null;
+                $tipoAsistencia = match (true) {
+                    empty($entrada) && in_array($tipo_asistencia, [1, 4]) => 3,  // sin entrada -> asistencia normal/otro estado
+                    !strtotime(date("$this->strFecha $entrada")) < $this->limitePuntual => 4, // tiene entrada y es tarde
+                    default => 2  // tiene entrada y es puntual
+                };
+
+                DB::table('asistencias')->where('id', $id_asistencia)->update([
+                    'tipo_asistencia' => $tipoAsistencia,
+                    'entrada' => $entrada
+                ]);
+
+                if ($tipoAsistencia == 3) {
+                    DB::table('descuentos_asistencia')->where('asistencia_id', $id_asistencia)->delete();
+                } else if ($tipoAsistencia == 4 && $tipo_asistencia == 2) {
+                    DB::table('descuentos_asistencia')->insert([
+                        'asistencia_id' => $id_asistencia,
+                        'user_id' => $user_id,
+                        'fecha' => $asistencia->fecha,
+                    ]);
+                    $estatus = 0;
+                    $tipo_asistencia = 4;
+                }
+            }
+            
             // Crear contenido HTML
             $contenido = $this->createBodyMessage(
                 $tipo_asistencia,
@@ -97,36 +126,6 @@ class JustificacionController extends Controller
                 ]);
             }
 
-            // Procesar asistencia solo cuando corresponde
-            if ($estatus == 1) {
-                $entrada = $request->entrada ?? date('H:i:s');
-                $puntualidad = strtotime(date("$this->strFecha $entrada")) < $this->limitePuntual;
-                $tipoAsistencia = match (true) {
-                    empty($entrada) && in_array($tipo_asistencia, [1, 4]) => 3,  // sin entrada -> asistencia normal/otro estado
-                    !$puntualidad => 4, // tiene entrada y es tarde
-                    default => 2  // tiene entrada y es puntual
-                };
-
-                DB::table('asistencias')->where('id', $id_asistencia)->update([
-                    'tipo_asistencia' => $tipoAsistencia,
-                    'entrada' => $entrada
-                ]);
-
-                if ($tipoAsistencia == 3) {
-                    DB::table('descuentos_asistencia')->where('asistencia_id', $id_asistencia)->delete();
-                } else if ($tipoAsistencia == 4 && $tipo_asistencia == 2) {
-                    DB::table('descuentos_asistencia')->insert([
-                        'asistencia_id' => $id_asistencia,
-                        'user_id' => $user_id,
-                        'fecha' => $asistencia->fecha,
-                    ]);
-                }
-            }
-
-            if (!empty($request->archivos)) {
-                MediaArchivoController::uploadFileS3($request->archivos, $id_asistencia);
-            }
-
             if ($user_id == Auth::user()->user_id && !in_array($tipo_asistencia, [2])) {
                 $configuraciones = match ($tipo_asistencia) {
                     1 => [3, 2],
@@ -148,7 +147,11 @@ class JustificacionController extends Controller
 
             DB::commit();
 
-            if ($user_id == Auth::user()->user_id && !in_array($tipo_asistencia, [2]))
+            if (!empty($request->archivos)) {
+                MediaArchivoController::uploadFileS3($request->archivos, $id_asistencia);
+            }
+
+            if ($user_id == Auth::user()->user_id && !in_array($tipo_asistencia, [0, 2]))
                 PushController::sendForAdmin();
 
             return ApiResponse::success('Justificación creada correctamente.');
@@ -224,14 +227,16 @@ class JustificacionController extends Controller
                 DB::table('descuentos_asistencia')->where('asistencia_id', $id_asistencia)->delete();
             }
 
+            if ($id_asistencia)
+                NotificacionController::marcarLeido(0, $id_asistencia);
+
+            DB::commit();
+
             if (!empty($request->archivos)) {
                 MediaArchivoController::uploadFileS3($request->archivos, $id_asistencia);
             }
             $archivos = DB::table('media_archivos')->where('asistencia_id', $id_asistencia)->get();
 
-            if ($id_asistencia)
-                NotificacionController::marcarLeido(0, $id_asistencia);
-            DB::commit();
             return ApiResponse::success(
                 str_replace(':?', $estatus == 1 ? 'aprobada' : 'rechazada', 'Justificación :? correctamente.'),
                 [
@@ -323,11 +328,6 @@ class JustificacionController extends Controller
             if (!empty($actualizarAsistencia))
                 DB::table('asistencias')->where('id', $id_asistencia)->update($actualizarAsistencia);
 
-            if (!empty($request->archivos)) {
-                MediaArchivoController::uploadFileS3($request->archivos, $id_asistencia);
-            }
-            $archivos = DB::table('media_archivos')->where('asistencia_id', $id_asistencia)->get();
-
             // Enviar notificaciones
             if ($id_asistencia)
                 NotificacionController::marcarLeido(0, $id_asistencia);
@@ -345,6 +345,11 @@ class JustificacionController extends Controller
             ]);
 
             DB::commit();
+
+            if (!empty($request->archivos)) {
+                MediaArchivoController::uploadFileS3($request->archivos, $id_asistencia);
+            }
+            $archivos = DB::table('media_archivos')->where('asistencia_id', $id_asistencia)->get();
 
             PushController::sendForAdmin();
 
@@ -438,11 +443,13 @@ class JustificacionController extends Controller
             $titulo = $title;
         } else {
             $tasistencia = JsonDB::table('tipo_asistencia')->where('id', $id_tasistencia)->first();
-            $titulo = 'Justificación de <span class="fw-bold" style="color: ' . $tasistencia->color . ';">' . ($id_tasistencia == 2 ? 'Asistencia' : $tasistencia->descripcion) . '</span>';
+            $color = $tasistencia?->color ?? '#9fa6b2';
+            $descripcion = !empty($tasistencia) ? ($id_tasistencia == 2 ? 'Asistencia' : $tasistencia->descripcion) : 'Asistencia';
+            $titulo = 'Justificación de <span class="fw-bold" style="color: ' . $color . ';">' . $descripcion . '</span>';
         }
 
         $fecha = $this->fecha_espanol();
-        $hora = date('h:i a', strtotime($timestamp));
+        $hora = date('h:i a', timestamp: strtotime($timestamp));
         $fechaCompleta = "$fecha a las $hora";
 
         $body = '

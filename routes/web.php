@@ -186,30 +186,3 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/push/test/{id}', [PushController::class, 'test']);
-
-
-// Route::get('/manifest10.json', function () {
-//     return response()->json([
-//         'name' => 'Asistencias RC',
-//         'short_name' => 'Asistencias RC',
-//         'description' => 'Sistema de control de asistencias',
-//         'start_url' => secure_url('/'),
-//         'scope' => secure_url('/'),
-//         'display' => 'standalone',
-//         'background_color' => '#3b71ca',
-//         'theme_color' => '#000000',
-//         'orientation' => 'portrait',
-//         'icons' => [
-//             [
-//                 'src' => secure_asset('front/images/app/icons/icon-192.png'),
-//                 'sizes' => '192x192',
-//                 'type' => 'image/png'
-//             ],
-//             [
-//                 'src' => secure_asset('front/images/app/icons/icon-512.png'),
-//                 'sizes' => '512x512',
-//                 'type' => 'image/png'
-//             ]
-//         ]
-//     ]);
-// });

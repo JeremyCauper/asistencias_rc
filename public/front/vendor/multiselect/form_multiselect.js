@@ -126,7 +126,7 @@ var BootstrapMultiselect = function () {
                     desktop: {
                         desktop: true,
                         addclass: 'bg-primary text-white',
-                        icon: '../../../../global_assets/images/pnotify/info.png'
+                        icon: ''
                     }
                 })).get().on('click', function (e) {
                     if ($('.ui-pnotify-closer, .ui-pnotify-sticker, .ui-pnotify-closer *, .ui-pnotify-sticker *').is(e.target)) return;

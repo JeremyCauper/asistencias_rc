@@ -1,7 +1,7 @@
 // =======================================================
 // CONFIGURACIÓN
 // =======================================================
-const VERSION = "1.0.13";
+const VERSION = "1.1.0.3";
 const CACHE_STATIC_NAME = "pwa-static-v" + VERSION;
 const CACHE_INMUTABLE_NAME = "pwa-inmutable-v1";
 const CACHE_DYNAMIC_NAME = "pwa-dynamic-v1";
@@ -17,11 +17,11 @@ const PRECACHE_STATIC_FILES = [
     { file: "index.html" },
     { file: "offline.html" },
     // IMG
-    { file: "images/app/icons/icon.png" },
-    { file: "images/app/icons/icon-badge.png" },
-    { file: "images/app/icons/icon-96.png" },
-    { file: "images/app/icons/icon-192.png" },
-    { file: "images/app/icons/icon-512.png" },
+    { file: "images/app/icons/icon.webp" },
+    { file: "images/app/icons/icon-badge.webp" },
+    { file: "images/app/icons/icon-96.webp" },
+    { file: "images/app/icons/icon-192.webp" },
+    { file: "images/app/icons/icon-512.webp" },
 
     // CSS
     { file: "css/app.css" },
@@ -37,11 +37,9 @@ const PRECACHE_STATIC_FILES = [
 
 const PRECACHE_INMUTABLE_FILES = [
     // IMG
-    { file: "images/app/logo_pdf.png" },
-    { file: "images/app/logo_tittle_rc_white.png" },
-    { file: "images/app/LogoRC.png" },
-    { file: "images/app/LogoRC_TBlanco.png" },
-    { file: "images/app/LogoRC_TNegro.png" },
+    { file: "images/app/LogoRC.webp" },
+    { file: "images/app/LogoRC_TBlanco.webp" },
+    { file: "images/app/LogoRC_TNegro.webp" },
     { file: "images/app/LogoRC_WBlanco.webp" },
     { file: "images/app/LogoRC_WNormal.webp" },
 
@@ -78,6 +76,7 @@ const PRECACHE_INMUTABLE_FILES = [
 // INSTALACIÓN
 // =======================================================
 self.addEventListener("install", (event) => {
+    console.log('Instalando service worker');
     self.skipWaiting();
 
     const cacheProm = caches.open(CACHE_STATIC_NAME).then(async cache => {
@@ -161,26 +160,29 @@ self.addEventListener("fetch", event => {
             if (res) return res;
 
             return fetch(event.request)
-                .then(newResp => {
-                    // Clonar la respuesta antes de cachear
-                    const clonedResponse = newResp.clone();
+                // .then(newResp => {
+                //     // Clonar la respuesta antes de cachear
+                //     const clonedResponse = newResp.clone();
 
-                    caches.delete(CACHE_DYNAMIC_NAME);
-                    caches.open(CACHE_DYNAMIC_NAME)
-                        .then(cache => {
-                            cache.put(event.request, clonedResponse);
-                        });
+                //     caches.delete(CACHE_DYNAMIC_NAME);
+                //     caches.open(CACHE_DYNAMIC_NAME)
+                //         .then(cache => {
+                //             cache.put(event.request, clonedResponse);
+                //         });
 
-                    return newResp;
-                })
+                //     return newResp;
+                // })
                 .catch(error => {
                     // Manejar diferentes tipos de errores
                     console.error('Error en fetch:', error);
 
                     // Si es una navegación (página), mostrar página offline
                     if (event.request.mode === 'navigate') {
-                        return caches.match(RUTA_FRONT + RUTA_OFFLINE)
+                        // return caches.match(RUTA_FRONT + RUTA_OFFLINE)
+                        return caches.match(`${RUTA_FRONT}${RUTA_OFFLINE}?v=${VERSION}`)
                             .then(offlinePage => {
+                                console.log(offlinePage);
+
                                 if (offlinePage) {
                                     return offlinePage;
                                 }

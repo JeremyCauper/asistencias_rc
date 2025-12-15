@@ -60,8 +60,8 @@ class PushController extends Controller
                     'contentEncoding' => $sub->content_encoding,
                 ]);
                 $webPush->queueNotification($subscription, json_encode(array_merge($payload, [
-                    'icon192' => secure_asset('front/images/app/icons/icon-192.png'),
-                    'badge' => secure_asset('front/images/app/icons/icon-badge.png')
+                    'icon192' => secure_asset('front/images/app/icons/icon-192.webp'),
+                    'badge' => secure_asset('front/images/app/icons/icon-badge.webp')
                 ])));
             }
 

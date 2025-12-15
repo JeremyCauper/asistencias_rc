@@ -51,11 +51,24 @@
     @endif
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{ secure_asset($ft_img->icon) }}" />
+
+    <!-- PWA Meta Tags -->
     <link rel="manifest" href="{{ secure_asset($ft_json->manifest) }}">
     <meta name="theme-color" content="#000000">
 
-    <link rel="shortcut icon" href="{{ secure_asset($ft_img->icon) }}" />
     <title>@yield('title')</title>
+
+    <!-- Para iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Asistencias">
+    <link rel="apple-touch-icon" href="{{ secure_asset($ft_img->icon_192) }}">
+    
+    <!-- Para Windows -->
+    <meta name="msapplication-TileImage" content="{{ secure_asset($ft_img->icon_192) }}">
+    <meta name="msapplication-TileColor" content="#000000">
+
     <!-- Font Awesome -->
     <link href="{{ secure_asset($ft_css->mdb_all_min6_0_0) }}" rel="stylesheet">
     <!-- MDB -->
@@ -123,7 +136,7 @@
                     <div class="sidebar__item" {{ !empty($menu['submenu']) ? 'data-collapse="false"' : '' }}>
                         <a class="sidebar__link{{ !empty($menu['submenu']) ? ' sidebar__link-menu' : '' }}"
                             {{ empty($menu['submenu']) ? 'data-mdb-ripple-init' : '' }}
-                            href="{{ !empty($menu['submenu']) ? 'javascript:void(0)' : url($menu['ruta']) }}"
+                            href="{{ !empty($menu['submenu']) ? 'javascript:void(0)' : secure_url($menu['ruta']) }}"
                             @if (!empty($menu['submenu'])) data-menu="{{ $menu['ruta'] }}" @endif>
                             <div class="sidebar__link-icon">
                                 <i class="{{ $menu['icon'] }}"></i>
@@ -144,7 +157,7 @@
                                     @foreach ($submenus as $submenu)
                                         <li class="sidebar__submenu-item">
                                             <a class="sidebar__submenu-link" data-mdb-ripple-init
-                                                href="{{ url($submenu['ruta']) }}" data-ruta="{{ $menu['ruta'] }}">
+                                                href="{{ secure_url($submenu['ruta']) }}" data-ruta="{{ $menu['ruta'] }}">
                                                 {{ $submenu['descripcion'] }}
                                             </a>
                                         </li>
