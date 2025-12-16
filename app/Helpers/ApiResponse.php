@@ -21,11 +21,12 @@ class ApiResponse
     /**
      * Respuesta de error general.
      */
-    public static function error(string $message = 'Ocurrió un error inesperado.', string $errorDetail = '', int $status = 500): JsonResponse
+    public static function error(string $message = 'Ocurrió un error inesperado.', string $errorDetail = '', int $status = 500, $data = []): JsonResponse
     {
         $response = [
             'success' => false,
             'message' => $message,
+            'data' => $data,
         ];
 
         if ($errorDetail) {
