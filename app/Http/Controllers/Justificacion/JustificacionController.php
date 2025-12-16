@@ -63,6 +63,7 @@ class JustificacionController extends Controller
                 $tipo_asistencia == 2 && $tipo_modalidad == 2 => 1,
                 default => 0
             };
+
             $user_id = $request->has('user_id') ? $request->user_id : Auth::user()->user_id;
 
             DB::beginTransaction();
@@ -72,7 +73,7 @@ class JustificacionController extends Controller
                 $entrada = $tipo_modalidad == 2 ? $request->entrada : null;
                 $tipoAsistencia = match (true) {
                     empty($entrada) && in_array($tipo_asistencia, [1, 4]) => 3,  // sin entrada -> asistencia normal/otro estado
-                    !strtotime(date("$this->strFecha $entrada")) < $this->limitePuntual => 4, // tiene entrada y es tarde
+                    strtotime(date("$this->strFecha $entrada")) > $this->limitePuntual => 4, // tiene entrada y es tarde
                     default => 2  // tiene entrada y es puntual
                 };
 
@@ -93,7 +94,7 @@ class JustificacionController extends Controller
                     $tipo_asistencia = 4;
                 }
             }
-            
+
             // Crear contenido HTML
             $contenido = $this->createBodyMessage(
                 $tipo_asistencia,
