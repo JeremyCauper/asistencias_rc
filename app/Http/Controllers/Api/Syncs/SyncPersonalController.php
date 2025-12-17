@@ -225,12 +225,16 @@ class SyncPersonalController extends Controller
             $fecha = date('Y-m-d');
             $campoDia = $this->getDay($fecha);
 
-            $asistencia = DB::table('asistencias')->where(['user_id' => $id, 'fecha' => $fecha])->first();
-            if ($asistencia && !$asistencia->entrada) {
-                DB::table('asistencias')->where(['user_id' => $id, 'fecha' => $fecha])->update([
-                    'tipo_modalidad' => $request->$campoDia,
-                    'tipo_asistencia' => $request->$campoDia == 4 ? 3 : 2,
-                ]);
+            if (!empty($campoDia)) {
+                $dia_modalidad = "tp$campoDia";
+                $tipo_modalidad = $request->$dia_modalidad;
+                $asistencia = DB::table('asistencias')->where(['user_id' => $id, 'fecha' => $fecha])->first();
+                if ($asistencia && empty($asistencia->entrada)) {
+                    DB::table('asistencias')->where(['user_id' => $id, 'fecha' => $fecha])->update([
+                        'tipo_modalidad' => $tipo_modalidad,
+                        'tipo_asistencia' => $tipo_modalidad == 4 ? 3 : 1,
+                    ]);
+                }
             }
             DB::commit();
 
