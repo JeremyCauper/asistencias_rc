@@ -51,7 +51,7 @@
             </a>
             <div class="navbar-brand">
                 <div class="me-2">
-                    <span class="text-white me-0">
+                    <span class="me-0">
                         ASISTENCIAS - RCI
                     </span>
                 </div>

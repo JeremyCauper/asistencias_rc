@@ -26,6 +26,7 @@ return [
         'ChartMananger' => 'front/js/app/ChartMananger.js?v=' . $version,
         'MediaViewerControl' => 'front/js/app/MediaViewerControl.js?v=' . $version,
         'QuillControl' => 'front/js/app/QuillControl.js?v=' . $version,
+        'CardTable' => 'front/js/app/CardTable.js?v=' . $version,
 
         'swicth_layout' => 'front/layout/swicth_layout.js?v=' . $version,
         'toggle_template' => 'front/layout/toggle_template.js?v=' . $version,

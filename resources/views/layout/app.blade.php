@@ -2,7 +2,7 @@
 <html lang="es" data-mdb-theme="light">
 
 <head>
-    @if (env('APP_ENV') == 'produccion')
+    <!-- @if (env('APP_ENV') == 'produccion')
         <script>
             const url_base_logeo = '{{ secure_url('') }}';
 
@@ -48,7 +48,7 @@
                 })();
             }
         </script>
-    @endif
+    @endif -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="shortcut icon" href="{{ secure_asset($ft_img->icon) }}" />
@@ -97,6 +97,7 @@
     <script src="{{ secure_asset($ft_js->select2) }}"></script>
     <script src="{{ secure_asset($ft_js->form_select2) }}"></script>
     <script src="{{ secure_asset($ft_js->AlertMananger) }}"></script>
+    <script src="{{ secure_asset($ft_js->CardTable) }}"></script>
     <script src="{{ secure_asset($ft_js->jquery_dataTables) }}"></script>
     <script src="{{ secure_asset($ft_js->app) }}"></script>
 

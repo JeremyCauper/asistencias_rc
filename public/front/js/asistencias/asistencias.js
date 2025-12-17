@@ -14,14 +14,16 @@ $(document).ready(function () {
     ]);
 
     fObservador('.content-wrapper', () => {
-        tablaAsistencias.columns.adjust().draw();
+        if (!esCelular()) {
+            tablaAsistencias.columns.adjust().draw();
+        }
 
         incidencia_estados.forEach((e, i) => {
             if (e.chart) e.chart.resize();
         });
     });
 
-    $('.botones-table').append(
+    $('.botones-accion').append(
         $('<button>', {
             class: 'btn btn-primary px-3 me-2',
             "data-mdb-ripple-init": ''

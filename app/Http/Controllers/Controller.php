@@ -257,7 +257,7 @@ class Controller extends BaseController
         $tittle = str_replace(":titulo", $arr_acciones['tittle'] ?? "Acciones", $str_title);
 
         // Botones del dropdown
-        $str_button = '<button class="dropdown-item py-2 :clase" :funcion :attr>:texto</button>';
+        $str_button = '<button class="dropdown-item py-3 :clase" :funcion :attr>:texto</button>';
         $button = '';
 
         foreach ($arr_acciones['button'] as $val) {

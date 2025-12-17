@@ -449,64 +449,36 @@ function calcularDuracion(fechaIni, fechaFin) {
 //   const fin    = "2025-04-21 13:55:44";
 //   console.log(calcularDuracion(inicio, fin)); // "3h 6m 0s"
 
-
-function getBadgeIncidencia(estado, size = '.7') {
-    estadoInforme = {
-        "0": { 'color': 'warning', 'text': 'Sin Asignar' },
-        "1": { 'color': 'info', 'text': 'Asignada' },
-        "2": { 'color': 'primary', 'text': 'En Proceso' },
-        "3": { 'color': 'success', 'text': 'Finalizado' },
-        "4": { 'color': 'danger', 'text': 'Faltan Datos' },
-        "5": { 'color': 'danger', 'text': 'Cierre Sistema' },
+function getBadgeAreas(estado, size = '.75') {
+    let area = tipoAreas.find(tp => tp.id == estado) || {
+        descripcion: 'Sin Area',
+        color: '#9fa6b2'
     };
-    let tsize = `style="font-size: ${size}rem;"` ?? null;
-
-    return `<label class="badge badge-${estadoInforme[estado]['color']}" ${tsize}>${estadoInforme[estado]['text']}</label>`;
+    return `<label class="badge" style="font-size: ${size}rem;background-color: ${area.color};">${area.descripcion}</label>`;
 }
 
-function getBadgeTIncidencia(estado, size = '.7') {
-    estadoInforme = {
-        "1": { 'color': 'success', 'text': 'N1' },
-        "2": { 'color': 'warning', 'text': 'N2' },
-        "3": { 'color': 'danger', 'text': 'N3' },
+function getBadgeTipoPersonal(estado, size = '.75') {
+    let tipo = tipoPersonal.find(tp => tp.id == estado) || {
+        descripcion: 'Sin Tipo',
+        color: '#9fa6b2'
     };
-    let tsize = `style="font-size: ${size}rem;"` ?? null;
-
-    return `<label class="badge badge-${estadoInforme[estado]['color']}" ${tsize}>${estadoInforme[estado]['text']}</label>`;
+    return `<label class="badge" style="font-size: ${size}rem;background-color: ${tipo.color};">${tipo.descripcion}</label>`;
 }
 
-function getBadgeVisita(estado, size = null) {
-    estadoInforme = {
-        "0": { 'color': 'warning', 'text': 'Sin Iniciar' },
-        "1": { 'color': 'primary', 'text': 'En Proceso' },
-        "2": { 'color': 'success', 'text': 'Finalizado' },
-        "4": { 'color': 'danger', 'text': 'Faltan Datos' },
+function getBadgeTipoModalidad(estado, size = '.75') {
+    let modalidad = tipoModalidad.find(tp => tp.id == estado) || {
+        descripcion: 'Sin Modalidad',
+        color: '#9fa6b2'
     };
-    let tsize = `style="font-size: ${size}rem;"` ?? null;
-
-    return `<label class="badge badge-${estadoInforme[estado]['color']}" ${tsize}>${estadoInforme[estado]['text']}</label>`;
+    return `<label class="badge" style="font-size: ${size}rem; background-color: ${modalidad?.color};"><i class="${modalidad?.icono} fa-1x me-1"></i>${modalidad?.descripcion}</label>`;
 }
 
-function getBadgeContrato(estado, size = null) {
-    estadoInforme = [
-        { 'color': 'danger', 'text': 'Sin Contrato' },
-        { 'color': 'success', 'text': 'En Contrato' },
-    ];
-    let tsize = `style="font-size: ${size}rem;"` ?? null;
-
-    return `<label class="badge badge-${estadoInforme[estado]['color']}" ${tsize}>${estadoInforme[estado]['text']}</label>`;
-}
-
-function getBadgePrioridad(estado, size = null) {
-    estadoInforme = {
-        "P1": { 'color': 'dark', 'text': 'P1' },
-        "P2": { 'color': 'danger', 'text': 'P2' },
-        "P3": { 'color': 'warning', 'text': 'P3' },
-        "P4": { 'color': 'success', 'text': 'P4' },
+function getBadgeTipoAsistencia(estado, size = '.75') {
+    let tipo = tipoAsistencia.find(tp => tp.id == estado) || {
+        descripcion: 'Sin Tipo',
+        color: '#9fa6b2'
     };
-    let tsize = `style="font-size: ${size}rem;"` ?? null;
-
-    return `<label class="badge badge-${estadoInforme[estado]['color']} me-2" ${tsize}>${estadoInforme[estado]['text']}</label>`;
+    return `<label class="badge" style="font-size: ${size}rem;background-color: ${tipo.color};">${tipo.descripcion}</label>`;
 }
 
 function mostrar_acciones(table = null) {
