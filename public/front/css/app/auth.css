@@ -17,6 +17,11 @@ body {
     background-color: var(--root-body-bg)
 }
 
+.navbar {
+    background-color: var(--root-body-bg);
+    box-shadow: none;
+}
+
 .navbar-brand .logo_rci {
     background: var(--root-logo-navbar);
     background-size: contain;
@@ -27,7 +32,7 @@ body {
 
 @media screen and (max-width: 665px) {
     :root {
-        --root-font-size-span: xx-small;
+        --root-font-size-span: small;
         --root-logo-navbar: url(../../images/app/LogoRC.webp) no-repeat center center;
         --root-logo-width-navbar: 2.75rem;
         --root-logo-height-navbar: 2.75rem;

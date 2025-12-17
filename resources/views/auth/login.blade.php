@@ -44,7 +44,7 @@
 
 <body style="height: 100% !important;">
 
-    <nav class="navbar bg-dark-subtle fixed-top">
+    <nav class="navbar fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand me-0 p-0" href="{{ secure_url('/') }}">
                 <div class="logo_rci"></div>

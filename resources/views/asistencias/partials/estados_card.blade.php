@@ -60,7 +60,7 @@
     incidencia_estados.forEach((e, i) => {
         list_estado.append(
             $('<div>', {
-                class: 'col-xxl-2 col-lg-4 col-6 mb-3'
+                class: 'col-xxl-2 col-4 mb-2'
             }).append(
                 $('<div>', {
                     class: 'card',
@@ -70,14 +70,14 @@
                     onclick: `searchTable(${e.searchTable})`
                 }).append(
                     $('<div>', {
-                        class: 'card-body row',
-                        style: 'color: ' + bliColor[e.color],
+                        class: 'card-body row pe-2',
+                        style: 'padding-left: .75rem;color: ' + bliColor[e.color],
                     }).append(
                         $('<div>', {
                             class: e.chart ? 'col-7' : ''
                         }).append(
                             $('<h6>', {
-                                class: 'card-title chart-estado-title text-nowrap mb-1'
+                                class: 'card-title chart-estado-title mb-1'
                             }).text(e.text),
                             $('<h4>', {
                                 class: 'subtitle-count',
@@ -85,7 +85,7 @@
                             }).text(0)
                         ),
                         e.chart ? $('<div>', {
-                            class: 'col-5'
+                            class: 'col-5 p-0'
                         }).append($('<div>', {
                             id: 'chart-' + e.name
                         })) : null

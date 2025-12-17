@@ -47,7 +47,7 @@
 
     <!-- Tabla -->
     <div class="card">
-        <div class="card-body">
+        <div class="card-body px-3">
             <div class="d-flex justify-content-between align-items-center">
                 <h6 class="fw-bold">📅 Panel de Asistencias Diarias</h6>
                 <span id="feriado-text"></span>
@@ -142,8 +142,8 @@
                     dom: `<"row"
                         <"col-lg-12 mb-2"B>>
                         <"row"
-                            <"col-xsm-6 text-xsm-start text-center my-1 botones-table">
-                            <"col-xsm-6 text-xsm-end text-center my-1"f>>
+                            <"col-sm-6 text-sm-start text-center my-1 botones-table">
+                            <"col-sm-6 text-sm-end text-center my-1"f>>
                         <"contenedor_tabla my-2"tr>
                         <"row"
                             <"col-md-5 text-md-start text-center my-1"i>

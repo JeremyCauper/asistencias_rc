@@ -1,5 +1,5 @@
 <?php
-$version = '5.6.4';
+$version = '5.6.5';
 return [
     'version' => $version,
     'css' => (object) [
