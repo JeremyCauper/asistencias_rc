@@ -206,7 +206,7 @@
             </div>
         </aside>
         <!-- MAIN CONTENT -->
-        <main class="flex-grow-1">
+        <main class="content-full flex-grow-1">
             <!-- Navbar -->
             <nav class="navbar pe-3" style="padding-left: 16px;">
                 <div class="navbar-brand mb-0 p-0">

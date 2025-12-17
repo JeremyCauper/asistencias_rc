@@ -81,7 +81,7 @@ class ChartMananger {
                                 lineHeight: 30,
                                 borderRadius: 8,
                                 offsetCenter: [3.5, '-150%'],
-                                fontSize: 12,
+                                fontSize: 11,
                                 fontWeight: 'bolder',
                                 formatter: (value) => {
                                     const result = (!isNaN(value) && !isNaN(parseFloat(value))) ? value : '00';

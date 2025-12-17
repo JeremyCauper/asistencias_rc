@@ -29,10 +29,6 @@
 
 html, body {
     height: 100%;
-    overflow: hidden;
-}
-
-body {
     background-color: var(--root-layout-bg);
 }
 
@@ -41,17 +37,10 @@ body * .hover-layout:hover {
 }
 
 .layout-container {
-    height: 100dvh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    height: 100%;
+    overflow: hidden;
     display: flex;
 }
-
-/* .layout-container {
-    height: 100dvh;
-    overflow-y: auto;
-    display: flex;
-} */
 
 .navbar {
     background-color: var(--root-layout-bg);
@@ -473,18 +462,19 @@ body * .hover-layout:hover {
     transform: translate(8px, -65px) !important;
 }
 
-.layout-container main .content-wrapper {
+.layout-container .content-full {
+    height: 100dvh;
+    width: 0px;
+}
+
+.layout-container .content-full .content-wrapper {
     --border-wrapper: 1px solid var(--root-border-color);
-    height: calc(100vh - var(--root-height-navbar));
+    height: calc(100% - var(--root-height-navbar));
     background: var(--root-container-bg);
     overflow: auto;
     border-radius: 1.5rem 0 0 0;
     border-top: var(--border-wrapper);
     border-left: var(--border-wrapper);
-}
-
-.layout-container main {
-    width: 0px;
 }
 
 /*----------------------------------------------
@@ -661,11 +651,11 @@ body * .hover-layout:hover {
         display: flex;
     }
 
-    .layout-container main {
+    .layout-container .content-full {
         width: auto;
     }
 
-    .layout-container main .content-wrapper {
+    .layout-container .content-full .content-wrapper {
         border-radius: 0;
         border-left: none;
     }

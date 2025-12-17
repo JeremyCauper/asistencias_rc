@@ -24,7 +24,7 @@
 
     <!-- Tabla -->
     <div class="card">
-        <div class="card-body">
+        <div class="card-body px-3">
             <h6 class="fw-bold">📅 Mis asistencias diarias</h6>
             <div class="row mb-2">
                 <div class="col-md-4 my-1">

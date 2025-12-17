@@ -17,6 +17,11 @@ body {
     background-color: var(--root-body-bg)
 }
 
+.navbar {
+    background-color: var(--root-body-bg);
+    box-shadow: none;
+}
+
 .navbar-brand .logo_rci {
     background: var(--root-logo-navbar);
     background-size: contain;

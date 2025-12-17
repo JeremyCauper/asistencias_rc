@@ -549,9 +549,15 @@
   cursor: pointer;
   display: inline-block;
   float: left;
-  height: 24px;
-  padding: 3px 5px;
-  width: 28px;
+  height: 40px;
+  padding: 8px;
+  width: 40px;
+  border-radius: 10px;
+}
+
+.ql-snow.ql-toolbar button:hover,
+.ql-snow .ql-toolbar button:hover {
+  background: none;
 }
 
 .ql-snow.ql-toolbar button svg,
@@ -654,6 +660,11 @@
   .ql-snow.ql-toolbar button:hover:not(.ql-active),
   .ql-snow .ql-toolbar button:hover:not(.ql-active) {
     color: #444;
+    background: #c7c7c7;
+  }
+
+  .ql-snow.ql-toolbar button:hover:not(.ql-active) i {
+    color: #444;
   }
 
   .ql-snow.ql-toolbar button:hover:not(.ql-active) .ql-fill,
@@ -715,6 +726,8 @@
 
 .ql-snow .ql-formats button[type="button"] i {
   color: #949494;
+  min-width: .1rem;
+  font-size: 1.15rem;
 }
 
 .ql-snow .ql-stroke {
@@ -1098,7 +1111,7 @@
 }
 
 .ql-toolbar.ql-snow .ql-formats {
-  margin-right: 15px;
+  margin-right: 5px;
 }
 
 .ql-toolbar.ql-snow .ql-picker-label {

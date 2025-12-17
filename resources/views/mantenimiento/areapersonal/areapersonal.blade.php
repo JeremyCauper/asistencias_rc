@@ -10,7 +10,7 @@
 
     <div class="col-12">
         <div class="card">
-            <div class="card-body">
+            <div class="card-body px-3">
                 <h6 class="card-title col-form-label-sm text-primary mb-3">
                     <strong>Listado de Areas del Personal</strong>
                 </h6>

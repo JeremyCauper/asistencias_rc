@@ -50,8 +50,8 @@ class EditorJustificacion {
 
         this.customizeToolbarIcons({
             link: 'link',
-            image: 'file-image',
-            video: 'file-video',
+            image: 'image',
+            video: 'film',
             pdf: 'file-pdf',
             camera: 'camera'
         });

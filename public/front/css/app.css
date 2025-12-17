@@ -1322,9 +1322,16 @@ tr .active-acciones {
     }
 }
 
+.chart-estado-title {
+    font-size: .9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 @media only screen and (max-width: 520px) {
     .chart-estado-title {
-        font-size: 2.7vw;
+        font-size: 2.25vw;
     }
 }
 
