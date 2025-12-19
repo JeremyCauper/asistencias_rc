@@ -156,7 +156,7 @@
     --mdb-tertiary-bg: #3b3b3b;
     --mdb-tertiary-bg-rgb: 59, 59, 59;
     --mdb-primary-text-emphasis: #2f5aa2;
-    --mdb-secondary-text-emphasis: #404247;
+    --mdb-secondary-text-emphasis: #717883;
     --mdb-success-text-emphasis: #0c622e;
     --mdb-info-text-emphasis: #3b7e94;
     --mdb-warning-text-emphasis: #896110;
@@ -16207,7 +16207,7 @@ fieldset:disabled .btn {
     --mdb-form-control-disabled-bg: #e0e0e0;
     --mdb-box-shadow-color: #000;
     --mdb-box-shadow-color-rgb: 0, 0, 0;
-    --mdb-stepper-mobile-bg: #fbfbfb
+    --mdb-stepper-mobile-bg: #f4f4f4
 }
 
 [data-mdb-theme=dark] {

@@ -178,6 +178,10 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::get('/', 'view')->name('view');
             Route::get('/listar', 'listar')->name('listar');
+            Route::post('/registrar', 'create')->name('create');
+            Route::get('/mostrar/{id}', 'show')->name('show');
+            Route::post('/actualizar', 'update')->name('update');
+            Route::post('/asignar', 'asignar')->name('asignar');
         });
 
     Route::get('/notificaciones/listar', [NotificacionController::class, 'listar']);
@@ -185,4 +189,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/push/subscribe', [PushController::class, 'subscribe']);
 });
 
+Route::get('/previsualizar-pdf/movil', [MediaArchivoController::class, 'previewPdfMovil']);
+
 Route::get('/push/test/{id}', [PushController::class, 'test']);
+Route::get('/delete-s3', [MediaArchivoController::class, 'deleteFile']);

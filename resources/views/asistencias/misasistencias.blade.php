@@ -9,10 +9,8 @@
     <script src="{{ secure_asset($ft_js->echarts) }}"></script>
     <script src="{{ secure_asset($ft_js->ChartMananger) }}"></script>
     <script>
-        const empresas = @json($empresas);
         const tipoModalidad = @json($tipoModalidad);
         const tipoAsistencia = @json($tipoAsistencia);
-        const tipoPersonal = @json($tipoPersonal);
     </script>
     <style>
     </style>
@@ -24,25 +22,30 @@
 
     <!-- Tabla -->
     <div class="card">
-        <div class="card-body px-3">
-            <h6 class="fw-bold">📅 Mis asistencias diarias</h6>
-            <div class="row mb-2">
-                <div class="col-md-4 my-1">
-                    <small class="form-label mb-0" for="fecha">Fecha</small>
-                    <div class="input-group">
-                        <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
-                            <i class="fas fa-angle-left"></i>
-                        </button>
-                        <input type="month" id="filtro_fecha" class="form-control" value="{{ date('Y-m') }}">
-                        <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
-                            <i class="fas fa-angle-right"></i>
-                        </button>
+        <div class="card-body px-0">
+            <div class="mx-3">
+                <h6 class="fw-bold">📅 Mis asistencias diarias</h6>
+                <div class="row mb-2">
+                    <div class="col-md-4 my-1">
+                        <small class="form-label mb-0" for="fecha">Fecha</small>
+                        <div class="input-group">
+                            <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
+                                <i class="fas fa-angle-left"></i>
+                            </button>
+                            <input type="month" id="filtro_fecha" class="form-control" value="{{ date('Y-m') }}">
+                            <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
+                                <i class="fas fa-angle-right"></i>
+                            </button>
+                        </div>
                     </div>
+                    <div class="col-md-1 my-1 text-end mt-auto"><button class="btn btn-primary" onclick="filtroBusqueda()"
+                            data-mdb-ripple-init>Filtrar</button></div>
                 </div>
-                <div class="col-md-1 my-1 text-end mt-auto"><button class="btn btn-primary" onclick="filtroBusqueda()"
-                        data-mdb-ripple-init>Filtrar</button></div>
             </div>
-            <table id="tablaMisAsistencias" class="table table-hover text-nowrap w-100">
+
+            <div id="cardsMisAsistencias" style="display: none;"></div>
+
+            <table id="tablaMisAsistencias" class="table table-hover text-nowrap w-100" style="display: none;">
                 <thead>
                     <tr class="text-bg-primary text-center">
                         <th>Jornada</th>
@@ -57,119 +60,198 @@
                 </thead>
             </table>
             <script>
-                const tablaMisAsistencias = new DataTable('#tablaMisAsistencias', {
-                    scrollX: true,
-                    scrollY: 400,
-                    ajax: {
-                        url: __url + `/asistencias/listar`,
-                        dataSrc: function(json) {
-                            let lista = json.data?.listado || [];
-                            let estadosAsistencias = [{
-                                    name: "estado-faltas",
-                                    value: lista.filter(a => a.tipo_asistencia === 1).length
-                                },
-                                {
-                                    name: "estado-asistencias",
-                                    value: lista.filter(a => a.tipo_asistencia === 2).length
-                                },
-                                {
-                                    name: "estado-justificados",
-                                    value: lista.filter(a => a.tipo_asistencia === 3).length
-                                },
-                                {
-                                    name: "estado-tardanzas",
-                                    value: lista.filter(a => a.tipo_asistencia === 4).length
-                                },
-                                {
-                                    name: "estado-derivados",
-                                    value: lista.filter(a => a.tipo_asistencia === 7).length
-                                },
-                            ];
-                            setEstados(estadosAsistencias, lista.length);
-                            return lista;
-                        },
-                        error: function(xhr, error, thrown) {
-                            boxAlert.table();
-                            console.log('Respuesta del servidor:', xhr);
-                        }
-                    },
-                    columns: [{
-                            data: 'jornada',
-                            render: function(data, type, row) {
-                                let dia = (data || 'domingo');
-                                return dia.charAt(0).toUpperCase() + dia.slice(1);
-                            }
-                        },
-                        {
-                            data: 'fecha'
-                        },
-                        {
-                            data: 'entrada',
-                            render: function(data, type, row) {
-                                return data || '-';
-                            }
-                        },
-                        {
-                            data: 'salida',
-                            render: function(data, type, row) {
-                                return data || '-';
-                            }
-                        },
-                        {
-                            data: 'tipo_modalidad',
-                            render: function(data, type, row) {
-                                let tmodalidad = tipoModalidad[data];
-                                return `<label class="badge" style="font-size: 0.75rem; background-color: ${tmodalidad?.color};"><i class="${tmodalidad?.icono} fa-1x me-1"></i>${tmodalidad?.descripcion}</label>`;
-                            }
-                        },
-                        {
-                            data: 'tipo_asistencia',
-                            render: function(data, type, row) {
-                                let tasistencia = tipoAsistencia.find(s => s.id == data) || {
-                                    descripcion: 'Pendiente',
-                                    color: '#9fa6b2'
-                                };
-                                return `<label class="badge" style="font-size: 0.75rem; background-color: ${tasistencia.color};">${tasistencia.descripcion}</label>`;
-                            }
-                        },
-                        {
-                            data: 'descuento',
-                            render: function(data, type, row) {
-                                let tasistencia = row.tipo_asistencia;
-                                return data || (tasistencia == 1 ? 'Día Comp.' : '-');
-                            }
-                        },
-                        {
-                            data: 'acciones'
-                        }
-                    ],
-                    createdRow: function(row, data, dataIndex) {
-                        $(row).addClass('text-center');
-                        $(row).find('td:eq(0)').addClass('text-start');
-                        $(row).find('td:eq(7)').addClass(`td-acciones`);
-                    },
-                    order: [
-                        [1, 'desc']
-                    ],
-                    processing: true
+                let tablaMisAsistencias;
+                let getUrlListar = () => generateUrl(`${__url}/asistencias/listar`, {
+                    fecha: $('#filtro_fecha').val()
                 });
+                let dataSet = (json) => {
+                    let feriado = json.data?.feriado || {};
+                    $('#feriado-text').html(Object.keys(feriado).length ?
+                        `<b>${feriado.tipo}:</b> ${feriado.nombre}` : '');
+
+                    let lista = json.data?.listado || [];
+                    let estadosAsistencias = [{
+                            name: "estado-faltas",
+                            value: lista.filter(a => a.tipo_asistencia === 1).length
+                        },
+                        {
+                            name: "estado-asistencias",
+                            value: lista.filter(a => a.tipo_asistencia === 2).length
+                        },
+                        {
+                            name: "estado-justificados",
+                            value: lista.filter(a => a.tipo_asistencia === 3).length
+                        },
+                        {
+                            name: "estado-tardanzas",
+                            value: lista.filter(a => a.tipo_asistencia === 4).length
+                        },
+                        {
+                            name: "estado-derivados",
+                            value: lista.filter(a => a.tipo_asistencia === 7).length
+                        },
+                    ];
+                    setEstados(estadosAsistencias, lista.length);
+                    return lista;
+                }
+
+                if (esCelular()) {
+                    $('#cardsMisAsistencias').removeAttr('style');
+                    tablaMisAsistencias = new CardTable('cardsMisAsistencias', {
+                        ajax: {
+                            url: getUrlListar(),
+                            dataSrc: dataSet,
+                            error: function(xhr, error, thrown) {
+                                boxAlert.table();
+                                console.log('Respuesta del servidor:', xhr);
+                            }
+                        },
+                        columns: [{
+                                data: 'jornada',
+                                title: 'Jornada'
+                            },
+                            {
+                                data: 'fecha',
+                                title: 'Fecha'
+                            },
+                            {
+                                data: 'tipo_modalidad',
+                                title: 'Modalidad'
+                            },
+                            {
+                                data: 'tipo_asistencia',
+                                title: 'Estado'
+                            },
+                            {
+                                data: 'entrada',
+                                title: 'Entrada'
+                            },
+                            {
+                                data: 'salida',
+                                title: 'Salida'
+                            }
+                        ],
+                        cardTemplate: (data, index) => {
+                            return `
+                                <div class="d-flex align-items-center justify-content-between pb-1">
+                                    <div class="fw-medium mb-0" style="overflow: hidden;font-size: 3.25vw;">
+                                        <span>${obtenerFechaFormateada(new Date(data.fecha + ' 00:00:00'))}</span>
+                                    </div>
+                                    <div class="btn-acciones-movil">${data.acciones}</div>
+                                </div>
+                                <div class="d-flex justify-content-start align-items-center">
+                                    <span>
+                                        ${getBadgeTipoModalidad(data.tipo_modalidad, '.85')}
+                                        ${getBadgeTipoAsistencia(data.tipo_asistencia, '.85')}
+                                    </span>
+                                </div>
+                                <hr class="mx-1 my-2">
+                                <div class="d-flex align-items-center justify-content-between pt-1" style="font-size: 2.85vw;color: #909090;">
+                                    ${getFormatJornada(data)}
+                                    ${getBadgeDescuento(data)}
+                                </div>`;
+                        },
+                        scrollY: '600px',
+                        perPage: 40,
+                        searchPlaceholder: 'Buscar por nombre...',
+                        order: ['fecha', 'desc'],
+                        drawCallback: function() {
+                            if (typeof mdb !== 'undefined') {
+                                document.querySelectorAll('[data-mdb-dropdown-init]').forEach(el => {
+                                    new mdb.Dropdown(el);
+                                });
+                            }
+                        }
+                    });
+                } else {
+                    $('#tablaMisAsistencias').removeAttr('style');
+                    tablaMisAsistencias = new DataTable('#tablaMisAsistencias', {
+                        scrollX: true,
+                        scrollY: 400,
+                        ajax: {
+                            url: getUrlListar(),
+                            dataSrc: dataSet
+                        },
+                        columns: [{
+                                data: 'jornada',
+                                render: function(data, type, row) {
+                                    let dia = (data || 'domingo');
+                                    return dia.charAt(0).toUpperCase() + dia.slice(1);
+                                }
+                            },
+                            {
+                                data: 'fecha'
+                            },
+                            {
+                                data: 'entrada',
+                                render: function(data, type, row) {
+                                    return data || '-';
+                                }
+                            },
+                            {
+                                data: 'salida',
+                                render: function(data, type, row) {
+                                    return data || '-';
+                                }
+                            },
+                            {
+                                data: 'tipo_modalidad',
+                                render: function(data, type, row) {
+                                    return getBadgeTipoModalidad(data);
+                                }
+                            },
+                            {
+                                data: 'tipo_asistencia',
+                                render: function(data, type, row) {
+                                    return getBadgeTipoAsistencia(data);
+                                }
+                            },
+                            {
+                                data: 'descuento',
+                                render: function(data, type, row) {
+                                    return getBadgeDescuento(row);
+                                }
+                            },
+                            {
+                                data: 'acciones'
+                            }
+                        ],
+                        createdRow: function(row, data, dataIndex) {
+                            $(row).addClass('text-center');
+                            $(row).find('td:eq(0)').addClass('text-start');
+                            $(row).find('td:eq(7)').addClass(`td-acciones`);
+                        },
+                        order: [
+                            [1, 'desc']
+                        ],
+                        processing: true
+                    });
+                    mostrar_acciones(tablaMisAsistencias);
+                }
 
                 function updateTable() {
+                    if (esCelular()) {
+                        return tablaMisAsistencias.reload();
+                    }
                     tablaMisAsistencias.ajax.reload();
                 }
-                mostrar_acciones(tablaMisAsistencias);
 
                 function filtroBusqueda() {
-                    var filtroFecha = $('#filtro_fecha').val();
-
-                    var nuevoUrl = __url + `/asistencias/listar?fecha=${filtroFecha}`;
+                    var nuevoUrl = getUrlListar();
                     tablaMisAsistencias.ajax.url(nuevoUrl).load();
-                    tablaMisAsistencias.column([4]).search('').draw();
+
+                    if (!esCelular()) {
+                        tablaMisAsistencias.column([4]).search('').draw();
+                    }
                 }
 
                 function searchTable(search) {
-                    let tasistencia = tipoAsistencia.find(s => s.id == search)?.descripcion || '';
-                    tablaMisAsistencias.column([5]).search(tasistencia).draw();
+                    if (esCelular()) {
+                        tablaMisAsistencias.search('tipo_asistencia', search == 0 ? '' : search.toString()).draw();
+                    } else {
+                        let tasistencia = tipoAsistencia.find(s => s.id == search)?.descripcion || '';
+                        tablaMisAsistencias.column([4]).search(tasistencia).draw();
+                    }
 
                     const contenedor = document.querySelector('.content-wrapper');
                     contenedor.scrollTo({
@@ -324,5 +406,5 @@
     <script src="{{ secure_asset($ft_js->compressor) }}"></script>
     <script src="{{ secure_asset($ft_js->quill) }}"></script>
     <script src="{{ secure_asset($ft_js->QuillControl) }}"></script>
-    <script src="{{ secure_asset('front/js/misasistencias/misasistencias.js') }}?v=1"></script>
+    <script src="{{ secure_asset('front/js/misasistencias/misasistencias.js') }}?v=6.3.3.5"></script>
 @endsection

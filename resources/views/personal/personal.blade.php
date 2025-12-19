@@ -2,10 +2,10 @@
 @section('title', 'Control del Personal')
 
 @section('cabecera')
-    <link rel="stylesheet" href="{{ secure_asset('front/css/app/personal/personal.css') }}?v=1">
+    <link rel="stylesheet" href="{{ secure_asset('front/css/app/personal/personal.css') }}?v=6.3.3.5">
     <script>
         const empresa = @json($empresa);
-        const areas = @json($areas);
+        const tipoAreas = @json($areas);
         const tipoModalidad = @json($tipoModalidad);
         const tipoPersonal = @json($tipoPersonal);
     </script>
@@ -14,13 +14,13 @@
 
 @section('content')
     <!-- 🔹 Resumen contable -->
-    <section class="card mb-3">
-        <div class="card-body py-lg-2 px-md-3">
-            <div class="row gx-lg-5">
-                <div class="col-md-3 col-6 my-2 py-2">
+    <section class="row">
+        <div class="col-md-3 col-6 mb-2">
+            <div class="card">
+                <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="p-3 rounded-4" style="background-color: #e2eaf7">
+                            <div class="p-md-3 p-2 rounded-4" style="background-color: #e2eaf7">
                                 <i class="fa-solid fa-users text-primary fa-fw"></i>
                             </div>
                         </div>
@@ -30,11 +30,15 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="col-md-3 col-6 my-2 py-2">
+        <div class="col-md-3 col-6 mb-2">
+            <div class="card">
+                <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="p-3 rounded-4" style="background-color: #e2eaf7">
+                            <div class="p-md-3 p-2 rounded-4" style="background-color: #e2eaf7">
                                 <i class="fa-solid fa-cloud-arrow-up text-primary fa-fw"></i>
                             </div>
                         </div>
@@ -44,11 +48,15 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="col-md-3 col-6 my-2 py-2">
+        <div class="col-md-3 col-6 mb-2">
+            <div class="card">
+                <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="p-3 rounded-4" style="background-color: #e2eaf7">
+                            <div class="p-md-3 p-2 rounded-4" style="background-color: #e2eaf7">
                                 <i class="fa-solid fa-pen-to-square text-primary fa-fw"></i>
                             </div>
                         </div>
@@ -58,11 +66,15 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="col-md-3 col-6 my-2 py-2">
+        <div class="col-md-3 col-6 mb-2">
+            <div class="card">
+                <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="p-3 rounded-4" style="background-color: #e2eaf7">
+                            <div class="p-md-3 p-2 rounded-4" style="background-color: #e2eaf7">
                                 <i class="fa-solid fa-exclamation-triangle text-primary fa-fw"></i>
                             </div>
                         </div>
@@ -72,30 +84,24 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
 
     <!-- 🔹 Tabla -->
     <div class="card">
-        <div class="card-body px-3">
-            <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="card-body px-0">
+            <div class="d-flex justify-content-between align-items-center mb-3 mx-3">
                 <div>
-                    <h6 class="fw-bold">Listado de Personal</h6>
+                    <h6 class="fw-bold mb-0">Listado de Personal</h6>
                 </div>
 
-                <div class="d-flex align-items-center">
-                    <button class="btn btn-primary me-2" data-mdb-ripple-init data-mdb-modal-init
-                        data-mdb-target="#modalPersonal">
-                        <i class="fa fa-plus me-2"></i>Nuevo Personal
-                    </button>
-                    <button class="btn btn-primary px-3" onclick="updateTable()" data-mdb-ripple-init role="button">
-                        <i class="fas fa-rotate-right"></i>
-                    </button>
-                </div>
+                <button hidden data-mdb-modal-init data-mdb-target="#modalPersonal"></button>
             </div>
-            <table id="tablaPersonal" class="table align-center mb-0 table-hover text-nowrap w-100">
+
+            <div id="cardsPersonal" style="display: none;"></div>
+
+            <table id="tablaPersonal" class="table align-center mb-0 table-hover text-nowrap w-100" style="display: none">
                 <thead>
                     <tr class="text-bg-primary text-center">
                         <th>UserID</th>
@@ -113,110 +119,205 @@
                 </thead>
             </table>
             <script>
-                const tablaPersonal = new DataTable('#tablaPersonal', {
-                    scrollX: true,
-                    scrollY: 400,
-                    // buttons: ['excel'],
-                    ajax: {
-                        url: __url + '/personal/listar',
-                        dataSrc: function(json) {
-                            // let total = json.length;
-                            let sync = json.filter(p => p.estado_sync === 1).length;
-                            let cre = json.filter(p => p.estado_sync === 0).length;
-                            let mod = json.filter(p => p.estado_sync === 2).length;
-                            let eli = json.filter(p => p.estado_sync === 3).length;
-                            // let pend = json.filter(p => [0, 3].includes(p.estado_sync)).length;
-
-                            $('#totalSync').text(sync);
-                            $('#totalCreando').text(cre);
-                            $('#totalModificando').text(mod);
-                            $('#totalEliminando').text(eli);
-                            return json;
-                        },
-                        error: function(xhr, error, thrown) {
-                            boxAlert.table();
-                            console.log('Respuesta del servidor:', xhr);
-                        }
-                    },
-                    columns: [{
-                            data: 'user_id'
-                        },
-                        {
-                            data: 'empresa'
-                        },
-                        {
-                            data: 'area',
-                            render: function(data, type, row) {
-                                let area = areas.find(tp => tp.id == data) || {
-                                    descripcion: 'Sin Area',
-                                    color: '#9fa6b2'
-                                };
-                                return `<label class="badge" style="font-size: 0.75rem;background-color: ${area.color};">${area.descripcion}</label>`;
-                            }
-                        },
-                        {
-                            data: 'dni',
-                            render: function(data, type, row) {
-                                let dni = (data || '') + (data ? ' - ' : '');
-                                return dni + `${row.nombre || ''} ${row.apellido || ''}`;
-                            }
-                        },
-                        {
-                            data: 'clave'
-                        },
-                        {
-                            data: 'tipo',
-                            render: function(data, type, row) {
-                                let tPersonal = tipoPersonal.find(tp => tp.id == data);
-                                return `<label class="badge" style="font-size: 0.75rem;background-color: ${tPersonal.color};">${tPersonal.descripcion}</label>`;
-                            }
-                        },
-                        {
-                            data: 'estado_sync',
-                            render: function(data, type, row) {
-                                let estadoTexto = [
-                                    ['secondary', 'Creando'],
-                                    ['success', 'Sincronizado'],
-                                    ['warning', 'Modificando'],
-                                    ['danger', 'Eliminando']
-                                ][data] || 'Desconocido';
-
-                                return `<label class="badge badge-${estadoTexto[0]}" style="font-size: 0.75rem;">${estadoTexto[1]}</label>`;
-                            }
-                        },
-                        {
-                            data: 'estado',
-                            render: function(data, type, row) {
-                                let estadoTexto = [
-                                    ['warning', 'Desactivado'],
-                                    ['success', 'Activo'],
-                                ][data] || 'Desconocido';
-
-                                return `<label class="badge badge-${estadoTexto[0]}" style="font-size: 0.75rem;">${estadoTexto[1]}</label>`;
-                            }
-                        },
-                        {
-                            data: 'registrado'
-                        },
-                        {
-                            data: 'actualizado'
-                        },
-                        {
-                            data: 'acciones'
-                        }
-                    ],
-                    createdRow: function(row, data, dataIndex) {
-                        $(row).addClass('text-center');
-                        $(row).find('td:eq(1), td:eq(3)').addClass('text-start');
-                        $(row).find('td:eq(10)').addClass(`td-acciones`);
-                    },
-                    processing: true
+                let tablaPersonal;
+                let getUrlListar = () => generateUrl(__url + '/personal/listar', {
+                    empresa: $('#empresa').val()
                 });
+                let dataSet = (json) => {
+                    let sync = json.filter(p => p.estado_sync === 1).length;
+                    let cre = json.filter(p => p.estado_sync === 0).length;
+                    let mod = json.filter(p => p.estado_sync === 2).length;
+                    let eli = json.filter(p => p.estado_sync === 3).length;
+
+                    $('#totalSync').text(sync);
+                    $('#totalCreando').text(cre);
+                    $('#totalModificando').text(mod);
+                    $('#totalEliminando').text(eli);
+                    return json;
+                }
+
+                if (esCelular()) {
+                    $('#cardsPersonal').removeAttr('style');
+                    tablaMisAsistencias = new CardTable('cardsPersonal', {
+                        ajax: {
+                            url: getUrlListar(),
+                            dataSrc: dataSet,
+                            error: function(xhr, error, thrown) {
+                                boxAlert.table();
+                                console.log('Respuesta del servidor:', xhr);
+                            }
+                        },
+                        columns: [{
+                                data: 'user_id',
+                                title: 'USer Id'
+                            },
+                            {
+                                data: 'empresa',
+                                title: 'Empresa'
+                            },
+                            {
+                                data: 'area',
+                                title: 'Area'
+                            },
+                            {
+                                data: 'dni',
+                                title: 'Dni'
+                            },
+                            {
+                                data: 'nombre',
+                                title: 'Nombre'
+                            },
+                            {
+                                data: 'apellido',
+                                title: 'Apellido'
+                            },
+                            {
+                                data: 'clave',
+                                title: 'Clave'
+                            },
+                            {
+                                data: 'tipo',
+                                title: 'Tipo'
+                            },
+                            {
+                                data: 'estado_sync',
+                                title: 'Estado Sync'
+                            },
+                            {
+                                data: 'estado',
+                                title: 'Estado'
+                            }
+                        ],
+                        cardTemplate: (data, index) => {
+                            return `
+                                <div class="d-flex align-items-center justify-content-between pb-1">
+                                    <div class="fw-medium mb-0" style="overflow: hidden;font-size: 3vw;">
+                                        <span class="badge badge-dark">${data.user_id}</span>
+                                        <span>${data.apellido}, ${data.nombre}</span>
+                                    </div>
+                                    <div class="btn-acciones-movil">${data.acciones}</div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center pb-2">
+                                    <span style="font-size: 2.85vw;"><b class="text-muted">Documento:</b> ${data.dni}</span>
+                                    <span>
+                                        ${getBadgeAreas(data.area, '.8', false)} / ${getBadgeTipoPersonal(data.tipo, '.8', true)}
+                                    </span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center pb-2">
+                                    <span style="font-size: 2.85vw;"><b class="text-muted">Contraseña:</b> ${data.clave}</span>
+                                </div>
+                                <div class="d-flex justify-content-start align-items-center" style="gap: 4px;">
+                                    ${getBadgeEstadoSync(data.estado_sync, '.75', false)} ${getBadgeEstado(data.estado, '.75')}
+                                </div>
+                                <hr class="mx-1 my-2">
+                                <div class="d-flex align-items-center justify-content-between pt-1" style="font-size: 2.85vw;color: #909090;">
+                                    <label>
+                                        <span style="vertical-align: middle;">${data.empresa}</span>
+                                    </label>
+                                </div>`;
+                        },
+                        scrollY: '600px',
+                        perPage: 50,
+                        searchPlaceholder: 'Buscar',
+                        order: ['apellido', 'asc'],
+                        drawCallback: function() {
+                            if (typeof mdb !== 'undefined') {
+                                document.querySelectorAll('[data-mdb-dropdown-init]').forEach(el => {
+                                    new mdb.Dropdown(el);
+                                });
+                            }
+                        }
+                    });
+                } else {
+                    $('#tablaPersonal').removeAttr('style');
+                    tablaPersonal = new DataTable('#tablaPersonal', {
+                        lengthChange: false,
+                        paging: false,
+                        scrollX: true,
+                        scrollY: 400,
+                        dom: `<"row"
+                            <"col-lg-12 mb-2"B>>
+                            <"row"
+                                <"col-sm-6 text-sm-start text-center my-1 botones-accion">
+                                <"col-sm-6 text-sm-end text-center my-1"f>>
+                            <"contenedor_tabla my-2"tr>
+                            <"row"
+                                <"col-md-5 text-md-start text-center my-1"i>
+                                <"col-md-7 text-md-end text-center my-1"p>>`,
+                        ajax: {
+                            url: __url + '/personal/listar',
+                            dataSrc: dataSet,
+                            error: function(xhr, error, thrown) {
+                                boxAlert.table();
+                                console.log('Respuesta del servidor:', xhr);
+                            }
+                        },
+                        columns: [{
+                                data: 'user_id'
+                            },
+                            {
+                                data: 'empresa'
+                            },
+                            {
+                                data: 'area',
+                                render: function(data, type, row) {
+                                    return getBadgeAreas(data, '.75', false);
+                                }
+                            },
+                            {
+                                data: 'dni',
+                                render: function(data, type, row) {
+                                    let dni = (data || '') + (data ? ' - ' : '');
+                                    return dni + `${row.nombre || ''} ${row.apellido || ''}`;
+                                }
+                            },
+                            {
+                                data: 'clave'
+                            },
+                            {
+                                data: 'tipo',
+                                render: function(data, type, row) {
+                                    return getBadgeTipoPersonal(data);
+                                }
+                            },
+                            {
+                                data: 'estado_sync',
+                                render: function(data, type, row) {
+                                    return getBadgeEstadoSync(data);
+                                }
+                            },
+                            {
+                                data: 'estado',
+                                render: function(data, type, row) {
+                                    return getBadgeEstado(data);
+                                }
+                            },
+                            {
+                                data: 'registrado'
+                            },
+                            {
+                                data: 'actualizado'
+                            },
+                            {
+                                data: 'acciones'
+                            }
+                        ],
+                        createdRow: function(row, data, dataIndex) {
+                            $(row).addClass('text-center');
+                            $(row).find('td:eq(1), td:eq(3)').addClass('text-start');
+                            $(row).find('td:eq(10)').addClass(`td-acciones`);
+                        },
+                        processing: true
+                    });
+                    mostrar_acciones(tablaPersonal);
+                }
 
                 function updateTable() {
+                    if (esCelular()) {
+                        return tablaPersonal.reload();
+                    }
                     tablaPersonal.ajax.reload();
                 }
-                mostrar_acciones(tablaPersonal);
             </script>
         </div>
     </div>
@@ -386,10 +487,10 @@
             </div>
         </div>
     </div>
-    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}?v=1"></script>
+    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}?v=6.3.3.5"></script>
 
 
     <!-- 🔹 Scripts -->
     <script src="{{ secure_asset($ft_js->jquery_inputmask_bundle) }}"></script>
-    <script src="{{ secure_asset('front/js/personal/personal.js') }}?v=1"></script>
+    <script src="{{ secure_asset('front/js/personal/personal.js') }}?v=6.3.3.5"></script>
 @endsection

@@ -133,5 +133,5 @@
 
 @section('scripts')
     <script></script>
-    <script src="{{ secure_asset('front/js/mantenimiento_dev/tipopersonal/tipopersonal.js') }}?v=1"></script>
+    <script src="{{ secure_asset('front/js/mantenimiento_dev/tipopersonal/tipopersonal.js') }}?v=6.3.3.5"></script>
 @endsection

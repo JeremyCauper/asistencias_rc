@@ -14,14 +14,16 @@ $(document).ready(function () {
     ]);
 
     fObservador('.content-wrapper', () => {
-        tablaAsistencias.columns.adjust().draw();
+        if (!esCelular()) {
+            tablaAsistencias.columns.adjust().draw();
+        }
 
         incidencia_estados.forEach((e, i) => {
             if (e.chart) e.chart.resize();
         });
     });
 
-    $('.botones-table').append(
+    $('.botones-accion').append(
         $('<button>', {
             class: 'btn btn-primary px-3 me-2',
             "data-mdb-ripple-init": ''
@@ -87,7 +89,7 @@ async function modificarDescuento(id) {
         // Buscar descripción del tipo de asistencia
         const tasistencia = tipoAsistencia.find(s => s.id == json.tipo_asistencia) || {
             descripcion: 'Pendiente',
-            color: '#9fa6b2'
+            color: '#7e7979'
         };
 
         // Llenar campos visibles

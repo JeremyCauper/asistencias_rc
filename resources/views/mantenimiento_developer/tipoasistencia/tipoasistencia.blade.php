@@ -2,9 +2,9 @@
 @section('title', 'Tipo Asistencia')
 
 @section('cabecera')
-    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap.bundle.min.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap_multiselect.js') }}?v=1.0.0"></script>
-    <script src="{{ secure_asset('front/vendor/multiselect/form_multiselect.js') }}?v=1.0.0"></script>
+    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap.bundle.min.js') }}?v=6.3.3.5"></script>
+    <script src="{{ secure_asset('front/vendor/multiselect/bootstrap_multiselect.js') }}?v=6.3.3.5"></script>
+    <script src="{{ secure_asset('front/vendor/multiselect/form_multiselect.js') }}?v=6.3.3.5"></script>
     <script>
         const tipoModalidad = @json($tipoModalidad);
     </script>
@@ -145,5 +145,5 @@
 
 @section('scripts')
     <script></script>
-    <script src="{{ secure_asset('front/js/mantenimiento_dev/tipoasistencia/tipoasistencia.js') }}?v=1"></script>
+    <script src="{{ secure_asset('front/js/mantenimiento_dev/tipoasistencia/tipoasistencia.js') }}?v=6.3.3.5"></script>
 @endsection

@@ -2,7 +2,7 @@
 <html lang="es" data-mdb-theme="light">
 
 <head>
-    @if (env('APP_ENV') == 'produccion')
+    <!-- @if (env('APP_ENV') == 'produccion')
         <script>
             const url_base_logeo = '{{ secure_url('') }}';
 
@@ -48,7 +48,7 @@
                 })();
             }
         </script>
-    @endif
+    @endif -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="shortcut icon" href="{{ secure_asset($ft_img->icon) }}" />
@@ -97,6 +97,7 @@
     <script src="{{ secure_asset($ft_js->select2) }}"></script>
     <script src="{{ secure_asset($ft_js->form_select2) }}"></script>
     <script src="{{ secure_asset($ft_js->AlertMananger) }}"></script>
+    <script src="{{ secure_asset($ft_js->CardTable) }}"></script>
     <script src="{{ secure_asset($ft_js->jquery_dataTables) }}"></script>
     <script src="{{ secure_asset($ft_js->app) }}"></script>
 
@@ -285,6 +286,28 @@
 
         </main>
         <script src="{{ secure_asset($ft_js->toggle_template) }}"></script>
+    </div>
+
+    <button hidden data-mdb-modal-init data-mdb-target="#modal_pdf"></button>
+    <div class="modal fade" id="modal_pdf" aria-labelledby="modal_pdf" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h6 class="modal-title">Visualización de PDF
+                <span class="badge badge-success badge-lg" aria-item="codigo"></span>
+                <span class="badge badge-info badge-lg" aria-item="codigo_orden"></span>
+                </h6>
+                <button type="button" class="btn-close" data-mdb-ripple-init data-mdb-dismiss="modal"
+                aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 position-relative">
+                <iframe id="contenedor_doc" class="w-100" frameborder="0"></iframe>
+            </div>
+            <div class="modal-footer border-top-0 pt-0 pb-1">
+                <button type="button" class="btn btn-link " data-mdb-ripple-init data-mdb-dismiss="modal">Cerrar</button>
+            </div>
+            </div>
+        </div>
     </div>
 
     <script>

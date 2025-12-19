@@ -449,64 +449,88 @@ function calcularDuracion(fechaIni, fechaFin) {
 //   const fin    = "2025-04-21 13:55:44";
 //   console.log(calcularDuracion(inicio, fin)); // "3h 6m 0s"
 
-
-function getBadgeIncidencia(estado, size = '.7') {
-    estadoInforme = {
-        "0": { 'color': 'warning', 'text': 'Sin Asignar' },
-        "1": { 'color': 'info', 'text': 'Asignada' },
-        "2": { 'color': 'primary', 'text': 'En Proceso' },
-        "3": { 'color': 'success', 'text': 'Finalizado' },
-        "4": { 'color': 'danger', 'text': 'Faltan Datos' },
-        "5": { 'color': 'danger', 'text': 'Cierre Sistema' },
+function getBadgeAreas(estado, size = '.75', fill = true) {
+    let area = tipoAreas.find(tp => tp.id == estado) || {
+        descripcion: 'Sin Area',
+        color: '#7e7979'
     };
-    let tsize = `style="font-size: ${size}rem;"` ?? null;
 
-    return `<label class="badge badge-${estadoInforme[estado]['color']}" ${tsize}>${estadoInforme[estado]['text']}</label>`;
+    return `<label ${fill
+        ? `class="badge" style="font-size: ${size}rem;background-color: ${area.color};"`
+        : `style="font-size: ${size}rem;color: ${area.color};"`
+        }>${area.descripcion}</label>`;
 }
 
-function getBadgeTIncidencia(estado, size = '.7') {
-    estadoInforme = {
-        "1": { 'color': 'success', 'text': 'N1' },
-        "2": { 'color': 'warning', 'text': 'N2' },
-        "3": { 'color': 'danger', 'text': 'N3' },
-    };
-    let tsize = `style="font-size: ${size}rem;"` ?? null;
 
-    return `<label class="badge badge-${estadoInforme[estado]['color']}" ${tsize}>${estadoInforme[estado]['text']}</label>`;
+function getBadgeTipoPersonal(estado, size = '.75', muted = false) {
+    let tipo = tipoPersonal.find(tp => tp.id == estado) || {
+        descripcion: 'Sin Tipo',
+        color: '#7e7979'
+    };
+
+    return `<label ${muted
+        ? `class="text-muted" style="font-size: ${size}rem;"`
+        : `style="font-size: ${size}rem;color: ${tipo.color};"`
+        }>${tipo.descripcion}</label>`;
 }
 
-function getBadgeVisita(estado, size = null) {
-    estadoInforme = {
-        "0": { 'color': 'warning', 'text': 'Sin Iniciar' },
-        "1": { 'color': 'primary', 'text': 'En Proceso' },
-        "2": { 'color': 'success', 'text': 'Finalizado' },
-        "4": { 'color': 'danger', 'text': 'Faltan Datos' },
+function getBadgeTipoModalidad(estado, size = '.75') {
+    let modalidad = tipoModalidad.find(tp => tp.id == estado) || {
+        descripcion: 'Sin Modalidad',
+        color: '#7e7979'
     };
-    let tsize = `style="font-size: ${size}rem;"` ?? null;
-
-    return `<label class="badge badge-${estadoInforme[estado]['color']}" ${tsize}>${estadoInforme[estado]['text']}</label>`;
+    let color = modalidad?.color;
+    return `<label class="badge" style="font-size: ${size}rem; background-color: ${color}20;color: ${color};border: 1px solid ${color};">
+            <i class="${modalidad?.icono} fa-1x me-1"></i>${modalidad?.descripcion}
+        </label>`;
 }
 
-function getBadgeContrato(estado, size = null) {
-    estadoInforme = [
-        { 'color': 'danger', 'text': 'Sin Contrato' },
-        { 'color': 'success', 'text': 'En Contrato' },
-    ];
-    let tsize = `style="font-size: ${size}rem;"` ?? null;
-
-    return `<label class="badge badge-${estadoInforme[estado]['color']}" ${tsize}>${estadoInforme[estado]['text']}</label>`;
+function getBadgeTipoAsistencia(estado, size = '.75') {
+    let tipo = tipoAsistencia.find(tp => tp.id == estado) || {
+        descripcion: 'Pendiente',
+        color: '#7e7979'
+    };
+    return `<label class="badge" style="font-size: ${size}rem;background-color: ${tipo.color}25;color: ${tipo.color};">${tipo.descripcion}</label>`;
 }
 
-function getBadgePrioridad(estado, size = null) {
-    estadoInforme = {
-        "P1": { 'color': 'dark', 'text': 'P1' },
-        "P2": { 'color': 'danger', 'text': 'P2' },
-        "P3": { 'color': 'warning', 'text': 'P3' },
-        "P4": { 'color': 'success', 'text': 'P4' },
-    };
-    let tsize = `style="font-size: ${size}rem;"` ?? null;
+function getFormatJornada(data) {
+    return `<label>
+        <i class="far fa-clock"></i>
+        <span style="vertical-align: middle;">${data.entrada || 'No Check-in'}${data.salida ? ` - ${data.salida}` : ''}</span>
+    </label>`;
+}
 
-    return `<label class="badge badge-${estadoInforme[estado]['color']} me-2" ${tsize}>${estadoInforme[estado]['text']}</label>`;
+function getBadgeDescuento(data) {
+    if (data.descuento || data.tipo_asistencia == 1) {
+        return `
+        <label class="badge" style="border: 1px solid #f87171;color: #f87171;">
+            <i class="fas fa-triangle-exclamation me-2" style="font-size: .75rem;"></i>
+            <span> ${data.descuento ? `S/ -${data.descuento}` : (data.tipo_asistencia == 1 ? 'Día Comp.' : '')}</span>
+        </label>`;
+    }
+    return ''
+}
+
+function getBadgeEstadoSync(estado, size = '.75', fill = true) {
+    let estadoTexto = [
+        ['secondary', 'Creando'],
+        ['success', 'Sincronizado'],
+        ['warning', 'Modificando'],
+        ['danger', 'Eliminando']
+    ][estado] || ['dark', 'Desconocido'];
+
+    return `<label class="badge ${fill
+        ? `badge-${estadoTexto[0]}`
+        : `text-${estadoTexto[0]} border border-${estadoTexto[0]}`
+        }"  style="font-size: ${size}rem;">${estadoTexto[1]} en Sensor</label>`;
+}
+
+function getBadgeEstado(estado, size = '.75') {
+    let estadoTexto = [
+        ['danger', 'Inactivo'],
+        ['success', 'Activo']
+    ][estado] || ['dark', 'Desconocido'];
+    return `<label class="badge badge-${estadoTexto[0]}" style="font-size: ${size}rem;">${estadoTexto[1]}</label>`;
 }
 
 function mostrar_acciones(table = null) {
@@ -676,7 +700,7 @@ function parseColor(color) {
     if (!color) return;
     let colores = {
         primary: '#3b71ca',
-        secondary: '#9fa6b2',
+        secondary: '#7e7979',
         success: '#14a44d',
         danger: '#dc4c64',
         warning: '#e4a11b',
@@ -711,6 +735,29 @@ function parseColor(color) {
     throw new Error('Formato de color no reconocido');
 }
 
+function obtenerFechaFormateada(fecha = new Date(), short = false) {
+    const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const mesesAbreviados = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+
+    // Convertir a zona horaria de Lima (Perú)
+    // Si la fecha original no tiene hora, usamos mediodía para evitar problemas de zona horaria
+    const fechaConHora = new Date(fecha);
+    if (fechaConHora.getHours() === 0 && fechaConHora.getMinutes() === 0 && fechaConHora.getSeconds() === 0) {
+        fechaConHora.setHours(12);
+    }
+
+    const fechaLima = new Date(fechaConHora.toLocaleString('sv-SE', { timeZone: 'America/Lima' }));
+
+    const nombreDia = dias[fechaLima.getDay()];
+    const numeroDia = fechaLima.getDate();
+    const nombreMes = short ? mesesAbreviados[fechaLima.getMonth()] : meses[fechaLima.getMonth()];
+    const año = fechaLima.getFullYear();
+
+    return short ? `${nombreMes}. ${numeroDia}, ${año}` : `${nombreDia} ${numeroDia} de ${nombreMes} del ${año}`;
+}
 
 function fObservador(selector, callback) {
     if (typeof selector !== 'string') return null;

@@ -113,6 +113,8 @@ class Controller extends BaseController
         if (in_array(Auth::user()->rol_system, [2, 4 ,7]) || $inventario_asignado || Auth::user()->sistema == 1) {
             $filteredIds[6] = [];
         }
+        
+        Log::error('[InventarioVehicularController@show] ' . json_encode($filteredIds));
 
         // Obtener y filtrar los menús del JSON
         $menu = JsonDB::table('menu')->get()
@@ -257,7 +259,7 @@ class Controller extends BaseController
         $tittle = str_replace(":titulo", $arr_acciones['tittle'] ?? "Acciones", $str_title);
 
         // Botones del dropdown
-        $str_button = '<button class="dropdown-item py-2 :clase" :funcion :attr>:texto</button>';
+        $str_button = '<button class="dropdown-item :clase" style="padding-top: .8rem !important;padding-bottom: .8rem !important;" :funcion :attr>:texto</button>';
         $button = '';
 
         foreach ($arr_acciones['button'] as $val) {
@@ -276,13 +278,24 @@ class Controller extends BaseController
         $dropDown = '
             <div class="btn-group dropdown shadow-0">
                 ' . ($notificacion ? '
-                       <span class="position-absolute badge bg-danger" style="top: -4px;left: -10px;z-index:9;">
-                            <i class="fas fa-bell" style="font-size: larger;min-width: .5em;"></i>
+                       <span class="position-absolute" style="
+                                width: 1.15rem;
+                                height: 1.15rem;
+                                color: #ff5454;
+                                background-color: #ffc9c9;
+                                border-radius: 5px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                top: -6.5px;
+                                left: -18px;
+                                z-index: 9;">
+                            <i class="fas fa-bell" style="font-size: .7rem;min-width: .5em;"></i>
                             <span class="visually-hidden">Nuevas alertas</span>
                         </span>' : '') . '
                 <button
                     type="button"
-                    class="' . ($sinAcciones ? 'disabled' : 'dropdown-toggle') . ' btn btn-tertiary hover-btn btn-sm p-1 shadow-0"
+                    class="' . ($sinAcciones ? 'disabled' : 'dropdown-toggle hover-btn') . ' btn btn-tertiary btn-sm p-1 shadow-0"
                     data-mdb-ripple-init
                     aria-expanded="false"
                     data-mdb-dropdown-init
@@ -290,7 +303,7 @@ class Controller extends BaseController
                     data-mdb-parent=".dataTables_scrollBody"
                     data-mdb-dropdown-animation="off"
                     data-mdb-dropdown-initialized="true">
-                    <i class="fas fa-' . ($sinAcciones ? 'ban' : 'bars') . '" style="font-size: 1.125em;"></i>
+                    <i class="fas fa-' . ($sinAcciones ? 'ban' : 'bars') . '" style="font-size: 1.125em;' . ($sinAcciones ? 'visibility: hidden;' : '') . '"></i>
                 </button>
                 <div class="dropdown-menu">
                     ' . $tittle . $button . '

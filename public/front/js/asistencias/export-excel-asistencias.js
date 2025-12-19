@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $('.botones-table').append(
+    $('.botones-accion').append(
         $('<button>', {
             class: 'btn btn-warning',
             "data-mdb-ripple-init": '',

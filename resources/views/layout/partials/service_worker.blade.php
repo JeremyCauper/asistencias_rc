@@ -215,10 +215,7 @@
                         });
 
                         if (!ok || post.state === "denied") {
-                            return boxAlert.box({
-                                i: "warning",
-                                h: "Se denegó el acceso a la cámara."
-                            });
+                            return false;
                         }
                     }
 

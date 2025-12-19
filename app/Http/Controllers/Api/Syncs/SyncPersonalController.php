@@ -366,22 +366,4 @@ class SyncPersonalController extends Controller
             return ApiResponse::error('Error al guardar las vacaciones.');
         }
     }
-
-    // public function setearCredenciales() {
-    //     $personal = DB::table('personal')->get();
-
-    //     foreach ($personal as $p) {
-    //         $user_id = $p->user_id;
-    //         $nombre_arr = empty($p->nombre) ? '' : explode(' ', $p->nombre)[0];
-    //         $apellido_arr = empty($p->apellido) ? '' : explode(' ', $p->apellido)[0];
-
-    //         $usuario = ($nombre_arr && $apellido_arr) ? strtolower($nombre_arr[0] . $apellido_arr) : $p->cardno;
-
-    //         DB::table('personal')->where('user_id', $user_id)->update([
-    //             'usuario' => $usuario,
-    //             'password_view' => '123456',
-    //             'password_system' => Hash::make('123456'),
-    //         ]);
-    //     }
-    // }
 }
