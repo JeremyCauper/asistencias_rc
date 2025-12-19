@@ -237,7 +237,7 @@ class ChartMananger {
                             text: 'Total de incidencias por fecha',
                             // left: 'center',
                             textStyle: {
-                                color: '#9fa6b2',
+                                color: '#717883',
                                 fontFamily: 'Arial, sans-serif',
                                 fontSize: 14,
                             }
@@ -397,7 +397,7 @@ class ChartMananger {
                             text: 'Ranking de problemas con mayor número de incidencias',
                             // left: 'center',
                             textStyle: {
-                                color: '#9fa6b2',
+                                color: '#717883',
                                 fontFamily: 'Arial, sans-serif',
                                 fontSize: 14,
                             }
@@ -507,7 +507,7 @@ class ChartMananger {
                             text: 'Ranking de subproblemas del problema seleccionado',
                             // left: 'center',
                             textStyle: {
-                                color: '#9fa6b2',
+                                color: '#717883',
                                 fontFamily: 'Arial, sans-serif',
                                 fontSize: 14,
                             }
@@ -610,7 +610,7 @@ class ChartMananger {
                 title: {
                     text: title,
                     textStyle: {
-                        color: '#9fa6b2',
+                        color: '#717883',
                         fontFamily: 'Arial, sans-serif',
                         fontSize: 14,
                     }

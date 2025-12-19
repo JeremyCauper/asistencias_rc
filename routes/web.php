@@ -178,6 +178,7 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::get('/', 'view')->name('view');
             Route::get('/listar', 'listar')->name('listar');
+            Route::post('/registrar', 'create')->name('create');
         });
 
     Route::get('/notificaciones/listar', [NotificacionController::class, 'listar']);

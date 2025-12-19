@@ -1384,12 +1384,18 @@ tr .active-acciones {
     box-shadow: 0px 0px 12px -4px rgba(0, 0, 0, .65) !important;
 }
 
-.cardtable-container .cardtable-wrapper .card .card-body .dropdown .dropdown-toggle::after {
+.cardtable-container .cardtable-wrapper .card .card-body .btn-acciones-movil .dropdown .dropdown-toggle::after {
     display: none;
 }
 
-.cardtable-container .cardtable-wrapper .card .card-body .dropdown .dropdown-toggle i::before {
+.cardtable-container .cardtable-wrapper .card .card-body .btn-acciones-movil .dropdown .dropdown-toggle i::before {
     content: "\f142";
+}
+
+.cardtable-container .cardtable-wrapper .card .card-body .btn-acciones-movil .dropdown .dropdown-toggle {
+    width: 30px;
+    height: 30px;
+    background-color: var(--mdb-stepper-mobile-bg) !important;
 }
 
 .ql-editor-html img,

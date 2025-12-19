@@ -15,7 +15,7 @@ class CardTable {
             ajax: options.ajax || null,
             columns: options.columns || [],
             cardTemplate: options.cardTemplate || null,
-            cardWrapper: options.cardWrapper || '<div class="card my-2"><div class="card-body p-3">:content</div></div>',
+            cardWrapper: options.cardWrapper || '<div class="card rounded-7 my-2"><div class="card-body p-3">:content</div></div>',
             perPage: options.perPage || 12,
             scrollY: options.scrollY || null,
             searchable: options.searchable !== false,
@@ -30,7 +30,7 @@ class CardTable {
                 of: options.language?.of || 'de',
                 entries: options.language?.entries || 'registros',
                 noResults: options.language?.noResults || 'No se encontraron resultados',
-                loading: options.language?.loading || 'Cargando...'
+                loading: options.language?.loading || ''
             },
             onCardClick: options.onCardClick || null,
             filters: options.filters || [],
@@ -64,6 +64,7 @@ class CardTable {
         this.cardsContainer.className = 'cardtable-wrapper px-3';
 
         if (this.options.scrollY) {
+            this.cardsContainer.style.minHeight = this.options.scrollY;
             this.cardsContainer.style.maxHeight = this.options.scrollY;
             this.cardsContainer.style.overflowY = 'auto';
             this.cardsContainer.style.overflowX = 'hidden';

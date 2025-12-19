@@ -4,105 +4,312 @@
 @section('cabecera')
     <style>
     </style>
+    <script></script>
 @endsection
 @section('content')
 
 
     <div class="col-12">
         <div class="card">
-            <div class="card-body px-3">
-                <h6 class="card-title col-form-label-sm text-primary mb-3">
-                    <strong>Listado de Vehiculos</strong>
-                </h6>
-                <div>
-                    <button class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init
-                        data-mdb-target="#modal_inventario_vehicular">
-                        <i class="fas fa-plus"></i>
-                        Nuevo Vehiculo
-                    </button>
-                    <button class="btn btn-primary px-2" onclick="updateTable()" data-mdb-ripple-init role="button">
-                        <i class="fas fa-rotate-right"></i>
-                    </button>
+            <div class="card-body px-0">
+                <div class="d-flex align-items-center justify-content-between mx-3">
+                    <h6 class="fw-bold mb-0">Inventario Vehicular</h6>
+                    <button hidden data-mdb-modal-init data-mdb-target="#modal_inventario_vehicular"></button>
                 </div>
-                <div class="row">
-                    <div class="col-12">
-                        <table id="tb_inventario_vehicular" class="table table-hover text-nowrap" style="width:100%">
-                            <thead>
-                                <tr class="text-bg-primary text-center">
-                                    <th>Placa</th>
-                                    <th>Tipo Registro</th>
-                                    <th>Modelo</th>
-                                    <th>Marca</th>
-                                    <th>Soat</th>
-                                    <th>Revisión Técnica</th>
-                                    <th>Chip</th>
-                                    <th>Cilindro</th>
-                                    <th>Registrado</th>
-                                    <th>Actualizado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                        </table>
-                        <script>
-                            const tb_inventario_vehicular = new DataTable('#tb_inventario_vehicular', {
-                                autoWidth: true,
-                                scrollX: true,
-                                scrollY: 400,
-                                fixedHeader: true, // Para fijar el encabezado al hacer scroll vertical
-                                ajax: {
-                                    url: `${__url}/inventario-vehicular/listar`,
-                                    dataSrc: function(json) {
-                                        return json?.data;
-                                    },
-                                    error: function(xhr, error, thrown) {
-                                        boxAlert.table();
-                                        console.log('Respuesta del servidor:', xhr);
+
+                <div id="cardsInventarioVehicular" style="display: none"></div>
+
+                <table id="tb_inventario_vehicular" class="table table-hover text-nowrap w-100" style="display: none">
+                    <thead>
+                        <tr class="text-bg-primary text-center">
+                            <th>Placa</th>
+                            <th>Tipo Registro</th>
+                            <th>Propietario</th>
+                            <th>Modelo</th>
+                            <th>Marca</th>
+                            <th>Soat</th>
+                            <th>Revisión Técnica</th>
+                            <th>Chip</th>
+                            <th>Cilindro</th>
+                            <th>Registrado</th>
+                            <th>Actualizado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                </table>
+                <script>
+                    let tb_inventario_vehicular;
+                    let getUrlListar = () => `${__url}/inventario-vehicular/listar`;
+                    let dataSet = (json) => {
+                        return json?.data;
+                    };
+
+                    function evaluarExpiracion(fechaExpiracion, tipo) {
+                        const iconos = {
+                            'soat': {
+                                titulo: 'SOAT',
+                                icon: 'fas fa-shield'
+                            },
+                            'r_tecnica': {
+                                titulo: 'INSPECCIÓN',
+                                icon: 'fas fa-wrench'
+                            },
+                            'v_chip': {
+                                titulo: 'CHIP',
+                                icon: 'fas fa-microchip'
+                            },
+                            'v_cilindro': {
+                                titulo: 'CILINDRO',
+                                icon: 'fas fa-gas-pump'
+                            }
+                        } [tipo];
+                        let informacion = null;
+                        let fechaExpiracionFormateada = '';
+                        let isButton = '';
+                        let estadoBadge = '';
+
+                        if (fechaExpiracion) {
+                            const fechaExp = new Date(fechaExpiracion + 'T00:00:00');
+                            const hoy = new Date();
+                            hoy.setHours(0, 0, 0, 0);
+                            const diferenciaTiempo = fechaExp - hoy;
+                            const diferenciaDias = Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24));
+
+                            if (diferenciaDias < 0) {
+                                informacion = {
+                                    estado: 'Expirado',
+                                    color: 'danger'
+                                };
+                            } else if (diferenciaDias >= 0 && diferenciaDias <= 10) {
+                                informacion = {
+                                    estado: `${diferenciaDias} dia${diferenciaDias !== 1 ? 's' : ''}`,
+                                    color: 'warning'
+                                };
+                            } else informacion = {
+                                estado: `Vigente`,
+                                color: 'success'
+                            };
+
+                            fechaExpiracionFormateada = obtenerFechaFormateada(new Date(fechaExpiracion), true);
+                            isButton = `data-mdb-ripple-init`;
+                            estadoBadge =
+                                `<span class="ms-auto badge badge-${informacion.color} rounded-1">${informacion.estado}</span>`;
+                        } else {
+                            informacion = {
+                                estado: null,
+                                color: 'secondary'
+                            };
+                            fechaExpiracionFormateada = 'Sin Registro';
+                        }
+
+                        return `
+                        <div class="d-flex align-items-center border border-${informacion.color} rounded-4 p-1 w-100" style="font-size: .65rem;" ${isButton} type="button">
+                            <div class="d-flex align-items-center me-1">
+                                <span class="text-${informacion.color}"><i class="${iconos.icon}" style="font-size: .75rem;"></i></span>
+                                <span class="text-start">
+                                    <p class="mb-0 fw-bold" style="font-size: .5rem;">${iconos.titulo}</p>
+                                    <p class="mb-0 text-${informacion.color} text-nowrap" style="font-size: .6rem;">${fechaExpiracionFormateada}</p>
+                                </span>
+                            </div>
+                            ${estadoBadge}
+                        </div>
+                        `;
+                    }
+
+                    if (esCelular()) {
+                        $('#cardsInventarioVehicular').removeAttr('style');
+                        tb_inventario_vehicular = new CardTable('cardsInventarioVehicular', {
+                            ajax: {
+                                url: getUrlListar(),
+                                dataSrc: dataSet,
+                                error: function(xhr, error, thrown) {
+                                    boxAlert.table();
+                                    console.log('Respuesta del servidor:', xhr);
+                                }
+                            },
+                            columns: [{
+                                    data: 'placa'
+                                },
+                                {
+                                    data: 'tipo_registro'
+                                },
+                                {
+                                    data: 'propietario'
+                                },
+                                {
+                                    data: 'modelo'
+                                },
+                                {
+                                    data: 'marca'
+                                },
+                                {
+                                    data: 'soat'
+                                },
+                                {
+                                    data: 'r_tecnica'
+                                },
+                                {
+                                    data: 'v_chip'
+                                },
+                                {
+                                    data: 'v_cilindro'
+                                },
+                            ],
+                            cardTemplate: (data, index) => {
+                                return `
+                                <div class="d-flex align-items-center pb-1">
+                                    <div class="align-content-center d-grid rounded-6 text-bg-dark" style="width: 48px;height: 47px;">
+                                        <i class="fas fa-${data.tipo_registro.toLocaleLowerCase() != 'motorizado' ? 'car' : 'motorcycle'}"></i>
+                                    </div>
+                                    <div class="ms-2">
+                                        <p class="fw-bold mb-1" style="font-size: 1.25rem;">
+                                            ${data.placa}
+                                            <span class="text-muted mb-0 ms-2" style="font-size: .65rem;">${data.tipo_registro}</span>
+                                        </p>
+                                        <p class="text-muted mb-0" style="font-size: .65rem;">${data.propietario}</p>
+                                    </div>
+                                    <div class="btn-acciones-movil ms-auto">${data.acciones}</div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center my-2">
+                                    <div class="col-6">
+                                        <p class="text-muted mb-0" style="font-size: .65rem;">Modelo</p>
+                                        <p class="fw-bold mb-0" style="font-size: .8rem;">${data.modelo}</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="text-muted mb-0" style="font-size: .65rem;">Marca</p>
+                                        <p class="fw-bold mb-0" style="font-size: .8rem;">${data.marca}</p>
+                                    </div>
+                                </div>
+                                <hr class="m-1">
+                                <div class="col-12 text-muted my-1" style="font-size: .65rem;">Estado de Mantenimientos</div>
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-6 p-0 pb-1" style="padding-right: .1rem !important;">${evaluarExpiracion(data.soat, 'soat')}</div>
+                                        <div class="col-6 p-0 pb-1" style="padding-left: .1rem !important;">${evaluarExpiracion(data.r_tecnica, 'r_tecnica')}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 p-0 pb-1" style="padding-right: .1rem !important;">${evaluarExpiracion(data.v_chip, 'v_chip')}</div>
+                                        <div class="col-6 p-0 pb-1" style="padding-left: .1rem !important;">${evaluarExpiracion(data.v_cilindro, 'v_cilindro')}</div>
+                                    </div>
+                                </div>
+                                `;
+                            },
+                            scrollY: '600px',
+                            perPage: 50,
+                            searchPlaceholder: 'Buscar',
+                            order: ['apellido', 'asc'],
+                            drawCallback: function() {
+                                if (typeof mdb !== 'undefined') {
+                                    document.querySelectorAll('[data-mdb-dropdown-init]').forEach(el => {
+                                        new mdb.Dropdown(el);
+                                    });
+                                }
+                            }
+                        });
+                    } else {
+                        $('#tb_inventario_vehicular').removeAttr('style');
+                        tb_inventario_vehicular = new DataTable('#tb_inventario_vehicular', {
+                            autoWidth: true,
+                            scrollX: true,
+                            scrollY: 400,
+                            fixedHeader: true, // Para fijar el encabezado al hacer scroll vertical
+                            ajax: {
+                                url: getUrlListar(),
+                                dataSrc: dataSet,
+                                error: function(xhr, error, thrown) {
+                                    boxAlert.table();
+                                    console.log('Respuesta del servidor:', xhr);
+                                }
+                            },
+                            columns: [{
+                                    data: 'placa'
+                                },
+                                {
+                                    data: 'tipo_registro'
+                                },
+                                {
+                                    data: 'propietario'
+                                },
+                                {
+                                    data: 'modelo'
+                                },
+                                {
+                                    data: 'marca'
+                                },
+                                {
+                                    data: 'soat',
+                                    render: function(data, type, row) {
+                                        return evaluarExpiracion(data, 'soat');
                                     }
                                 },
-                                columns: [{
-                                        data: 'placa'
-                                    },
-                                    {
-                                        data: 'tipo_registro'
-                                    },
-                                    {
-                                        data: 'modelo'
-                                    },
-                                    {
-                                        data: 'marca'
-                                    },
-                                    {
-                                        data: 'soat'
-                                    },
-                                    {
-                                        data: 'r_tecnica'
-                                    },
-                                    {
-                                        data: 'v_chip'
-                                    },
-                                    {
-                                        data: 'v_cilindro'
-                                    },
-                                    {
-                                        data: 'created_at'
-                                    },
-                                    {
-                                        data: 'updated_at'
-                                    },
-                                    {
-                                        data: 'acciones'
+                                {
+                                    data: 'r_tecnica',
+                                    render: function(data, type, row) {
+                                        return evaluarExpiracion(data, 'r_tecnica');
                                     }
-                                ],
-                                createdRow: function(row, data, dataIndex) {
-                                    $(row).addClass('text-center');
-                                    $(row).find('td:eq(10)').addClass(`td-acciones`);
                                 },
-                                processing: true
-                            });
-                        </script>
-                    </div>
-                </div>
+                                {
+                                    data: 'v_chip',
+                                    render: function(data, type, row) {
+                                        return evaluarExpiracion(data, 'v_chip');
+                                    }
+                                },
+                                {
+                                    data: 'v_cilindro',
+                                    render: function(data, type, row) {
+                                        return evaluarExpiracion(data, 'v_cilindro');
+                                    }
+                                },
+                                {
+                                    data: 'created_at'
+                                },
+                                {
+                                    data: 'updated_at'
+                                },
+                                {
+                                    data: 'acciones'
+                                }
+                            ],
+                            createdRow: function(row, data, dataIndex) {
+                                $(row).addClass('text-center');
+                                $(row).find('td:eq(11)').addClass(`td-acciones`);
+                            },
+                            processing: true
+                        });
+                        mostrar_acciones(tb_inventario_vehicular);
+                    }
+
+                    function updateTable() {
+                        if (esCelular()) {
+                            return tb_inventario_vehicular.reload();
+                        }
+                        tb_inventario_vehicular.ajax.reload();
+                    }
+                </script>
+
+
             </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_inventario_vehicular_asignar" tabindex="-1"
+        aria-labelledby="modal_inventario_vehicularLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <form class="modal-content" id="form-inventario-vehicular">
+                <div class="modal-header  bg-primary text-white">
+                    <h6 class="modal-title" id="modal_inventario_vehicularLabel">REGISTRAR VEHICULO</h6>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init
+                        data-mdb-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Guardar</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -110,35 +317,93 @@
     <div class="modal fade" id="modal_inventario_vehicular" tabindex="-1" aria-labelledby="modal_inventario_vehicularLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
-            <form class="modal-content" id="form-tipo-modalidad">
+            <form class="modal-content" id="form-inventario-vehicular">
                 <div class="modal-header  bg-primary text-white">
-                    <h6 class="modal-title" id="modal_inventario_vehicularLabel">REGISTRAR TIPO MODALIDAD</h6>
+                    <h6 class="modal-title" id="modal_inventario_vehicularLabel">REGISTRAR VEHICULO</h6>
                     <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <input type="hidden" name="id" id="id">
-                        <div class="col-6 mb-2">
-                            <input class="form-control" id="descripcion">
+                        <div class="col-md-4 col-6 mb-2">
+                            <input class="form-control" id="placa">
                         </div>
+                        <div class="col-md-4 col-6 mb-2">
+                            <input class="form-control" id="modelo">
+                        </div>
+                        <div class="col-md-4 col-6 mb-2">
+                            <input class="form-control" id="marca">
+                        </div>
+                        <div class="col-md-4 col-6 mb-2">
+                            <select class="select-clear-nsearch" id="tipo_registro">
+                                <option value="VEHICULO">VEHICULO</option>
+                                <option value="MOTORIZADO">MOTORIZADO</option>
+                                <option value="GERENCIA">GERENCIA</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8 mb-2">
+                            <select class="select-clear" id="popietario">
+                                <option value=""></option>
+                                @foreach ($personal as $v)
+                                    <option value="{{ $v->user_id }}">
+                                        {{ $v->dni }} - {{ $v->nombre }} {{ $v->apellido }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <div class="col-6 mb-2">
-                            <label class="form-label mb-0" for="icono">Icono</label>
+                            <label class="form-label mb-1">Soat</label>
                             <div class="input-group">
-                                <span class="input-group-text rounded me-1 px-2"><i class="fas fa-question"
-                                        aria-label="icono"></i></span>
-                                <input type="text" class="form-control rounded" id="icono" name="icono"
-                                    requested="Icono">
+                                <label class="input-group-text px-2" style="font-size: .7rem" for="fileSoat" type="button"
+                                    data-mdb-ripple-init>
+                                    <i class="far fa-file-pdf text-danger"></i>
+                                    Subir
+                                </label>
+                                <input type="file" hidden id="fileSoat" accept=".pdf" />
+                                <input type="date" class="form-control" id="soat" name="soat"
+                                    value="{{ date('Y-m-d') }}">
                             </div>
                         </div>
                         <div class="col-6 mb-2">
-                            <input class="form-control" id="color">
+                            <label class="form-label mb-1">Inspeccion</label>
+                            <div class="input-group">
+                                <label class="input-group-text px-2" style="font-size: .7rem" for="fileInspeccion"
+                                    type="button" data-mdb-ripple-init>
+                                    <i class="far fa-file-pdf text-danger"></i>
+                                    Subir
+                                </label>
+                                <input type="file" hidden id="fileInspeccion" accept=".pdf" />
+                                <input type="date" class="form-control" id="inspeccion" name="inspeccion"
+                                    value="{{ date('Y-m-d') }}">
+                            </div>
                         </div>
                         <div class="col-6 mb-2">
-                            <select class="select" id="estado">
-                                <option selected value="1">Activo</option>
-                                <option value="0">Inactivo</option>
-                            </select>
+                            <label class="form-label mb-1">Chip</label>
+                            <div class="input-group">
+                                <label class="input-group-text px-2" style="font-size: .7rem" for="fileChip"
+                                    type="button" data-mdb-ripple-init>
+                                    <i class="far fa-file-pdf text-danger"></i>
+                                    Subir
+                                </label>
+                                <input type="file" hidden id="fileChip" accept=".pdf" />
+                                <input type="date" class="form-control" id="chip" name="chip"
+                                    value="{{ date('Y-m-d') }}">
+                            </div>
+                        </div>
+                        <div class="col-6 mb-2">
+                            <label class="form-label mb-1">Cilindro</label>
+                            <div class="input-group">
+                                <label class="input-group-text px-2" style="font-size: .7rem" for="fileCilindro"
+                                    type="button" data-mdb-ripple-init>
+                                    <i class="far fa-file-pdf text-danger"></i>
+                                    Subir
+                                </label>
+                                <input type="file" hidden id="fileCilindro" accept=".pdf" />
+                                <input type="date" class="form-control" id="cilindro" name="cilindro"
+                                    value="{{ date('Y-m-d') }}">
+                            </div>
                         </div>
                     </div>
                 </div>

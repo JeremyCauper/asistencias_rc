@@ -199,7 +199,7 @@ class AsistenciaController extends Controller
                         ];
                     }
 
-                    $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object) ['color' => '#9fa6b2', 'descripcion' => 'Pendiente'];
+                    $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object) ['color' => '#717883', 'descripcion' => 'Pendiente'];
 
                     $listado[] = [
                         'tipo_personal' => $p->rol_system,
@@ -214,7 +214,7 @@ class AsistenciaController extends Controller
                         'notificacion' => $notificacion,
                         'descuento' => $descuento?->monto_descuento ?? null,
                         'acciones' => $this->DropdownAcciones([
-                            'tittle' => '<label class="badge" style="background-color: ' . $badgeTitle->color . '">' . $badgeTitle->descripcion . '</label>',
+                            'tittle' => '<label class="badge" style="background-color: ' . $badgeTitle->color . '15;color: ' . $badgeTitle->color . ';border: 1px solid ' . $badgeTitle->color . ';">' . $badgeTitle->descripcion . '</label>',
                             'button' => $acciones
                         ], $notificacion)
                     ];

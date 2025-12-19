@@ -6,7 +6,9 @@ $(document).ready(function () {
     const quilleditorJustificar = new EditorJustificacion('#editor-justificar');
 
     fObservador('.content-wrapper', () => {
-        tablaMisAsistencias.columns.adjust().draw();
+        if (!esCelular()) {
+            tablaMisAsistencias.columns.adjust().draw();
+        }
 
         incidencia_estados.forEach((e, i) => {
             if (e.chart) e.chart.resize();
@@ -118,7 +120,7 @@ $(document).ready(function () {
             }
 
             let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
-                || { descripcion: 'Pendiente', color: '#9fa6b2' };
+                || { descripcion: 'Pendiente', color: '#717883' };
 
             llenarInfoModal('modalJustificarDerivado', {
                 fecha: `${data.fecha} ${(data.entrada || '')}`,
@@ -235,7 +237,7 @@ $(document).ready(function () {
             fMananger.formModalLoding('modalJustificar', 'show');
 
             let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
-                || { descripcion: 'Pendiente', color: '#9fa6b2' };
+                || { descripcion: 'Pendiente', color: '#717883' };
             window.tasistencia = tasistencia;
 
             llenarInfoModal('modalJustificar', {
@@ -360,7 +362,7 @@ $(document).ready(function () {
             const archivos = data.archivos;
 
             let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
-                || { descripcion: 'Pendiente', color: '#9fa6b2' };
+                || { descripcion: 'Pendiente', color: '#717883' };
 
             let estado = [
                 { descripcion: 'Pendiente', color: 'secondary' },

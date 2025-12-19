@@ -28,7 +28,7 @@
     <!-- Cards resumen -->
     @include('asistencias.partials.estados_card')
 
-    <div class="card my-3">
+    {{-- <div class="card my-3">
         <div class="card-body p-3">
             <div class="d-flex align-items-center justify-content-between my-1">
                 <div class="fw-bold mb-0" style="overflow: hidden;font-size: 2.5vw;">
@@ -67,7 +67,7 @@
                 </label>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <!-- Tabla -->
     <div class="card">
@@ -98,7 +98,9 @@
                             <label class="form-label-filter" for="areas">Areas</label>
                             <select id="areas" name="areas" multiple="multiple" class="multiselect-select-all">
                                 @foreach ($areas as $v)
-                                    <option {{ in_array(Auth::user()->rol_system, [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }} value="{{ $v->id }}">
+                                    <option
+                                        {{ in_array(Auth::user()->rol_system, [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
+                                        value="{{ $v->id }}">
                                         {{ $v->descripcion }}
                                     </option>
                                 @endforeach
@@ -180,25 +182,25 @@
 
             let lista = json.data?.listado || [];
             let estadosAsistencias = [{
-                name: "estado-faltas",
-                value: lista.filter(a => a.tipo_asistencia === 1).length
-            },
-            {
-                name: "estado-asistencias",
-                value: lista.filter(a => a.tipo_asistencia === 2).length
-            },
-            {
-                name: "estado-justificados",
-                value: lista.filter(a => a.tipo_asistencia === 3).length
-            },
-            {
-                name: "estado-tardanzas",
-                value: lista.filter(a => a.tipo_asistencia === 4).length
-            },
-            {
-                name: "estado-derivados",
-                value: lista.filter(a => a.tipo_asistencia === 7).length
-            },
+                    name: "estado-faltas",
+                    value: lista.filter(a => a.tipo_asistencia === 1).length
+                },
+                {
+                    name: "estado-asistencias",
+                    value: lista.filter(a => a.tipo_asistencia === 2).length
+                },
+                {
+                    name: "estado-justificados",
+                    value: lista.filter(a => a.tipo_asistencia === 3).length
+                },
+                {
+                    name: "estado-tardanzas",
+                    value: lista.filter(a => a.tipo_asistencia === 4).length
+                },
+                {
+                    name: "estado-derivados",
+                    value: lista.filter(a => a.tipo_asistencia === 7).length
+                },
             ];
             setEstados(estadosAsistencias, lista.length);
             return lista;
@@ -210,62 +212,62 @@
                 ajax: {
                     url: getUrlListar(),
                     dataSrc: dataSet,
-                    error: function (xhr, error, thrown) {
+                    error: function(xhr, error, thrown) {
                         boxAlert.table();
                         console.log('Respuesta del servidor:', xhr);
                     }
                 },
                 columns: [{
-                    data: 'personal',
-                    title: 'Nombre'
-                },
-                {
-                    data: 'area',
-                    title: 'Área'
-                },
-                {
-                    data: 'tipo_modalidad',
-                    title: 'Modalidad'
-                },
-                {
-                    data: 'tipo_asistencia',
-                    title: 'Estado'
-                },
-                {
-                    data: 'entrada',
-                    title: 'Entrada'
-                },
-                {
-                    data: 'salida',
-                    title: 'Salida'
-                }
+                        data: 'personal',
+                        title: 'Nombre'
+                    },
+                    {
+                        data: 'area',
+                        title: 'Área'
+                    },
+                    {
+                        data: 'tipo_modalidad',
+                        title: 'Modalidad'
+                    },
+                    {
+                        data: 'tipo_asistencia',
+                        title: 'Estado'
+                    },
+                    {
+                        data: 'entrada',
+                        title: 'Entrada'
+                    },
+                    {
+                        data: 'salida',
+                        title: 'Salida'
+                    }
                 ],
-                cardTemplate: (data, index) => `
-                    <div class="d-flex align-items-center justify-content-between my-1">
-                        <div class="fw-bold mb-0" style="overflow: hidden;font-size: 2.5vw;">
-                            <span>${data.personal}</span>
+                cardTemplate: (data, index) => {
+                    return `
+                        <div class="d-flex align-items-center justify-content-between pb-1">
+                            <div class="fw-medium mb-0" style="overflow: hidden;font-size: 3.25vw;">
+                                <span>${data.personal}</span>
+                            </div>
+                            <div class="btn-acciones-movil">${data.acciones}</div>
                         </div>
-                        ${data.acciones}
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center my-2">
-                            ${getBadgeAreas(data.area)}
-                        <span>
-                            ${getBadgeTipoModalidad(data.tipo_modalidad)}
-                            ${getBadgeTipoAsistencia(data.tipo_asistencia)}
-                            <label><span style="font-size: 2.5vw;"> ${data.descuento ? 'S/ -' + data.descuento : (data.tipo_asistencia == 1 ? 'Día Comp.' : '')}</span></label>
-                        </span>
-                    </div>
-                    <div class="text-center">
-                        <label>
-                            <i class="far fa-clock"></i>
-                            <span style="font-size: 2.5vw;">${data.entrada || ''}${data.salida ? ' - ' + data.salida : ''}</span>
-                        </label>
-                    </div>`,
+                        <div class="d-flex justify-content-between align-items-center">
+                                ${getBadgeAreas(data.area, '.95', false)}
+                            <span>
+                                ${getBadgeTipoModalidad(data.tipo_modalidad, '.85')}
+                                ${getBadgeTipoAsistencia(data.tipo_asistencia, '.85')}
+                            </span>
+                        </div>
+                        <hr class="mx-1 my-2">
+                        <div class="d-flex align-items-center justify-content-between pt-1" style="font-size: 2.85vw;color: #909090;">
+                            ${getFormatJornada(data)}
+                            ${getBadgeDescuento(data)}
+                        </div>`;
+                },
                 scrollY: '600px',
-                perPage: 15,
+                perPage: 100,
                 searchPlaceholder: 'Buscar por nombre...',
                 order: ['personal', 'asc'],
-                drawCallback: function () {
+                drawCallback: function() {
                     if (typeof mdb !== 'undefined') {
                         document.querySelectorAll('[data-mdb-dropdown-init]').forEach(el => {
                             new mdb.Dropdown(el);
@@ -292,62 +294,61 @@
                 ajax: {
                     url: getUrlListar(),
                     dataSrc: dataSet,
-                    error: function (xhr, error, thrown) {
+                    error: function(xhr, error, thrown) {
                         boxAlert.table();
                         console.log('Respuesta del servidor:', xhr);
                     }
                 },
                 columns: [{
-                    data: 'personal'
-                },
-                {
-                    data: 'area',
-                    render: function (data, type, row) {
-                        return getBadgeAreas(data);
+                        data: 'personal'
+                    },
+                    {
+                        data: 'area',
+                        render: function(data, type, row) {
+                            return getBadgeAreas(data);
+                        }
+                    },
+                    {
+                        data: 'tipo_personal',
+                        render: function(data, type, row) {
+                            return getBadgeTipoPersonal(data);
+                        }
+                    },
+                    {
+                        data: 'tipo_modalidad',
+                        render: function(data, type, row) {
+                            return getBadgeTipoModalidad(data);
+                        }
+                    },
+                    {
+                        data: 'tipo_asistencia',
+                        render: function(data, type, row) {
+                            return getBadgeTipoAsistencia(data);
+                        }
+                    },
+                    {
+                        data: 'entrada',
+                        render: function(data, type, row) {
+                            return data || '-';
+                        }
+                    },
+                    {
+                        data: 'salida',
+                        render: function(data, type, row) {
+                            return data || '-';
+                        }
+                    },
+                    {
+                        data: 'descuento',
+                        render: function(data, type, row) {
+                            return getBadgeDescuento(row);
+                        }
+                    },
+                    {
+                        data: 'acciones'
                     }
-                },
-                {
-                    data: 'tipo_personal',
-                    render: function (data, type, row) {
-                        return getBadgeTipoPersonal(data);
-                    }
-                },
-                {
-                    data: 'tipo_modalidad',
-                    render: function (data, type, row) {
-                        return getBadgeTipoModalidad(data);
-                    }
-                },
-                {
-                    data: 'tipo_asistencia',
-                    render: function (data, type, row) {
-                        return getBadgeTipoAsistencia(data);
-                    }
-                },
-                {
-                    data: 'entrada',
-                    render: function (data, type, row) {
-                        return data || '-';
-                    }
-                },
-                {
-                    data: 'salida',
-                    render: function (data, type, row) {
-                        return data || '-';
-                    }
-                },
-                {
-                    data: 'descuento',
-                    render: function (data, type, row) {
-                        let tasistencia = row.tipo_asistencia;
-                        return data || (tasistencia == 1 ? 'Día Comp.' : '-');
-                    }
-                },
-                {
-                    data: 'acciones'
-                }
                 ],
-                createdRow: function (row, data, dataIndex) {
+                createdRow: function(row, data, dataIndex) {
                     if (data.justificado == 0) {
                         $(row).attr({
                             'title': 'Tiene una Justificacion pendiente.'
@@ -382,8 +383,6 @@
         }
 
         function searchTable(search) {
-            console.log(search);
-
             if (esCelular()) {
                 tablaAsistencias.search('tipo_asistencia', search == 0 ? '' : search.toString()).draw();
             } else {
@@ -447,7 +446,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" data-mdb-ripple-init data-mdb-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init
+                        data-mdb-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Guardar</button>
                 </div>
             </form>
@@ -507,14 +507,15 @@
     </div>
 
     <!-- Modal de Justificación -->
-    <div class="modal fade" id="modalJustificar" tabindex="-1" aria-labelledby="modalJustificarLabel" aria-hidden="true">
+    <div class="modal fade" id="modalJustificar" tabindex="-1" aria-labelledby="modalJustificarLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <form id="formJustificar" class="modal-content">
 
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="modalJustificarLabel">Justificar asistencia</h5>
-                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init
+                        data-mdb-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="col-md-12 col-sm-12 col-xs-12">
@@ -562,8 +563,8 @@
                 <!-- CABECERA -->
                 <div class="modal-header bg-primary text-white">
                     <h6 class="modal-title" id="modalExportLabel">EXPORTAR MENSUAL</h6>
-                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init
+                        data-mdb-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <!-- CUERPO -->
@@ -574,7 +575,9 @@
                             <label class="form-label-filter" for="tipoArea">Areas</label>
                             <select id="tipoArea" name="tipoArea" multiple="multiple" class="multiselect-select-all">
                                 @foreach ($areas as $v)
-                                    <option {{ in_array(Auth::user()->rol_system, [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }} value="{{ $v->id }}">
+                                    <option
+                                        {{ in_array(Auth::user()->rol_system, [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
+                                        value="{{ $v->id }}">
                                         {{ $v->descripcion }}
                                     </option>
                                 @endforeach

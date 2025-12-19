@@ -21,16 +21,12 @@ class MisAsistenciaController extends Controller
         // dd($config_system);
         // $this->validarPermisos(6, 14);
         try {
-            $empresas = DB::table('empresa')->get();
-            $tipoModalidad = JsonDB::table('tipo_modalidad')->get()->keyBy('id');
+            $tipoModalidad = JsonDB::table('tipo_modalidad')->get();
             $tipoAsistencia = JsonDB::table('tipo_asistencia')->get();
-            $tipoPersonal = JsonDB::table('tipo_personal')->get()->keyBy('id');
 
             return view('asistencias.misasistencias', [
                 'tipoModalidad' => $tipoModalidad,
-                'tipoAsistencia' => $tipoAsistencia,
-                'tipoPersonal' => $tipoPersonal,
-                'empresas' => $empresas,
+                'tipoAsistencia' => $tipoAsistencia
             ]); // la vista Blade (más abajo)
         } catch (Exception $e) {
             Log::error('[MisAsistenciaController@view] ' . $e->getMessage());
@@ -155,7 +151,7 @@ class MisAsistenciaController extends Controller
                     ];
                 }
 
-                $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object) ['color' => '#9fa6b2', 'descripcion' => 'Pendiente'];
+                $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object) ['color' => '#717883', 'descripcion' => 'Pendiente'];
 
                 $listado[] = [
                     'jornada' => $campoDia,

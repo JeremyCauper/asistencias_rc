@@ -57,7 +57,7 @@ $(document).ready(function () {
             }
 
             const tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
-                || { descripcion: 'Pendiente', color: '#9fa6b2' };
+                || { descripcion: 'Pendiente', color: '#717883' };
 
             const estado = ESTADOS_JUSTIFICACION[just.estatus || 0];
             const contenidoHTML = base64ToUtf8(just.contenido_html);
@@ -148,7 +148,7 @@ $(document).ready(function () {
 
             const resp = data.data;
             const tasistencia = tipoAsistencia.find(s => s.id == resp.tipo_asistencia)
-                || { descripcion: 'Pendiente', color: '#9fa6b2' };
+                || { descripcion: 'Pendiente', color: '#717883' };
 
             llenarInfoModal('modalJustificacion', {
                 estado: badgeHtml(estado.color, estado.descripcion),
@@ -196,7 +196,7 @@ $(document).ready(function () {
             fMananger.formModalLoding('modalJustificar', 'show');
 
             let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
-                || { descripcion: 'Pendiente', color: '#9fa6b2' };
+                || { descripcion: 'Pendiente', color: '#717883' };
             window.tasistencia = tasistencia;
 
             llenarInfoModal('modalJustificar', {
