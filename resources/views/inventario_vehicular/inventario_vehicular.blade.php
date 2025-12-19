@@ -14,7 +14,6 @@
             <div class="card-body px-0">
                 <div class="d-flex align-items-center justify-content-between mx-3">
                     <h6 class="fw-bold mb-0">Inventario Vehicular</h6>
-                    <button hidden data-mdb-modal-init data-mdb-target="#modal_inventario_vehicular"></button>
                 </div>
 
                 <div id="cardsInventarioVehicular" style="display: none"></div>
@@ -44,7 +43,7 @@
                         return json?.data;
                     };
 
-                    function evaluarExpiracion(fechaExpiracion, tipo) {
+                    function evaluarExpiracion(fechaExpiracion, tipo, urlPdf) {
                         const iconos = {
                             'soat': {
                                 titulo: 'SOAT',
@@ -62,11 +61,11 @@
                                 titulo: 'CILINDRO',
                                 icon: 'fas fa-gas-pump'
                             }
-                        } [tipo];
+                        }[tipo];
                         let informacion = null;
                         let fechaExpiracionFormateada = '';
-                        let isButton = '';
                         let estadoBadge = '';
+                        let abrirPdf = urlPdf ? `onclick="abrirPdf('${urlPdf}')" data-mdb-ripple-init` : 'style="cursor: default;"';
 
                         if (fechaExpiracion) {
                             const fechaExp = new Date(fechaExpiracion + 'T00:00:00');
@@ -90,8 +89,7 @@
                                 color: 'success'
                             };
 
-                            fechaExpiracionFormateada = obtenerFechaFormateada(new Date(fechaExpiracion), true);
-                            isButton = `data-mdb-ripple-init`;
+                            fechaExpiracionFormateada = obtenerFechaFormateada(fechaExp, true);
                             estadoBadge =
                                 `<span class="ms-auto badge badge-${informacion.color} rounded-1">${informacion.estado}</span>`;
                         } else {
@@ -103,17 +101,17 @@
                         }
 
                         return `
-                        <div class="d-flex align-items-center border border-${informacion.color} rounded-4 p-1 w-100" style="font-size: .65rem;" ${isButton} type="button">
-                            <div class="d-flex align-items-center me-1">
-                                <span class="text-${informacion.color}"><i class="${iconos.icon}" style="font-size: .75rem;"></i></span>
-                                <span class="text-start">
-                                    <p class="mb-0 fw-bold" style="font-size: .5rem;">${iconos.titulo}</p>
-                                    <p class="mb-0 text-${informacion.color} text-nowrap" style="font-size: .6rem;">${fechaExpiracionFormateada}</p>
-                                </span>
-                            </div>
-                            ${estadoBadge}
-                        </div>
-                        `;
+                                                            <div class="d-flex align-items-center border border-${informacion.color} rounded-4 p-1 w-100" style="font-size: .65rem;" type="button" ${abrirPdf}>
+                                                                <div class="d-flex align-items-center me-1">
+                                                                    <span class="text-${informacion.color}"><i class="${iconos.icon}" style="font-size: .75rem;"></i></span>
+                                                                    <span class="text-start">
+                                                                        <p class="mb-0 fw-bold" style="font-size: .5rem;">${iconos.titulo}</p>
+                                                                        <p class="mb-0 text-${informacion.color} text-nowrap" style="font-size: .6rem;">${fechaExpiracionFormateada}</p>
+                                                                    </span>
+                                                                </div>
+                                                                ${estadoBadge}
+                                                            </div>
+                                                            `;
                     }
 
                     if (esCelular()) {
@@ -122,83 +120,83 @@
                             ajax: {
                                 url: getUrlListar(),
                                 dataSrc: dataSet,
-                                error: function(xhr, error, thrown) {
+                                error: function (xhr, error, thrown) {
                                     boxAlert.table();
                                     console.log('Respuesta del servidor:', xhr);
                                 }
                             },
                             columns: [{
-                                    data: 'placa'
-                                },
-                                {
-                                    data: 'tipo_registro'
-                                },
-                                {
-                                    data: 'propietario'
-                                },
-                                {
-                                    data: 'modelo'
-                                },
-                                {
-                                    data: 'marca'
-                                },
-                                {
-                                    data: 'soat'
-                                },
-                                {
-                                    data: 'r_tecnica'
-                                },
-                                {
-                                    data: 'v_chip'
-                                },
-                                {
-                                    data: 'v_cilindro'
-                                },
+                                data: 'placa'
+                            },
+                            {
+                                data: 'tipo_registro'
+                            },
+                            {
+                                data: 'propietario'
+                            },
+                            {
+                                data: 'modelo'
+                            },
+                            {
+                                data: 'marca'
+                            },
+                            {
+                                data: 'soat'
+                            },
+                            {
+                                data: 'r_tecnica'
+                            },
+                            {
+                                data: 'v_chip'
+                            },
+                            {
+                                data: 'v_cilindro'
+                            },
                             ],
                             cardTemplate: (data, index) => {
                                 return `
-                                <div class="d-flex align-items-center pb-1">
-                                    <div class="align-content-center d-grid rounded-6 text-bg-dark" style="width: 48px;height: 47px;">
-                                        <i class="fas fa-${data.tipo_registro.toLocaleLowerCase() != 'motorizado' ? 'car' : 'motorcycle'}"></i>
-                                    </div>
-                                    <div class="ms-2">
-                                        <p class="fw-bold mb-1" style="font-size: 1.25rem;">
-                                            ${data.placa}
-                                            <span class="text-muted mb-0 ms-2" style="font-size: .65rem;">${data.tipo_registro}</span>
-                                        </p>
-                                        <p class="text-muted mb-0" style="font-size: .65rem;">${data.propietario}</p>
-                                    </div>
-                                    <div class="btn-acciones-movil ms-auto">${data.acciones}</div>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center my-2">
-                                    <div class="col-6">
-                                        <p class="text-muted mb-0" style="font-size: .65rem;">Modelo</p>
-                                        <p class="fw-bold mb-0" style="font-size: .8rem;">${data.modelo}</p>
-                                    </div>
-                                    <div class="col-6">
-                                        <p class="text-muted mb-0" style="font-size: .65rem;">Marca</p>
-                                        <p class="fw-bold mb-0" style="font-size: .8rem;">${data.marca}</p>
-                                    </div>
-                                </div>
-                                <hr class="m-1">
-                                <div class="col-12 text-muted my-1" style="font-size: .65rem;">Estado de Mantenimientos</div>
-                                <div class="col-12">
-                                    <div class="row">
-                                        <div class="col-6 p-0 pb-1" style="padding-right: .1rem !important;">${evaluarExpiracion(data.soat, 'soat')}</div>
-                                        <div class="col-6 p-0 pb-1" style="padding-left: .1rem !important;">${evaluarExpiracion(data.r_tecnica, 'r_tecnica')}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-6 p-0 pb-1" style="padding-right: .1rem !important;">${evaluarExpiracion(data.v_chip, 'v_chip')}</div>
-                                        <div class="col-6 p-0 pb-1" style="padding-left: .1rem !important;">${evaluarExpiracion(data.v_cilindro, 'v_cilindro')}</div>
-                                    </div>
-                                </div>
-                                `;
+                                        <div class="d-flex align-items-center pb-1">
+                                            <div class="align-content-center d-grid rounded-6 text-bg-dark" style="width: 48px;height: 47px;">
+                                                <i class="fas fa-${data.tipo_registro.toLocaleLowerCase() != 'motorizado' ? 'car' : 'motorcycle'}"></i>
+                                            </div>
+                                            <div class="ms-2">
+                                                <p class="fw-bold mb-1" style="font-size: 1.25rem;">
+                                                    ${data.placa}
+                                                    <span class="text-muted mb-0 ms-2" style="font-size: .65rem;">${data.tipo_registro}</span>
+                                                </p>
+                                                <p class="text-muted mb-0" style="font-size: .65rem;">${data.propietario}</p>
+                                            </div>
+                                            <div class="btn-acciones-movil ms-auto">${data.acciones}</div>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center my-2">
+                                            <div class="col-6">
+                                                <p class="text-muted mb-0" style="font-size: .65rem;">Modelo</p>
+                                                <p class="fw-bold mb-0" style="font-size: .8rem;">${data.modelo}</p>
+                                            </div>
+                                            <div class="col-6">
+                                                <p class="text-muted mb-0" style="font-size: .65rem;">Marca</p>
+                                                <p class="fw-bold mb-0" style="font-size: .8rem;">${data.marca}</p>
+                                            </div>
+                                        </div>
+                                        <hr class="m-1">
+                                        <div class="col-12 text-muted my-1" style="font-size: .65rem;">Estado de Mantenimientos</div>
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-6 p-0 pb-1" style="padding-right: .1rem !important;">${evaluarExpiracion(data.soat, 'soat', data.soat_pdf)}</div>
+                                                <div class="col-6 p-0 pb-1" style="padding-left: .1rem !important;">${evaluarExpiracion(data.r_tecnica, 'r_tecnica', data.r_tecnica_pdf)}</div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6 p-0 pb-1" style="padding-right: .1rem !important;">${evaluarExpiracion(data.v_chip, 'v_chip', data.v_chip_pdf)}</div>
+                                                <div class="col-6 p-0 pb-1" style="padding-left: .1rem !important;">${evaluarExpiracion(data.v_cilindro, 'v_cilindro', data.v_cilindro_pdf)}</div>
+                                            </div>
+                                        </div>
+                                        `;
                             },
                             scrollY: '600px',
                             perPage: 50,
                             searchPlaceholder: 'Buscar',
                             order: ['apellido', 'asc'],
-                            drawCallback: function() {
+                            drawCallback: function () {
                                 if (typeof mdb !== 'undefined') {
                                     document.querySelectorAll('[data-mdb-dropdown-init]').forEach(el => {
                                         new mdb.Dropdown(el);
@@ -209,68 +207,77 @@
                     } else {
                         $('#tb_inventario_vehicular').removeAttr('style');
                         tb_inventario_vehicular = new DataTable('#tb_inventario_vehicular', {
-                            autoWidth: true,
+                            lengthChange: false,
+                            paging: false,
                             scrollX: true,
                             scrollY: 400,
-                            fixedHeader: true, // Para fijar el encabezado al hacer scroll vertical
+                            dom: `<"row"
+                                <"col-lg-12 mb-2"B>>
+                                <"row"
+                                    <"col-sm-6 text-sm-start text-center my-1 botones-accion">
+                                    <"col-sm-6 text-sm-end text-center my-1"f>>
+                                <"contenedor_tabla my-2"tr>
+                                <"row"
+                                    <"col-md-5 text-md-start text-center my-1"i>
+                                    <"col-md-7 text-md-end text-center my-1"p>>`,
                             ajax: {
                                 url: getUrlListar(),
                                 dataSrc: dataSet,
-                                error: function(xhr, error, thrown) {
+                                error: function (xhr, error, thrown) {
                                     boxAlert.table();
                                     console.log('Respuesta del servidor:', xhr);
                                 }
                             },
                             columns: [{
-                                    data: 'placa'
-                                },
-                                {
-                                    data: 'tipo_registro'
-                                },
-                                {
-                                    data: 'propietario'
-                                },
-                                {
-                                    data: 'modelo'
-                                },
-                                {
-                                    data: 'marca'
-                                },
-                                {
-                                    data: 'soat',
-                                    render: function(data, type, row) {
-                                        return evaluarExpiracion(data, 'soat');
-                                    }
-                                },
-                                {
-                                    data: 'r_tecnica',
-                                    render: function(data, type, row) {
-                                        return evaluarExpiracion(data, 'r_tecnica');
-                                    }
-                                },
-                                {
-                                    data: 'v_chip',
-                                    render: function(data, type, row) {
-                                        return evaluarExpiracion(data, 'v_chip');
-                                    }
-                                },
-                                {
-                                    data: 'v_cilindro',
-                                    render: function(data, type, row) {
-                                        return evaluarExpiracion(data, 'v_cilindro');
-                                    }
-                                },
-                                {
-                                    data: 'created_at'
-                                },
-                                {
-                                    data: 'updated_at'
-                                },
-                                {
-                                    data: 'acciones'
+                                data: 'placa'
+                            },
+                            {
+                                data: 'tipo_registro'
+                            },
+                            {
+                                data: 'propietario'
+                            },
+                            {
+                                data: 'modelo'
+                            },
+                            {
+                                data: 'marca'
+                            },
+                            {
+                                data: 'soat',
+                                render: function (data, type, row) {
+                                    return evaluarExpiracion(data, 'soat', row.soat_pdf);
                                 }
+                            },
+                            {
+                                data: 'r_tecnica',
+                                render: function (data, type, row) {
+                                    return evaluarExpiracion(data, 'r_tecnica', row.r_tecnica_pdf);
+                                }
+                            },
+                            {
+                                data: 'v_chip',
+                                render: function (data, type, row) {
+                                    return evaluarExpiracion(data, 'v_chip', row.v_chip_pdf);
+                                }
+                            },
+                            {
+                                data: 'v_cilindro',
+                                render: function (data, type, row) {
+                                    return evaluarExpiracion(data, 'v_cilindro', row.v_cilindro_pdf);
+                                }
+                            },
+                            {
+                                data: 'created_at'
+                            },
+                            {
+                                data: 'updated_at'
+                            },
+                            {
+                                data: 'acciones'
+                            }
                             ],
-                            createdRow: function(row, data, dataIndex) {
+                            createdRow: function (row, data, dataIndex) {
                                 $(row).addClass('text-center');
                                 $(row).find('td:eq(11)').addClass(`td-acciones`);
                             },
@@ -295,21 +302,78 @@
     <div class="modal fade" id="modal_inventario_vehicular_asignar" tabindex="-1"
         aria-labelledby="modal_inventario_vehicularLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
-            <form class="modal-content" id="form-inventario-vehicular">
+            <div class="modal-content">
                 <div class="modal-header  bg-primary text-white">
-                    <h6 class="modal-title" id="modal_inventario_vehicularLabel">REGISTRAR VEHICULO</h6>
+                    <h6 class="modal-title" id="modal_inventario_vehicularLabel">ASIGNAR VEHICULO</h6>
                     <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="mb-2 border border-secondary rounded-4 p-3">
+                        <span hidden aria-item="id"></span>
+                        <div class="d-flex align-items-center pb-1">
+                            <div class="align-content-center d-grid rounded-6 text-bg-dark"
+                                style="width: 48px;height: 47px;" aria-item="tipo_registro_icon"></div>
+                            <div class="ms-2">
+                                <p class="fw-bold mb-1" style="font-size: 1.25rem;">
+                                    <span aria-item="placa"></span>
+                                    <span class="text-muted mb-0 ms-2" style="font-size: .65rem;"
+                                        aria-item="tipo_registro"></span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center my-2">
+                            <div class="col-6">
+                                <p class="text-muted mb-0" style="font-size: .65rem;">Modelo</p>
+                                <p class="fw-bold mb-0" style="font-size: .8rem;" aria-item="modelo"></p>
+                            </div>
+                            <div class="col-6">
+                                <p class="text-muted mb-0" style="font-size: .65rem;">Marca</p>
+                                <p class="fw-bold mb-0" style="font-size: .8rem;" aria-item="marca"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <div class="my-1">
+                            <input type="search" id="searchPersonal" class="form-control" placeholder="Buscar">
+                        </div>
+                        <ul id="personal_asignados" class="list-group list-group-light"
+                            style="max-height: 400px;overflow: hidden auto;">
+                            @foreach ($personal as $v)
+                                @if (!in_array($v->rol_system, [2, 4, 7]))
+                                    <li class="list-group-item py-3">
+                                        <div class="d-flex align-items-center" data-user-id="{{ $v->user_id }}">
+                                            <input class="form-check-input me-1" type="checkbox" />
+                                            <div class="ms-2">
+                                                <p class="mb-1">{{ $v->nombre }} {{ $v->apellido }}</p>
+                                                <p class="mb-0">{{ $v->dni }}</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    </div>
+                    <script>
+                        document.getElementById('searchPersonal').addEventListener('input', function () {
+                            const search = this.value.toLowerCase().trim();
+                            const items = document.querySelectorAll('#personal_asignados li');
 
+                            items.forEach(item => {
+                                const nombre = item.querySelector('p.mb-1')?.textContent.toLowerCase() || '';
+                                const dni = item.querySelector('p.mb-0')?.textContent.toLowerCase() || '';
+
+                                const coincide = nombre.includes(search) || dni.includes(search);
+                                item.style.display = coincide ? '' : 'none';
+                            });
+                        });
+                    </script>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" data-mdb-ripple-init
-                        data-mdb-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Guardar</button>
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init data-mdb-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="btnAsignar" data-mdb-ripple-init>Asignar</button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -318,7 +382,7 @@
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <form class="modal-content" id="form-inventario-vehicular">
-                <div class="modal-header  bg-primary text-white">
+                <div class="modal-header bg-primary text-white">
                     <h6 class="modal-title" id="modal_inventario_vehicularLabel">REGISTRAR VEHICULO</h6>
                     <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal"
                         aria-label="Close"></button>
@@ -362,8 +426,7 @@
                                     Subir
                                 </label>
                                 <input type="file" hidden id="fileSoat" accept=".pdf" />
-                                <input type="date" class="form-control" id="soat" name="soat"
-                                    value="{{ date('Y-m-d') }}">
+                                <input type="date" class="form-control" id="soat" name="soat" value="{{ date('Y-m-d') }}">
                             </div>
                         </div>
                         <div class="col-6 mb-2">
@@ -382,14 +445,13 @@
                         <div class="col-6 mb-2">
                             <label class="form-label mb-1">Chip</label>
                             <div class="input-group">
-                                <label class="input-group-text px-2" style="font-size: .7rem" for="fileChip"
-                                    type="button" data-mdb-ripple-init>
+                                <label class="input-group-text px-2" style="font-size: .7rem" for="fileChip" type="button"
+                                    data-mdb-ripple-init>
                                     <i class="far fa-file-pdf text-danger"></i>
                                     Subir
                                 </label>
                                 <input type="file" hidden id="fileChip" accept=".pdf" />
-                                <input type="date" class="form-control" id="chip" name="chip"
-                                    value="{{ date('Y-m-d') }}">
+                                <input type="date" class="form-control" id="chip" name="chip" value="{{ date('Y-m-d') }}">
                             </div>
                         </div>
                         <div class="col-6 mb-2">
@@ -408,8 +470,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" data-mdb-ripple-init
-                        data-mdb-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init data-mdb-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Guardar</button>
                 </div>
             </form>
@@ -419,6 +480,5 @@
 @endsection
 
 @section('scripts')
-    <script></script>
-    <script src="{{ secure_asset('front/js/inventario_vehicular/inventario_vehicular.js') }}?v=1"></script>
+    <script src="{{ secure_asset('front/js/inventario_vehicular/inventario_vehicular.js') }}?v=6.3.3.5"></script>
 @endsection

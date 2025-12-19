@@ -21,19 +21,13 @@ class SettingsController extends Controller
     {
         self::bootSchema();
         $userId = Auth::user()->user_id;
-        $response = JsonDB::table('ajustes')->where('user_id', $userId)->first();
 
-        if (!$response) {
-            JsonDB::table('ajustes')->insert([
-                'user_id' => $userId,
-                'settings' => $settings,
-            ]);
-        } else {
-            $payload = $response->settings;
-            JsonDB::table('ajustes')->where('user_id', $userId)->update([
-                'settings' => $payload,
-            ]);
-        }
+        JsonDB::table('ajustes')->where('user_id', $userId)->delete();
+
+        JsonDB::table('ajustes')->insert([
+            'user_id' => $userId,
+            'settings' => $settings,
+        ]);
     }
 
     public static function get()

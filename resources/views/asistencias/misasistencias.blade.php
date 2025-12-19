@@ -406,5 +406,5 @@
     <script src="{{ secure_asset($ft_js->compressor) }}"></script>
     <script src="{{ secure_asset($ft_js->quill) }}"></script>
     <script src="{{ secure_asset($ft_js->QuillControl) }}"></script>
-    <script src="{{ secure_asset('front/js/misasistencias/misasistencias.js') }}?v=1"></script>
+    <script src="{{ secure_asset('front/js/misasistencias/misasistencias.js') }}?v=6.3.3.5"></script>
 @endsection

@@ -140,10 +140,19 @@ class MediaArchivoController extends Controller
         }
     }
 
-    public function deleteFile()
+    public function deleteFile(Request $request)
     {
         try {
-            $ruta = 'asistencias_rc/justificaciones/2025/11/1763710725_59a36764f39fcba1.webp';
+            $url = $request->query('url');
+            if (!$url) {
+                return response()->json([
+                    'ok' => false,
+                    'mensaje' => 'No se proporcionó la URL del archivo.'
+                ]);
+            }
+
+            $host = 'https://s3-rc-sistemas.s3.us-east-2.amazonaws.com/';
+            $ruta = $url . str_replace($host, '', $url);
 
             $eliminado = Storage::disk('s3')->delete($ruta);
 
@@ -164,6 +173,37 @@ class MediaArchivoController extends Controller
                 'ok' => false,
                 'error' => $e->getMessage()
             ]);
+        }
+    }
+
+    public function previewPdfMovil(Request $request)
+    {
+        try {
+            $url = $request->query('url');
+
+            // Configurar contexto para permitir SSL
+            $context = stream_context_create([
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                ],
+                'http' => [
+                    'timeout' => 30
+                ]
+            ]);
+
+            // Obtener el contenido del PDF
+            $pdfContent = file_get_contents($url, false, $context);
+
+            if ($pdfContent === false) {
+                throw new Exception("No se pudo obtener el contenido del PDF");
+            }
+
+            return view('pdfjs.preview', ['base64_pdf' => base64_encode($pdfContent)]);
+
+        } catch (Exception $e) {
+            error_log("Error al convertir PDF a Base64: " . $e->getMessage());
+            return false;
         }
     }
 }

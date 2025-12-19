@@ -444,7 +444,7 @@ class JustificacionController extends Controller
             $titulo = $title;
         } else {
             $tasistencia = JsonDB::table('tipo_asistencia')->where('id', $id_tasistencia)->first();
-            $color = $tasistencia?->color ?? '#717883';
+            $color = $tasistencia?->color ?? '#7e7979';
             $descripcion = !empty($tasistencia) ? ($id_tasistencia == 2 ? 'Asistencia' : $tasistencia->descripcion) : 'Asistencia';
             $titulo = 'Justificación de <span class="fw-bold" style="color: ' . $color . ';">' . $descripcion . '</span>';
         }

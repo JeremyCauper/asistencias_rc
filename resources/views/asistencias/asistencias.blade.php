@@ -283,14 +283,14 @@
                 scrollX: true,
                 scrollY: 400,
                 dom: `<"row"
-                                <"col-lg-12 mb-2"B>>
-                                <"row"
-                                    <"col-sm-6 text-sm-start text-center my-1 botones-accion">
-                                    <"col-sm-6 text-sm-end text-center my-1"f>>
-                                <"contenedor_tabla my-2"tr>
-                                <"row"
-                                    <"col-md-5 text-md-start text-center my-1"i>
-                                    <"col-md-7 text-md-end text-center my-1"p>>`,
+                    <"col-lg-12 mb-2"B>>
+                    <"row"
+                        <"col-sm-6 text-sm-start text-center my-1 botones-accion">
+                        <"col-sm-6 text-sm-end text-center my-1"f>>
+                    <"contenedor_tabla my-2"tr>
+                    <"row"
+                        <"col-md-5 text-md-start text-center my-1"i>
+                        <"col-md-7 text-md-end text-center my-1"p>>`,
                 ajax: {
                     url: getUrlListar(),
                     dataSrc: dataSet,
@@ -621,11 +621,11 @@
     <script src="{{ secure_asset($ft_js->quill) }}"></script>
     <script src="{{ secure_asset($ft_js->QuillControl) }}"></script>
 
-    <script src="{{ secure_asset('front/js/asistencias/asistencias.js') }}?v=1"></script>
+    <script src="{{ secure_asset('front/js/asistencias/asistencias.js') }}?v=6.3.3.5"></script>
     @if (!in_array(Auth::user()->rol_system, [1, 5, 6]) || $tipo_sistema)
         <script src="{{ secure_asset($ft_js->exceljs) }}"></script>
         <script src="{{ secure_asset($ft_js->FileSaver) }}"></script>
-        <script src="{{ secure_asset('front/js/asistencias/export-excel-asistencias.js') }}?v=1"></script>
+        <script src="{{ secure_asset('front/js/asistencias/export-excel-asistencias.js') }}?v=6.3.3.5"></script>
     @endif
-    <script src="{{ secure_asset('front/js/asistencias/asistencias-justificaciones.js') }}?v=1.1"></script>
+    <script src="{{ secure_asset('front/js/asistencias/asistencias-justificaciones.js') }}?v=6.3.3.5"></script>
 @endsection

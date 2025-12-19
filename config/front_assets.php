@@ -1,5 +1,5 @@
 <?php
-$version = '5.6.5';
+$version = '6.3.3';
 return [
     'version' => $version,
     'css' => (object) [
@@ -50,6 +50,8 @@ return [
         'FileSaver' => 'front/vendor/exceljs/FileSaver.min.js',
         'full_calendar' => 'front/vendor/full-calendar/full-calendar.min.js',
         'jquery_inputmask_bundle' => 'front/vendor/inputmask/jquery.inputmask.bundle.min.js',
+        'pdf_js' => 'front/vendor/pdfjs/pdf-js/pdf.min.js',
+        'pdf_worker_js' => 'front/vendor/pdfjs/pdf-js/pdf.worker.min.js',
 
         'service_worker' => 'sw.js?v=' . $version,
     ],

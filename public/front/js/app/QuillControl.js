@@ -226,7 +226,7 @@ class EditorJustificacion {
             if (!ok || post.state === "denied") {
                 return boxAlert.box({
                     i: "warning",
-                    h: "Se denegó el acceso a la cámara."
+                    h: "Se denegó el acceso a la cámara, debe desbloquearlo desde los ajustes del navegador."
                 });
             }
         }

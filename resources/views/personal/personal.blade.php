@@ -2,7 +2,7 @@
 @section('title', 'Control del Personal')
 
 @section('cabecera')
-    <link rel="stylesheet" href="{{ secure_asset('front/css/app/personal/personal.css') }}?v=1">
+    <link rel="stylesheet" href="{{ secure_asset('front/css/app/personal/personal.css') }}?v=6.3.3.5">
     <script>
         const empresa = @json($empresa);
         const tipoAreas = @json($areas);
@@ -231,9 +231,19 @@
                 } else {
                     $('#tablaPersonal').removeAttr('style');
                     tablaPersonal = new DataTable('#tablaPersonal', {
+                        lengthChange: false,
+                        paging: false,
                         scrollX: true,
                         scrollY: 400,
-                        // buttons: ['excel'],
+                        dom: `<"row"
+                            <"col-lg-12 mb-2"B>>
+                            <"row"
+                                <"col-sm-6 text-sm-start text-center my-1 botones-accion">
+                                <"col-sm-6 text-sm-end text-center my-1"f>>
+                            <"contenedor_tabla my-2"tr>
+                            <"row"
+                                <"col-md-5 text-md-start text-center my-1"i>
+                                <"col-md-7 text-md-end text-center my-1"p>>`,
                         ajax: {
                             url: __url + '/personal/listar',
                             dataSrc: dataSet,
@@ -477,10 +487,10 @@
             </div>
         </div>
     </div>
-    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}?v=1"></script>
+    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}?v=6.3.3.5"></script>
 
 
     <!-- 🔹 Scripts -->
     <script src="{{ secure_asset($ft_js->jquery_inputmask_bundle) }}"></script>
-    <script src="{{ secure_asset('front/js/personal/personal.js') }}?v=1"></script>
+    <script src="{{ secure_asset('front/js/personal/personal.js') }}?v=6.3.3.5"></script>
 @endsection
