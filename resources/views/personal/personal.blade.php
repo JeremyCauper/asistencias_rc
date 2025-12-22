@@ -2,7 +2,7 @@
 @section('title', 'Control del Personal')
 
 @section('cabecera')
-    <link rel="stylesheet" href="{{ secure_asset('front/css/app/personal/personal.css') }}?v=6.83.0.6">
+    <link rel="stylesheet" href="{{ secure_asset('front/css/app/personal/personal.css') }}?v=6.83.0.7">
     <script>
         const empresa = @json($empresa);
         const tipoAreas = @json($areas);
@@ -487,10 +487,10 @@
             </div>
         </div>
     </div>
-    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}?v=6.83.0.6"></script>
+    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}?v=6.83.0.7"></script>
 
 
     <!-- 🔹 Scripts -->
     <script src="{{ secure_asset($ft_js->jquery_inputmask_bundle) }}"></script>
-    <script src="{{ secure_asset('front/js/personal/personal.js') }}?v=6.83.0.6"></script>
+    <script src="{{ secure_asset('front/js/personal/personal.js') }}?v=6.83.0.7"></script>
 @endsection
