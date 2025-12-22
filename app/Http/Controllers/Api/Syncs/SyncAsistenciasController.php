@@ -85,6 +85,7 @@ class SyncAsistenciasController extends Controller
                     $descuento = false;
 
                     $asistencia = DB::table('asistencias')->where(['user_id' => $userId, 'fecha' => $fecha])->first();
+                    $id_asistencia = $asistencia?->id ?? null;
 
                     $payloadBase = [
                         'tipo_modalidad' => 1,
@@ -95,7 +96,7 @@ class SyncAsistenciasController extends Controller
                     | CASO A: No existe asistencia previa (primera marca)
                     ---------------------------------------------------------*/
                     if (!$asistencia) {
-                        DB::table('asistencias')->insert(array_merge($payloadBase, [
+                        $id_asistencia = DB::table('asistencias')->insertGetId(array_merge($payloadBase, [
                             'user_id' => $userId,
                             'fecha' => $fecha,
                             'entrada' => $hora,
@@ -126,7 +127,7 @@ class SyncAsistenciasController extends Controller
                                     }
                                 }
 
-                                DB::table('asistencias')->where('id', $asistencia->id)
+                                DB::table('asistencias')->where('id', $id_asistencia)
                                     ->update(array_merge($payloadBase, [
                                         $jornada => $hora,
                                     ]));
@@ -139,6 +140,7 @@ class SyncAsistenciasController extends Controller
                     ---------------------------------------------------------*/
                     if ($descuento) {
                         DB::table('descuentos_asistencia')->insert([
+                            'asistencia_id' => $id_asistencia,
                             'user_id' => $userId,
                             'fecha' => $fecha,
                         ]);

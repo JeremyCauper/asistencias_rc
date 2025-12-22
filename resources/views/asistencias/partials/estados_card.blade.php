@@ -8,7 +8,7 @@
         success: '#14a44d',
         danger: '#dc4c64',
         light: '#fbfbfb',
-        secondary: '#7e7979',
+        secondary: '#959595',
         dark: '#332d2d',
     };
 

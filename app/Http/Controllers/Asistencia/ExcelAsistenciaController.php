@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rules\In;
 
 class ExcelAsistenciaController extends Controller
 {
@@ -70,6 +71,11 @@ class ExcelAsistenciaController extends Controller
                 ->get()
                 ->groupBy('user_id');
 
+            $justificaciones = DB::table('justificaciones')
+                ->whereBetween('fecha', [$fechaIni, $fechaFin])
+                ->get()
+                ->groupBy('user_id');
+
             $descuentos = DB::table('descuentos_asistencia')
                 ->whereBetween('fecha', [$fechaIni, $fechaFin])
                 ->get()
@@ -93,10 +99,13 @@ class ExcelAsistenciaController extends Controller
 
                 $asistenciasUsuario = $asistencias->get($user_id, collect());
                 $descuentosUsuario = $descuentos->get($user_id, collect());
+                $justificacionUsuario = $justificaciones->get($user_id, collect());
                 $configUsuario = $config->get($user_id);
 
-                $totalFaltas = 0;
                 $totalAsistencias = 0;
+                $totalPendientes = 0;
+                $totalFaltas = 0;
+                $totalPuntuales = 0;
                 $totalJustificados = 0;
                 $totalDerivados = 0;
                 $totalTardanzas = 0;
@@ -106,6 +115,7 @@ class ExcelAsistenciaController extends Controller
                     $strAFecha = strtotime($fecha);
                     $asistenciaDia = $asistenciasUsuario->firstWhere('fecha', $fecha);
                     $descuentoDia = $descuentosUsuario->firstWhere('fecha', $fecha);
+                    $justificacionDia = $justificacionUsuario->firstWhere('fecha', $fecha);
                     $campoDia = $this->getDay($fecha);
                     $feriado = $feriados->get(date('m-d', $strAFecha));
 
@@ -140,7 +150,11 @@ class ExcelAsistenciaController extends Controller
                     if ($asistenciaDia) {
                         $entrada = $asistenciaDia->entrada;
                         $tipo_modalidad = $asistenciaDia->tipo_modalidad;
-                        $tipo_asistencia = $asistenciaDia->tipo_asistencia;
+                        $tipo_asistencia = match(true) {
+                            // $entrada && strtotime($entrada) > $this->limitePuntual($fecha) && $asistenciaDia->tipo_asistencia == 2 => 4,
+                            $justificacionDia && $justificacionDia->estatus == 0 => 0,
+                            default => $asistenciaDia->tipo_asistencia,
+                        };
                     } else {
                         // Si no tiene registro pero debía asistir
                         if ($tipo_modalidad == 1) {
@@ -148,24 +162,32 @@ class ExcelAsistenciaController extends Controller
                         }
                     }
 
-                    // Determinar tardanza si entrada > 08:30:59 y asistencia válida
-                    if ($entrada && strtotime($entrada) > $horaLimiteTardanza && $tipo_asistencia == 2) {
-                        $tipo_asistencia = 4; // Tardanza
-                    }
-
                     // Calcular totales
-                    if ($tipo_asistencia == 1)
-                        $totalFaltas++;
-                    if ($tipo_asistencia == 2)
-                        $totalAsistencias++;
-                    if ($tipo_asistencia == 3)
-                        $totalJustificados++;
-                    if ($tipo_asistencia == 4)
-                        $totalTardanzas++;
-                    if ($tipo_asistencia == 7)
-                        $totalDerivados++;
-                    if ($descuentoDia)
+                    switch ($tipo_asistencia) {
+                        case 0:
+                            $totalPendientes++;
+                            break;
+                        case 1:
+                            $totalFaltas++;
+                            break;
+                        case 2:
+                            $totalPuntuales++;
+                            break;
+                        case 3:
+                            $totalJustificados++;
+                            break;
+                        case 4:
+                            $totalTardanzas++;
+                            break;
+                        case 7:
+                            $totalDerivados++;
+                            break;
+                    }
+                    
+                    if ($descuentoDia && $tipo_asistencia != 0)
                         $totalDescuento += floatval($descuentoDia->monto_descuento);
+
+                    $totalAsistencias++;
 
                     $registro[$fecha] = [
                         'entrada' => $entrada,
@@ -174,8 +196,10 @@ class ExcelAsistenciaController extends Controller
                     ];
                 }
 
+                $registro['total'] = $totalAsistencias;
+                $registro['pendientes'] = $totalPendientes;
                 $registro['faltas'] = $totalFaltas;
-                $registro['asistencias'] = $totalAsistencias;
+                $registro['puntuales'] = $totalPuntuales;
                 $registro['justificados'] = $totalJustificados;
                 $registro['derivados'] = $totalDerivados;
                 $registro['tardanzas'] = $totalTardanzas;

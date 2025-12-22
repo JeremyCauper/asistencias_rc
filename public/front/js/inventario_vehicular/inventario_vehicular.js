@@ -35,8 +35,8 @@ $(document).ready(function () {
         ['fileSoat', 'fileInspeccion', 'fileChip', 'fileCilindro'].forEach(id => {
             $('#' + id).val('').trigger('change');
         });
-        
-        desmarcarTodos();
+
+        desmarcarCheckboxes();
     });
 
     $('.botones-accion').append(
@@ -53,8 +53,103 @@ $(document).ready(function () {
         }).html('<i class="fas fa-rotate-right" style="min-width: 1.25rem;"></i>').on('click', updateTable),
     );
 
+    // Función para obtener la fecha mínima permitida (día siguiente)
+    function getFechaMinima() {
+        const hoy = new Date();
+        hoy.setDate(hoy.getDate() + 1);
+        return hoy.toISOString().split('T')[0];
+    }
+
+    // Configurar fecha mínima en todos los inputs de tipo date
+    document.querySelectorAll('input[type="date"]').forEach(input => {
+        input.setAttribute('min', getFechaMinima());
+    });
+
+    // Función para manejar la subida de archivos
+    function configurarInputFile(fileInputId, iconoUploadSelector, dateInputId) {
+        const fileInput = document.getElementById(fileInputId);
+        const iconoUpload = document.querySelector(iconoUploadSelector);
+        const dateInput = document.getElementById(dateInputId);
+
+        if (!fileInput || !iconoUpload || !dateInput) return;
+
+        // Evento cuando se selecciona un archivo
+        fileInput.addEventListener('change', function (e) {
+            if (this.files && this.files.length > 0) {
+                // Cambiar icono a check
+                iconoUpload.className = 'fas fa-check text-success';
+
+                // Añadir atributo requested al input date
+                const idMayuscula = dateInputId.toUpperCase();
+                dateInput.setAttribute('requested', idMayuscula);
+                document.querySelector(`[for="${dateInputId}"]`).classList.add('requested');
+            }
+        });
+
+        // Evento cuando se hace click en el icono
+        iconoUpload.parentElement.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            // Si el icono es check (ya hay archivo subido)
+            if (iconoUpload.classList.contains('fa-check')) {
+                // Limpiar el input file
+                fileInput.value = '';
+
+                // Cambiar icono a upload
+                iconoUpload.className = 'fas fa-upload';
+
+                // Remover atributo requested del input date
+                dateInput.removeAttribute('requested');
+                document.querySelector(`[for="${dateInputId}"]`).classList.remove('requested');
+            }
+        });
+    }
+
+    // Soat
+    configurarInputFile(
+        'fileSoat',
+        '[data-ver-pdf="soat"] i',
+        'soat'
+    );
+
+    // Inspección
+    configurarInputFile(
+        'fileInspeccion',
+        '[data-ver-pdf="inspeccion"] i',
+        'inspeccion'
+    );
+
+    // Chip
+    configurarInputFile(
+        'fileChip',
+        '[data-ver-pdf="chip"] i',
+        'chip'
+    );
+
+    // Cilindro
+    configurarInputFile(
+        'fileCilindro',
+        '[data-ver-pdf="cilindro"] i',
+        'cilindro'
+    );
+
+    // Función adicional para validar fechas al enviar el formulario (opcional)
+    function validarFechas() {
+        const fechaMinima = getFechaMinima();
+        let valido = true;
+
+        document.querySelectorAll('input[type="date"]').forEach(input => {
+            if (input.value && input.value <= fechaMinima) {
+                alert(`La fecha de ${input.name} debe ser posterior a hoy`);
+                valido = false;
+            }
+        });
+
+        return valido;
+    }
+
     // Array con los IDs de los inputs file y sus correspondientes inputs date
-    const campos = [
+    /*const campos = [
         { file: '#fileSoat', date: '#soat', label: 'label[for="fileSoat"]' },
         { file: '#fileInspeccion', date: '#inspeccion', label: 'label[for="fileInspeccion"]' },
         { file: '#fileChip', date: '#chip', label: 'label[for="fileChip"]' },
@@ -95,7 +190,7 @@ $(document).ready(function () {
     // Aplicar el evento a cada campo
     campos.forEach(campo => {
         manejarCambioArchivo(campo);
-    });
+    });*/
 });
 
 const url_base = `${__url}/inventario-vehicular`;
@@ -213,8 +308,6 @@ async function Editar(id) {
     }
 }
 
-let arrayInicial = [];
-
 // ======================================================
 // ASIGNAR
 // ======================================================
@@ -244,8 +337,8 @@ async function Asignar(id) {
             tipo_registro: json.tipo_registro,
             propietario: json.user_id
         });
-        arrayInicial = json.personal_asignados || [];
-        marcarCheckboxes(arrayInicial);
+        window.arrayAsignados = json.personal_asignados || [];
+        marcarCheckboxes(window.arrayAsignados);
         window.currentVehiculoId = json.id;
 
         fMananger.formModalLoding('modal_inventario_vehicular_asignar', 'hide');
@@ -263,10 +356,8 @@ async function Asignar(id) {
 }
 
 document.querySelector('#btnAsignar').addEventListener('click', async function () {
-    const marcadosActuales = obtenerMarcados();
-    const cambios = compararArrays(arrayInicial, marcadosActuales);
-
     try {
+        const cambios = compararArrays();
         if (cambios.nuevos.length === 0 && cambios.eliminados.length === 0) {
             return boxAlert.box({
                 i: 'info',
@@ -314,7 +405,6 @@ document.querySelector('#btnAsignar').addEventListener('click', async function (
     }
 });
 
-// 1. Marcar los checkboxes según el array inicial
 function marcarCheckboxes(userIds) {
     const todosLosCheckboxes = document.querySelectorAll('#personal_asignados input[type="checkbox"]');
     todosLosCheckboxes.forEach(checkbox => checkbox.checked = false);
@@ -330,8 +420,12 @@ function marcarCheckboxes(userIds) {
     });
 }
 
-// 2. Obtener los IDs actualmente marcados
-function obtenerMarcados() {
+function desmarcarCheckboxes() {
+    const todosLosCheckboxes = document.querySelectorAll('#personal_asignados input[type="checkbox"]');
+    todosLosCheckboxes.forEach(checkbox => checkbox.checked = false);
+}
+
+function compararArraysAsignados() {
     const marcados = [];
     const checkboxes = document.querySelectorAll('#personal_asignados input[type="checkbox"]:checked');
 
@@ -342,29 +436,8 @@ function obtenerMarcados() {
         }
     });
 
-    return marcados;
-}
-
-// 3. Comparar y obtener nuevos y eliminados
-function compararArrays(arrayOriginal, arrayActual) {
-    const nuevos = arrayActual.filter(id => !arrayOriginal.includes(id));
-    const eliminados = arrayOriginal.filter(id => !arrayActual.includes(id));
+    const nuevos = marcados.filter(id => !window.arrayAsignados.includes(id));
+    const eliminados = window.arrayAsignados.filter(id => !marcados.includes(id));
 
     return { nuevos, eliminados };
-}
-
-// Desmarcar TODOS los checkboxes
-function desmarcarTodos() {
-    const todosLosCheckboxes = document.querySelectorAll('#personal_asignados input[type="checkbox"]');
-    todosLosCheckboxes.forEach(checkbox => checkbox.checked = false);
-}
-
-function abrirPdf(url) {
-    if (esCelular()) {
-        cargarIframeDocumento(generateUrl(`${__url}/previsualizar-pdf/movil`, {
-            url: url
-        }));
-    } else {
-        window.open(url, `Visualizar`, "width=900, height=800");
-    }
 }

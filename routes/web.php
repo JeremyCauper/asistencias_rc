@@ -86,7 +86,8 @@ Route::middleware('auth')->group(function () {
         ->prefix('justificacion')
         ->as('justificacion.')
         ->group(function () {
-            Route::post('/justificar', 'storeJustificacion')->name('justificar');
+            Route::post('/justificar-usuario', 'storeJustificacionByUser')->name('storeJustificacionByUser');
+            Route::post('/justificar-admin', 'storeJustificacionByAdmin')->name('storeJustificacionByAdmin');
             Route::post('/responder-justificacion/usuario', 'responseJustificacionByUser')->name('responseJustificacionByUser');
             Route::post('/responder-justificacion/admin', 'responseJustificacionByAdmin')->name('responseJustificacionByAdmin');
             Route::put('/marcar-derivado/{id}', 'marcarDerivado')->name('marcarDerivado');

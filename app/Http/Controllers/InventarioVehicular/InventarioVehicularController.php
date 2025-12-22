@@ -251,7 +251,7 @@ class InventarioVehicularController extends Controller
                     'r_tecnica_pdf' => $rTecnicaPdf,
                     'v_chip_pdf' => $vChipPdf,
                     'v_cilindro_pdf' => $vCilindroPdf,
-                    'created_at' => now()->format('Y-m-d H:i:s')
+                    'updated_at' => now()->format('Y-m-d H:i:s')
                 ]);
             DB::commit();
 

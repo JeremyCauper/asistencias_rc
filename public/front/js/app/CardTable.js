@@ -1,6 +1,6 @@
 /**
  * CardTable - Sistema de cards configurable similar a DataTables
- * @version 2.5.0
+ * @version 15.0.0
  */
 class CardTable {
     constructor(containerId, options = {}) {
@@ -84,9 +84,18 @@ class CardTable {
             this.filteredData = [...this.options.data];
 
             // Aplicar orden inicial si existe
-            if (this.initialOrder && !this.sortColumn) {
+            if (this.initialOrder) {
                 const [column, direction] = this.initialOrder;
-                this.sort(column, direction);
+                this.sortColumn = column;
+                this.sortDirection = direction;
+                this.filteredData.sort((a, b) => {
+                    const aVal = this.getNestedValue(a, column);
+                    const bVal = this.getNestedValue(b, column);
+
+                    if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+                    if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+                    return 0;
+                });
             }
 
             this.renderCards();
@@ -139,10 +148,30 @@ class CardTable {
             this.options.data = Array.isArray(processedData) ? processedData : [];
             this.filteredData = [...this.options.data];
 
-            // Aplicar orden inicial si existe
-            if (this.initialOrder && !this.sortColumn) {
+            // Aplicar orden si existe uno configurado
+            if (this.sortColumn) {
+                // Si ya hay un sortColumn configurado, mantenerlo
+                this.filteredData.sort((a, b) => {
+                    const aVal = this.getNestedValue(a, this.sortColumn);
+                    const bVal = this.getNestedValue(b, this.sortColumn);
+
+                    if (aVal < bVal) return this.sortDirection === 'asc' ? -1 : 1;
+                    if (aVal > bVal) return this.sortDirection === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            } else if (this.initialOrder) {
+                // Si no hay sortColumn pero hay orden inicial, aplicarlo
                 const [column, direction] = this.initialOrder;
-                this.sort(column, direction);
+                this.sortColumn = column;
+                this.sortDirection = direction;
+                this.filteredData.sort((a, b) => {
+                    const aVal = this.getNestedValue(a, column);
+                    const bVal = this.getNestedValue(b, column);
+
+                    if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+                    if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+                    return 0;
+                });
             }
 
             this.hideLoading();
@@ -274,8 +303,8 @@ class CardTable {
             const noData = document.createElement('div');
             noData.className = 'cardtable-no-data alert alert-info text-center';
             noData.innerHTML = `<i class="fas fa-info-circle me-2"></i>${this.searchTerm || Object.keys(this.columnSearches).length > 0 || Object.keys(this.activeFilters).length > 0
-                    ? this.options.language.noResults
-                    : this.options.noDataMessage
+                ? this.options.language.noResults
+                : this.options.noDataMessage
                 }`;
             this.cardsContainer.appendChild(noData);
             this.updateInfo();
@@ -568,6 +597,18 @@ class CardTable {
             return true;
         });
 
+        // Aplicar orden si existe
+        if (this.sortColumn) {
+            this.filteredData.sort((a, b) => {
+                const aVal = this.getNestedValue(a, this.sortColumn);
+                const bVal = this.getNestedValue(b, this.sortColumn);
+
+                if (aVal < bVal) return this.sortDirection === 'asc' ? -1 : 1;
+                if (aVal > bVal) return this.sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
         this.currentPage = 1;
         this.renderCards();
         if (this.options.pagination) {
@@ -600,6 +641,31 @@ class CardTable {
             await this.loadAjaxData();
         } else {
             this.filteredData = [...this.options.data];
+
+            // Aplicar orden si existe
+            if (this.sortColumn) {
+                this.filteredData.sort((a, b) => {
+                    const aVal = this.getNestedValue(a, this.sortColumn);
+                    const bVal = this.getNestedValue(b, this.sortColumn);
+
+                    if (aVal < bVal) return this.sortDirection === 'asc' ? -1 : 1;
+                    if (aVal > bVal) return this.sortDirection === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            } else if (this.initialOrder) {
+                const [column, direction] = this.initialOrder;
+                this.sortColumn = column;
+                this.sortDirection = direction;
+                this.filteredData.sort((a, b) => {
+                    const aVal = this.getNestedValue(a, column);
+                    const bVal = this.getNestedValue(b, column);
+
+                    if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+                    if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }
+
             this.renderCards();
             if (this.options.pagination) {
                 this.renderPagination();

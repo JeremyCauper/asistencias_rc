@@ -28,7 +28,7 @@
     <!-- MDB -->
     <link href="{{ secure_asset($ft_css->mdb_min7_2_0) }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ secure_asset($ft_css->sweet_default) }}">
-    <link rel="stylesheet" href="{{ secure_asset('front/css/app/auth.css') }}?v=6.3.3.5">
+    <link rel="stylesheet" href="{{ secure_asset('front/css/app/auth.css') }}?v=6.83.0.6">
 
     <script src="{{ secure_asset($ft_js->jquery) }}"></script>
 
@@ -111,7 +111,7 @@
         const __url = "{{ secure_url('') }}";
         const __token = "{{ csrf_token() }}";
     </script>
-    <script src="{{ secure_asset('front/js/auth/auth.js') }}?v=6.3.3.5"></script>
+    <script src="{{ secure_asset('front/js/auth/auth.js') }}?v=6.83.0.6"></script>
 
     @include('layout.partials.service_worker')
 </body>

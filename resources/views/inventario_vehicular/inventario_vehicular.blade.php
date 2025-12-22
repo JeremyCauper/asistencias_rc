@@ -61,7 +61,7 @@
                                 titulo: 'CILINDRO',
                                 icon: 'fas fa-gas-pump'
                             }
-                        }[tipo];
+                        } [tipo];
                         let informacion = null;
                         let fechaExpiracionFormateada = '';
                         let estadoBadge = '';
@@ -120,38 +120,38 @@
                             ajax: {
                                 url: getUrlListar(),
                                 dataSrc: dataSet,
-                                error: function (xhr, error, thrown) {
+                                error: function(xhr, error, thrown) {
                                     boxAlert.table();
                                     console.log('Respuesta del servidor:', xhr);
                                 }
                             },
                             columns: [{
-                                data: 'placa'
-                            },
-                            {
-                                data: 'tipo_registro'
-                            },
-                            {
-                                data: 'propietario'
-                            },
-                            {
-                                data: 'modelo'
-                            },
-                            {
-                                data: 'marca'
-                            },
-                            {
-                                data: 'soat'
-                            },
-                            {
-                                data: 'r_tecnica'
-                            },
-                            {
-                                data: 'v_chip'
-                            },
-                            {
-                                data: 'v_cilindro'
-                            },
+                                    data: 'placa'
+                                },
+                                {
+                                    data: 'tipo_registro'
+                                },
+                                {
+                                    data: 'propietario'
+                                },
+                                {
+                                    data: 'modelo'
+                                },
+                                {
+                                    data: 'marca'
+                                },
+                                {
+                                    data: 'soat'
+                                },
+                                {
+                                    data: 'r_tecnica'
+                                },
+                                {
+                                    data: 'v_chip'
+                                },
+                                {
+                                    data: 'v_cilindro'
+                                },
                             ],
                             cardTemplate: (data, index) => {
                                 return `
@@ -196,7 +196,7 @@
                             perPage: 50,
                             searchPlaceholder: 'Buscar',
                             order: ['apellido', 'asc'],
-                            drawCallback: function () {
+                            drawCallback: function() {
                                 if (typeof mdb !== 'undefined') {
                                     document.querySelectorAll('[data-mdb-dropdown-init]').forEach(el => {
                                         new mdb.Dropdown(el);
@@ -223,61 +223,61 @@
                             ajax: {
                                 url: getUrlListar(),
                                 dataSrc: dataSet,
-                                error: function (xhr, error, thrown) {
+                                error: function(xhr, error, thrown) {
                                     boxAlert.table();
                                     console.log('Respuesta del servidor:', xhr);
                                 }
                             },
                             columns: [{
-                                data: 'placa'
-                            },
-                            {
-                                data: 'tipo_registro'
-                            },
-                            {
-                                data: 'propietario'
-                            },
-                            {
-                                data: 'modelo'
-                            },
-                            {
-                                data: 'marca'
-                            },
-                            {
-                                data: 'soat',
-                                render: function (data, type, row) {
-                                    return evaluarExpiracion(data, 'soat', row.soat_pdf);
+                                    data: 'placa'
+                                },
+                                {
+                                    data: 'tipo_registro'
+                                },
+                                {
+                                    data: 'propietario'
+                                },
+                                {
+                                    data: 'modelo'
+                                },
+                                {
+                                    data: 'marca'
+                                },
+                                {
+                                    data: 'soat',
+                                    render: function(data, type, row) {
+                                        return evaluarExpiracion(data, 'soat', row.soat_pdf);
+                                    }
+                                },
+                                {
+                                    data: 'r_tecnica',
+                                    render: function(data, type, row) {
+                                        return evaluarExpiracion(data, 'r_tecnica', row.r_tecnica_pdf);
+                                    }
+                                },
+                                {
+                                    data: 'v_chip',
+                                    render: function(data, type, row) {
+                                        return evaluarExpiracion(data, 'v_chip', row.v_chip_pdf);
+                                    }
+                                },
+                                {
+                                    data: 'v_cilindro',
+                                    render: function(data, type, row) {
+                                        return evaluarExpiracion(data, 'v_cilindro', row.v_cilindro_pdf);
+                                    }
+                                },
+                                {
+                                    data: 'created_at'
+                                },
+                                {
+                                    data: 'updated_at'
+                                },
+                                {
+                                    data: 'acciones'
                                 }
-                            },
-                            {
-                                data: 'r_tecnica',
-                                render: function (data, type, row) {
-                                    return evaluarExpiracion(data, 'r_tecnica', row.r_tecnica_pdf);
-                                }
-                            },
-                            {
-                                data: 'v_chip',
-                                render: function (data, type, row) {
-                                    return evaluarExpiracion(data, 'v_chip', row.v_chip_pdf);
-                                }
-                            },
-                            {
-                                data: 'v_cilindro',
-                                render: function (data, type, row) {
-                                    return evaluarExpiracion(data, 'v_cilindro', row.v_cilindro_pdf);
-                                }
-                            },
-                            {
-                                data: 'created_at'
-                            },
-                            {
-                                data: 'updated_at'
-                            },
-                            {
-                                data: 'acciones'
-                            }
                             ],
-                            createdRow: function (row, data, dataIndex) {
+                            createdRow: function(row, data, dataIndex) {
                                 $(row).addClass('text-center');
                                 $(row).find('td:eq(11)').addClass(`td-acciones`);
                             },
@@ -355,7 +355,7 @@
                         </ul>
                     </div>
                     <script>
-                        document.getElementById('searchPersonal').addEventListener('input', function () {
+                        document.getElementById('searchPersonal').addEventListener('input', function() {
                             const search = this.value.toLowerCase().trim();
                             const items = document.querySelectorAll('#personal_asignados li');
 
@@ -370,7 +370,8 @@
                     </script>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" data-mdb-ripple-init data-mdb-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init
+                        data-mdb-dismiss="modal">Cerrar</button>
                     <button type="button" class="btn btn-primary" id="btnAsignar" data-mdb-ripple-init>Asignar</button>
                 </div>
             </div>
@@ -418,59 +419,74 @@
                         </div>
 
                         <div class="col-6 mb-2">
-                            <label class="form-label mb-1">Soat</label>
+                            <label class="form-label mb-1" for="soat">Soat</label>
                             <div class="input-group">
-                                <label class="input-group-text px-2" style="font-size: .7rem" for="fileSoat" type="button"
-                                    data-mdb-ripple-init>
+                                <label class="input-group-text px-2" style="font-size: .7rem" for="fileSoat"
+                                    type="button" data-mdb-ripple-init>
                                     <i class="far fa-file-pdf text-danger"></i>
-                                    Subir
                                 </label>
                                 <input type="file" hidden id="fileSoat" accept=".pdf" />
-                                <input type="date" class="form-control" id="soat" name="soat" value="{{ date('Y-m-d') }}">
+                                <input type="date" class="form-control" id="soat" name="soat"
+                                    value="{{ date('Y-m-d') }}">
+                                <label class="input-group-text px-2" style="font-size: .7rem" data-ver-pdf="soat"
+                                    type="button" data-mdb-ripple-init>
+                                    <i class="fas fa-upload"></i>
+                                </label>
                             </div>
                         </div>
                         <div class="col-6 mb-2">
-                            <label class="form-label mb-1">Inspeccion</label>
+                            <label class="form-label mb-1" for="inspeccion">Inspeccion</label>
                             <div class="input-group">
                                 <label class="input-group-text px-2" style="font-size: .7rem" for="fileInspeccion"
                                     type="button" data-mdb-ripple-init>
                                     <i class="far fa-file-pdf text-danger"></i>
-                                    Subir
                                 </label>
                                 <input type="file" hidden id="fileInspeccion" accept=".pdf" />
                                 <input type="date" class="form-control" id="inspeccion" name="inspeccion"
                                     value="{{ date('Y-m-d') }}">
+                                <label class="input-group-text px-2" style="font-size: .7rem" data-ver-pdf="inspeccion"
+                                    type="button" data-mdb-ripple-init>
+                                    <i class="fas fa-upload"></i>
+                                </label>
                             </div>
                         </div>
                         <div class="col-6 mb-2">
-                            <label class="form-label mb-1">Chip</label>
+                            <label class="form-label mb-1" for="chip">Chip</label>
                             <div class="input-group">
-                                <label class="input-group-text px-2" style="font-size: .7rem" for="fileChip" type="button"
-                                    data-mdb-ripple-init>
+                                <label class="input-group-text px-2" style="font-size: .7rem" for="fileChip"
+                                    type="button" data-mdb-ripple-init>
                                     <i class="far fa-file-pdf text-danger"></i>
-                                    Subir
                                 </label>
                                 <input type="file" hidden id="fileChip" accept=".pdf" />
-                                <input type="date" class="form-control" id="chip" name="chip" value="{{ date('Y-m-d') }}">
+                                <input type="date" class="form-control" id="chip" name="chip"
+                                    value="{{ date('Y-m-d') }}">
+                                <label class="input-group-text px-2" style="font-size: .7rem" data-ver-pdf="chip"
+                                    type="button" data-mdb-ripple-init>
+                                    <i class="fas fa-upload"></i>
+                                </label>
                             </div>
                         </div>
                         <div class="col-6 mb-2">
-                            <label class="form-label mb-1">Cilindro</label>
+                            <label class="form-label mb-1" for="cilindro">Cilindro</label>
                             <div class="input-group">
                                 <label class="input-group-text px-2" style="font-size: .7rem" for="fileCilindro"
                                     type="button" data-mdb-ripple-init>
                                     <i class="far fa-file-pdf text-danger"></i>
-                                    Subir
                                 </label>
                                 <input type="file" hidden id="fileCilindro" accept=".pdf" />
                                 <input type="date" class="form-control" id="cilindro" name="cilindro"
                                     value="{{ date('Y-m-d') }}">
+                                <label class="input-group-text px-2" style="font-size: .7rem" data-ver-pdf="cilindro"
+                                    type="button" data-mdb-ripple-init>
+                                    <i class="fas fa-upload"></i>
+                                </label>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" data-mdb-ripple-init data-mdb-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init
+                        data-mdb-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Guardar</button>
                 </div>
             </form>
@@ -480,5 +496,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ secure_asset('front/js/inventario_vehicular/inventario_vehicular.js') }}?v=6.3.3.5"></script>
+    <script src="{{ secure_asset('front/js/inventario_vehicular/inventario_vehicular.js') }}?v=6.83.0.6"></script>
 @endsection
