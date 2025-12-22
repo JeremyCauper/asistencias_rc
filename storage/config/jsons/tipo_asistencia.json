@@ -14,11 +14,11 @@
         "id": 2,
         "simbolo": "P",
         "descripcion": "Puntual",
-        "color": "#4bb965",
+        "color": "#29a847",
         "estatus": 1,
         "selected": 0,
         "eliminado": 0,
-        "updated_at": "2025-12-18 14:02:20",
+        "updated_at": "2025-12-22 17:57:54",
         "created_at": "2025-10-29 23:52:55"
     },
     {
@@ -36,33 +36,33 @@
         "id": 4,
         "simbolo": "T",
         "descripcion": "Tardanza",
-        "color": "#e7af23",
+        "color": "#d49700",
         "estatus": 1,
         "selected": 0,
         "eliminado": 0,
-        "updated_at": "2025-12-18 14:02:51",
+        "updated_at": "2025-12-22 17:55:39",
         "created_at": "2025-10-30 00:18:56"
     },
     {
         "id": 5,
         "simbolo": "NA",
         "descripcion": "No Aplica",
-        "color": "#0d0d0d",
+        "color": "#ff8e52",
         "estatus": 1,
         "selected": 0,
         "eliminado": 0,
-        "updated_at": "2025-12-18 01:28:17",
+        "updated_at": "2025-12-22 17:54:05",
         "created_at": "2025-10-30 01:05:00"
     },
     {
         "id": 6,
         "simbolo": "FE",
         "descripcion": "Feriado",
-        "color": "#0f0f0f",
+        "color": "#fe8b4d",
         "estatus": 1,
         "selected": 0,
         "eliminado": 0,
-        "updated_at": "2025-12-18 01:28:56",
+        "updated_at": "2025-12-22 17:56:04",
         "created_at": "2025-10-30 14:10:23"
     },
     {
