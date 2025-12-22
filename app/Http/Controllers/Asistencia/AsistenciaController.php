@@ -112,7 +112,7 @@ class AsistenciaController extends Controller
 
                 $tipoAsistencias = JsonDB::table('tipo_asistencia')->select('id', 'descripcion', 'color')->get()->keyBy('id');
 
-                $fechaActual = date($this->strFecha) == $fecha;
+                $hoy = date($this->strFecha) == $fecha;
                 $mesActual = date('Y-m') == date('Y-m', $strtoTime);
 
                 foreach ($personal as $p) {
@@ -139,67 +139,71 @@ class AsistenciaController extends Controller
                     // Si aún no tiene registro pero debería asistir
                     $previo = $asistencia?->tipo_asistencia ?? 0;
                     $just = $justificacion?->estatus ?? null;
+                    $sinJustificar = empty($justificacion);
 
                     $tipo_asistencia = match (true) {
-                        empty($entrada) && in_array($tipo_modalidad, [1]) && $previo == 1 && $this->horaActual < $this->limitePuntual && $fechaActual => 0,
-                        empty($entrada) && in_array($tipo_modalidad, [2]) && $previo == 1 && $this->horaActual < $this->limiteRemoto && $fechaActual => 0,
-                        !empty($justificacion) && $just === 10 && $this->horaActual < $this->limiteDerivado && $fechaActual => 0,
-                        !empty($justificacion) && $just === 0 => 0,
+                        empty($entrada) && in_array($tipo_modalidad, [1]) && $previo == 1 && $this->horaActual < $this->limitePuntual($fecha) && $hoy => 0,
+                        empty($entrada) && in_array($tipo_modalidad, [2]) && $previo == 1 && $this->horaActual < $this->limiteRemoto($fecha) && $hoy => 100,
+                        !$sinJustificar && $just === 10 && $this->horaActual < $this->limiteDerivado($fecha) && $hoy => 100,
+                        !$sinJustificar && $just === 0 => 0,
                         default => $previo,
                     };
 
                     // Acciones dinámicas
                     $acciones = [];
-                    // Solo si tine id de asistencia y permisos adecuados por tipo de usuario o sistema y mes actual
-                    if ($asistencia_id && $mesActual && ($isAdmin || $isSystem)) {
-                        $acciones[] = [
-                            'funcion' => "modificarDescuento($asistencia_id)",
-                            'texto' => '<i class="fas fa-file-invoice-dollar me-2 text-secondary"></i> ' .
-                                ($descuento ? 'Modificar' : 'Aplicar') . ' Descuento'
-                        ];
+                    if ($asistencia_id) {
+                        $esPendiente = $tipo_asistencia == 0;
+                        $sePuedeJustificar = in_array($tipo_asistencia, [1, 4]);
+                        $esDerivacion = in_array($tipo_asistencia, [0, 1]);
+
+                        // Solo si tine id de asistencia y permisos adecuados por tipo de usuario o sistema y mes actual
+                        if ($mesActual && ($isAdmin || $isSystem)) {
+                            $acciones[] = [
+                                'funcion' => "modificarDescuento($asistencia_id)",
+                                'texto' => '<i class="fas fa-file-invoice-dollar me-2 text-secondary"></i> ' .
+                                    ($descuento ? 'Modificar' : 'Aplicar') . ' Descuento'
+                            ];
+                        }
+
+                        // Derivar asistencia solo si es tipo asistencia 0: pendiente o 1: falta, antes de las 10:00 y es para la fecha actual
+                        if ($esDerivacion && $sinJustificar && $this->horaActual < $this->limiteDerivado($fecha) && $hoy) {
+                            $acciones[] = [
+                                'funcion' => "marcarDerivado($asistencia_id)",
+                                'texto' => '<i class="fas fa-random me-2 text-info"></i> Derivar'
+                            ];
+                        }
+
+                        if (
+                            $sePuedeJustificar &&
+                            (
+                                ($sinJustificar && $this->horaActual > $this->limitePuntual($fecha)) ||
+                                (!$sinJustificar && $justificacion?->estatus == 10 && $this->horaActual > $this->limiteDerivado($fecha))
+                            )
+                        ) {
+                            $tipoAsistencia = $tipoAsistencias->get($asistencia->tipo_asistencia);
+                            $acciones[] = [
+                                'funcion' => "justificarAsistencia({$asistencia_id})",
+                                'texto' => '<i class="fas fa-comment-dots me-2" style="color: ' . $tipoAsistencia->color . ';"></i> Justificar ' . $tipoAsistencia->descripcion
+                            ];
+                        }
+
+                        // Permite ver justificación si existe y está pendiente, si se cumple la condición envia notificación
+                        if (!empty($justificacion) && $justificacion->estatus != 10) {
+                            $tJustificacion = [
+                                ['color' => 'secondary', 'text' => 'Pendiente'],
+                                ['color' => 'success', 'text' => 'Aprobada'],
+                                ['color' => 'danger', 'text' => 'Rechazada'],
+                            ][$justificacion->estatus];
+
+                            $acciones[] = [
+                                'funcion' => "verJustificacion($asistencia_id)",
+                                'texto' => '<i class="fas fa-comments me-2 text-' . $tJustificacion['color'] . '"></i> Justificación ' . $tJustificacion['text']
+                            ];
+                            $notificacion = $justificacion->estatus == 0;
+                        }
                     }
 
-                    // Derivar asistencia solo si es tipo asistencia 0: pendiente o 1: falta, antes de las 10:00 y es para la fecha actual
-                    if ($asistencia_id && in_array($tipo_asistencia, [0, 1]) && !$justificacion && $this->horaActual < $this->limiteDerivado && $fechaActual) {
-                        $acciones[] = [
-                            'funcion' => "marcarDerivado($asistencia_id)",
-                            'texto' => '<i class="fas fa-random me-2 text-info"></i> Derivar'
-                        ];
-                    }
-
-                    // Permite ver justificación si existe y está pendiente, si se cumple la condición envia notificación
-                    if ($asistencia_id && $justificacion && $justificacion->estatus != 10) {
-                        $tJustificacion = [
-                            ['color' => 'secondary', 'text' => 'Pendiente'],
-                            ['color' => 'success', 'text' => 'Aprobada'],
-                            ['color' => 'danger', 'text' => 'Rechazada'],
-                        ][$justificacion->estatus];
-
-                        $acciones[] = [
-                            'funcion' => "verJustificacion($asistencia_id)",
-                            'texto' => '<i class="fas fa-comments me-2 text-' . $tJustificacion['color'] . '"></i> Justificación ' . $tJustificacion['text']
-                        ];
-                        $notificacion = $justificacion->estatus == 0;
-                    }
-
-                    if (
-                        $asistencia_id &&
-                        in_array($tipo_asistencia, [1, 4]) &&
-                        $mesActual &&
-                        ($isAdmin || $isJefatura || $isSystem) &&
-                        (
-                            !$justificacion ||
-                            ($justificacion && $justificacion->estatus == 10 && $this->horaActual > $this->limiteDerivado)
-                        )
-                    ) {
-                        $tipoAsistencia = $tipoAsistencias->get($tipo_asistencia);
-                        $acciones[] = [
-                            'funcion' => "justificarAsistencia({$asistencia_id})",
-                            'texto' => '<i class="fas fa-scale-balanced me-2" style="color: ' . $tipoAsistencia->color . ';"></i>Justificar ' . $tipoAsistencia->descripcion
-                        ];
-                    }
-
-                    $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object) ['color' => '#7e7979', 'descripcion' => 'Pendiente'];
+                    $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object) ['color' => '#959595', 'descripcion' => 'Pendiente'];
 
                     $listado[] = [
                         'tipo_personal' => $p->rol_system,
@@ -213,8 +217,9 @@ class AsistenciaController extends Controller
                         'justificacion' => $justificacion?->estatus ?? null,
                         'notificacion' => $notificacion,
                         'descuento' => $descuento?->monto_descuento ?? null,
+                        'des' => $descuento,
                         'acciones' => $this->DropdownAcciones([
-                            'tittle' => '<label class="badge" style="background-color: ' . $badgeTitle->color . '15;color: ' . $badgeTitle->color . ';border: 1px solid ' . $badgeTitle->color . ';">' . $badgeTitle->descripcion . '</label>',
+                            'tittle' => '<label class="badge" style="background-color: ' . $badgeTitle->color . ';">' . $badgeTitle->descripcion . '</label>',
                             'button' => $acciones
                         ], $notificacion)
                     ];
@@ -270,17 +275,18 @@ class AsistenciaController extends Controller
                 ->where('asistencia_id', $asistencia->id)
                 ->get();
 
+            $fecha = $asistencia?->fecha;
             $entrada = $asistencia?->entrada;
             $tipo_modalidad = $asistencia?->tipo_modalidad;
-            $fechaActual = date($this->strFecha) == $asistencia?->fecha;
+            $fechaActual = date($this->strFecha) == $fecha;
 
             $previo = $asistencia?->tipo_asistencia ?? 0;
             $just = $justificacion?->estatus ?? null;
 
             $tipo_asistencia = match (true) {
-                empty($entrada) && in_array($tipo_modalidad, [1]) && $previo == 1 && $this->horaActual < $this->limitePuntual && $fechaActual => 0,
-                empty($entrada) && in_array($tipo_modalidad, [2]) && $previo == 1 && $this->horaActual < $this->limiteRemoto && $fechaActual => 0,
-                !empty($justificacion) && $just === 10 && $this->horaActual < $this->limiteDerivado && $fechaActual => 0,
+                empty($entrada) && in_array($tipo_modalidad, [1]) && $previo == 1 && $this->horaActual < $this->limitePuntual($fecha) && $fechaActual => 0,
+                empty($entrada) && in_array($tipo_modalidad, [2]) && $previo == 1 && $this->horaActual < $this->limiteRemoto($fecha) && $fechaActual => 0,
+                !empty($justificacion) && $just === 10 && $this->horaActual < $this->limiteDerivado($fecha) && $fechaActual => 0,
                 !empty($justificacion) && $just === 0 && !in_array($tipo_modalidad, [2]) => 0,
                 default => $previo,
             };
@@ -297,7 +303,7 @@ class AsistenciaController extends Controller
                 'descuento' => $descuento,
                 'justificacion' => $justificacion,
                 'archivos' => $archivos,
-                'is_derivado' => $this->horaActual < $this->limiteDerivado
+                'is_derivado' => $this->horaActual < $this->limiteDerivado($fecha)
             ];
 
             return ApiResponse::success('Consulta exitosa.', $detalle);
@@ -316,6 +322,7 @@ class AsistenciaController extends Controller
 
             // Validación de los datos de entrada
             $validator = Validator::make($request->all(), [
+                'asistencia_id' => 'required|integer',
                 'user_id' => 'required|integer',
                 'fecha' => 'required|string',
                 'monto_descuento' => 'required|numeric',
@@ -328,7 +335,7 @@ class AsistenciaController extends Controller
 
             // Insertar o actualizar si ya existe un descuento para ese usuario y fecha
             DB::table('descuentos_asistencia')->updateOrInsert(
-                ['user_id' => $request->user_id, 'fecha' => $request->fecha],
+                ['asistencia_id' => $request->asistencia_id, 'user_id' => $request->user_id, 'fecha' => $request->fecha],
                 [
                     'monto_descuento' => $request->monto_descuento,
                     'comentario' => $request->comentario,

@@ -120,7 +120,7 @@ $(document).ready(function () {
             }
 
             let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
-                || { descripcion: 'Pendiente', color: '#7e7979' };
+                || { descripcion: 'Pendiente', color: '#959595' };
 
             llenarInfoModal('modalJustificarDerivado', {
                 fecha: `${data.fecha} ${(data.entrada || '')}`,
@@ -237,8 +237,7 @@ $(document).ready(function () {
             fMananger.formModalLoding('modalJustificar', 'show');
 
             let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
-                || { descripcion: 'Pendiente', color: '#7e7979' };
-            window.tasistencia = tasistencia;
+                || { descripcion: 'Pendiente', color: '#959595' };
 
             llenarInfoModal('modalJustificar', {
                 fecha: `${data.fecha} ${(data.entrada || '')}`,
@@ -246,7 +245,6 @@ $(document).ready(function () {
             });
             window.tasistencia = tasistencia;
 
-            window.tipo_asistencia = data.tipo_asistencia;
             window.currentAsistenciaId = id;
 
             if ([0, 1].includes(data.tipo_asistencia) && ([2].includes(data.tipo_modalidad) || [10].includes(just?.estatus))) {
@@ -299,13 +297,12 @@ $(document).ready(function () {
             const body = JSON.stringify({
                 id_asistencia: window.currentAsistenciaId,
                 entrada: hora_justificacion,
-                tipo_asistencia: window.tipo_asistencia,
                 asunto: $('#asunto_justificar').val(),
                 contenido: mensaje,
                 archivos: archivos_data
             });
 
-            const response = await fetch(__url + '/justificacion/justificar', {
+            const response = await fetch(__url + '/justificacion/justificar-usuario', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -362,7 +359,7 @@ $(document).ready(function () {
             const archivos = data.archivos;
 
             let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
-                || { descripcion: 'Pendiente', color: '#7e7979' };
+                || { descripcion: 'Pendiente', color: '#959595' };
 
             let estado = [
                 { descripcion: 'Pendiente', color: 'secondary' },

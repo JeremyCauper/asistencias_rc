@@ -18,9 +18,6 @@ class Controller extends BaseController
     public $horaLimitePuntual;
     public $horaLimiteRemoto;
     public $horaLimiteDerivado;
-    public $limitePuntual;
-    public $limiteDerivado;
-    public $limiteRemoto;
     public $horaActual;
 
     public function __construct()
@@ -34,10 +31,21 @@ class Controller extends BaseController
         $this->horaLimitePuntual = $config_system['horaLimitePuntual']?->values ?? "08:30:59";
         $this->horaLimiteRemoto = $config_system['horaLimiteRemoto']?->values ?? "12:00:00";
         $this->horaLimiteDerivado = $config_system['horaLimiteDerivado']?->values ?? "10:30:00";
+    }
 
-        $this->limitePuntual = strtotime(date("{$this->strFecha} {$this->horaLimitePuntual}"));
-        $this->limiteRemoto = strtotime(date("{$this->strFecha} {$this->horaLimiteRemoto}"));
-        $this->limiteDerivado = strtotime(date("{$this->strFecha} {$this->horaLimiteDerivado}"));
+    public function limitePuntual($str_fecha = null) {
+        $str_fecha = $str_fecha ?? $this->strFecha;
+        return strtotime(date("{$str_fecha} {$this->horaLimitePuntual}"));
+    }
+
+    public function limiteDerivado($str_fecha = null) {
+        $str_fecha = $str_fecha ?? $this->strFecha;
+        return strtotime(date("{$str_fecha} {$this->horaLimiteDerivado}"));
+    }
+
+    public function limiteRemoto($str_fecha = null) {
+        $str_fecha = $str_fecha ?? $this->strFecha;
+        return strtotime(date("{$str_fecha} {$this->horaLimiteRemoto}"));
     }
 
     public function getDay($date)

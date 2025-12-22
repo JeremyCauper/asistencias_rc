@@ -310,47 +310,32 @@ class EditorJustificacion {
         input.click();
     }
 
-    async convertToWebP(file) {
-        const sizeMB = file.size / (1024 * 1024);
-        const quality = sizeMB > 3 ? 0.90 : 0.55;
-
-        boxAlert.loading(`Convertiendo imagen, ${sizeMB.toFixed(2)}MB... (puede tardar un poco)`);
-
-        return new Promise(resolve => {
-            new Compressor(file, {
-                quality: quality,
-                convertSize: 0,                 // convertir todo, incluso < 2MB
-                mimeType: "image/webp",         // salida WebP
-                success(result) {
-                    resolve(result);            // devuelve el archivo WebP
-                },
-                error(err) {
-                    console.error("Error al convertir WebP:", err);
-                    resolve(file);              // si falla, devuelve el original
-                }
-            });
-        });
-    }
-
-
-    /** ============================
-     *  🔹 SUBIDA AL BACKEND
-     * ============================ */
     async uploadFile(file, tipo) {
         try {
-
-            let last_Modified = file.lastModified;
             let fileToUpload = file;
+            let last_Modified = file.lastModified;
 
             /** ============================
              * 🔄 Convertir imágenes a WebP
              * ============================ */
             if (tipo === "image") {
                 const converted = await this.convertToWebP(file);
+
+                // ✅ Validar que la conversión fue exitosa
+                if (!converted || converted.size === 0) {
+                    throw new Error("No se pudo convertir la imagen. Inténtalo nuevamente.");
+                }
+
+                // ✅ Si la conversión devolvió el archivo original, no cambiar extensión
+                const isConverted = converted.type === "image/webp";
+                const newName = isConverted
+                    ? file.name.replace(/\.[^.]+$/, "") + ".webp"
+                    : file.name;
+
                 fileToUpload = new File(
                     [converted],
-                    file.name.replace(/\.[^.]+$/, "") + ".webp",
-                    { type: "image/webp" }
+                    newName,
+                    { type: converted.type, lastModified: last_Modified }
                 );
             }
 
@@ -379,6 +364,7 @@ class EditorJustificacion {
 
             const range = this.quill.getSelection(true);
             this.insertFile(tipo, url, last_Modified, id, range.index);
+
         } catch (error) {
             console.log(error);
             boxAlert.box({
@@ -387,6 +373,28 @@ class EditorJustificacion {
                 h: error.message || error || "Verifica tu conexión e inténtalo nuevamente."
             });
         }
+    }
+
+    async convertToWebP(file) {
+        const sizeMB = file.size / (1024 * 1024);
+        const quality = sizeMB > 3 ? 0.90 : 0.55;
+
+        boxAlert.loading(`Convertiendo imagen, ${sizeMB.toFixed(2)}MB... (puede tardar un poco)`);
+
+        return new Promise(resolve => {
+            new Compressor(file, {
+                quality: quality,
+                convertSize: 0,
+                mimeType: "image/webp",
+                success(result) {
+                    resolve(result);  // ✅ Devuelve el WebP convertido
+                },
+                error(err) {
+                    console.error("Error al convertir WebP:", err);
+                    resolve(null);  // ✅ Devuelve null para detectar el error
+                }
+            });
+        });
     }
 
     async parseJsonSafe(response) {

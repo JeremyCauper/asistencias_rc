@@ -1,7 +1,7 @@
 // =======================================================
 // CONFIGURACIÓN
 // =======================================================
-const VERSION = "6.3.3";
+const VERSION = "6.3.5";
 const CACHE_STATIC_NAME = "pwa-static-v" + VERSION;
 const CACHE_INMUTABLE_NAME = "pwa-inmutable-v1";
 const CACHE_DYNAMIC_NAME = "pwa-dynamic-v1";
@@ -97,7 +97,7 @@ self.addEventListener("install", (event) => {
     });
 
     const cacheInmutable = caches.open(CACHE_INMUTABLE_NAME).then(async cache => {
-        let CACHE_INMUTABLE_URLS = PRECACHE_INMUTABLE_FILES.map(b => `${RUTA_FRONT}${b.file}`);
+        let CACHE_INMUTABLE_URLS = PRECACHE_INMUTABLE_FILES.map(b => `${RUTA_FRONT}${b.file}?v=${VERSION}`);
 
         await Promise.all(
             CACHE_INMUTABLE_URLS.map(async url => {

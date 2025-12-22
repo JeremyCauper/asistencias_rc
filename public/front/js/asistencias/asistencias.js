@@ -89,7 +89,7 @@ async function modificarDescuento(id) {
         // Buscar descripción del tipo de asistencia
         const tasistencia = tipoAsistencia.find(s => s.id == json.tipo_asistencia) || {
             descripcion: 'Pendiente',
-            color: '#7e7979'
+            color: '#959595'
         };
 
         // Llenar campos visibles
@@ -106,6 +106,7 @@ async function modificarDescuento(id) {
         // Rellenar datos del descuento si existen
         $('#monto_descuento').val(json.descuento?.monto_descuento ?? '');
         $('#comentario').val(json.descuento?.comentario ?? '');
+        window.currentAsistenciaID = id;
 
         fMananger.formModalLoding('modalDescuento', 'hide');
     } catch (error) {
@@ -131,6 +132,7 @@ $('#form-descuento').on('submit', async function (e) {
 
     try {
         const body = JSON.stringify({
+            asistencia_id: window.currentAsistenciaID,
             user_id: $('#user_id').val(),
             fecha: $('#fecha').val(),
             monto_descuento: $('#monto_descuento').val(),
