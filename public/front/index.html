@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#000000">
 
     <title>Cargando...</title>
-    <link rel="icon" href="./front/images/app/icons/icon-192.webp?v=6.3.5">
+    <link rel="icon" href="./front/images/app/icons/icon-192.webp?v=6.4.5">
 
     <style>
         @keyframes l13 {
@@ -69,14 +69,14 @@
 <body>
     <div class="loader">
         <div class="logo-container">
-            <img src="./front/images/app/icons/icon-192.webp?v=6.3.5" class="logo-img" alt="Logo">
+            <img src="./front/images/app/icons/icon-192.webp?v=6.4.5" class="logo-img" alt="Logo">
         </div>
     </div>
 
     <script>
         window.addEventListener('load', () => {
             if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("./sw.js?v=6.3.5").then(() => {
+                navigator.serviceWorker.register("./sw.js?v=6.4.5").then(() => {
                     console.log('Service Worker registrado');
                     window.location.href = location.href + 'inicio';
                 });

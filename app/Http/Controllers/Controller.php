@@ -16,6 +16,7 @@ class Controller extends BaseController
     use AuthorizesRequests, ValidatesRequests;
     public $strFecha;
     public $horaLimitePuntual;
+    public $horaLimitePuntualAdmin;
     public $horaLimiteRemoto;
     public $horaLimiteDerivado;
     public $horaActual;
@@ -29,13 +30,17 @@ class Controller extends BaseController
         $config_system = DB::table('config_system')->get()->keyBy('config');
 
         $this->horaLimitePuntual = $config_system['horaLimitePuntual']?->values ?? "08:30:59";
+        $this->horaLimitePuntualAdmin = $config_system['horaLimitePuntualAdmin']?->values ?? "09:30:59";
         $this->horaLimiteRemoto = $config_system['horaLimiteRemoto']?->values ?? "12:00:00";
         $this->horaLimiteDerivado = $config_system['horaLimiteDerivado']?->values ?? "10:30:00";
     }
 
-    public function limitePuntual($str_fecha = null) {
+    public function limitePuntual($str_fecha = null, $rol) {
+        $tipoPersonal = $rol ?? Auth::user()->rol_system;
+        $limiteHora = in_array($tipoPersonal, [2, 4, 5, 7]) ? $this->horaLimitePuntualAdmin : $this->horaLimitePuntual;
         $str_fecha = $str_fecha ?? $this->strFecha;
-        return strtotime(date("{$str_fecha} {$this->horaLimitePuntual}"));
+
+        return strtotime(date("{$str_fecha} {$limiteHora}"));
     }
 
     public function limiteDerivado($str_fecha = null) {

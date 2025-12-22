@@ -70,7 +70,6 @@ class SyncAsistenciasController extends Controller
         try {
             $asistencias = $request->input('asistencias', []);
             $sincronizadas = [];
-            $limitePuntual = strtotime("08:30:59");
 
             if (!empty($asistencias)) {
                 DB::beginTransaction();
@@ -81,17 +80,26 @@ class SyncAsistenciasController extends Controller
                     $fecha = $a['fecha'];
                     $hora = $a['hora'];
                     $horaMarcada = strtotime($hora);
-                    $puntual = $horaMarcada <= $limitePuntual;
+                    $rol_personal = 1;
                     $descuento = false;
 
-                    $asistencia = DB::table('asistencias')->where(['user_id' => $userId, 'fecha' => $fecha])->first();
+                    $asistencia = DB::table('asistencias')->select('id', 'entrada', 'tipo_asistencia')->where(['user_id' => $userId, 'fecha' => $fecha])->first();
+
                     $id_asistencia = $asistencia?->id ?? null;
+                    $entrada = $asistencia?->entrada ?? null;
+                    $tipo_asistencia = $asistencia?->tipo_asistencia ?? null;
+
+                    if ($entrada === null) $rol_personal = DB::table('personal')->where('user_id', $userId)->value('rol_system');
+                    $puntual = $horaMarcada <= $this->limitePuntual(rol: $rol_personal);
+
+                    $justificacionEstatus = DB::table('justificaciones')->where('asistencia_id', $id_asistencia)->value('estatus');
 
                     $payloadBase = [
                         'tipo_modalidad' => 1,
                         'ip' => $a['ip'],
                         'sincronizado' => 1,
                     ];
+
                     /*---------------------------------------------------------
                     | CASO A: No existe asistencia previa (primera marca)
                     ---------------------------------------------------------*/
@@ -105,21 +113,21 @@ class SyncAsistenciasController extends Controller
 
                         $descuento = !$puntual;
                     } else {
-                        if ($asistencia->tipo_asistencia != 8) {
+                        if ($tipo_asistencia != 8) {
                             /*---------------------------------------------------------
                             | CASO B: Ya existe asistencia, evaluar salida/entrada
                             ---------------------------------------------------------*/
-                            $entradaMarcada = strtotime($asistencia->entrada);
+                            $entradaMarcada = strtotime($entrada);
                             $transcurrido = $horaMarcada - $entradaMarcada;
 
                             // Solo registra salida/entrada si pasaron más de 10 minutos
                             if ($transcurrido > 600) {
                                 $jornada = 'salida';
                                 // Si por alguna razón entrada está vacía, la registra
-                                if (empty($asistencia->entrada)) {
+                                if (empty($entrada)) {
                                     $jornada = 'entrada';
 
-                                    if ($asistencia->tipo_asistencia != 7) {
+                                    if (!in_array($tipo_asistencia, [3, 7]) && $justificacionEstatus != 1) {
                                         $tipo = $puntual ? 2 : 4;
                                         $payloadBase['tipo_asistencia'] = $tipo;
 

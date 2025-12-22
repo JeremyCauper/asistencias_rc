@@ -151,7 +151,6 @@ class ExcelAsistenciaController extends Controller
                         $entrada = $asistenciaDia->entrada;
                         $tipo_modalidad = $asistenciaDia->tipo_modalidad;
                         $tipo_asistencia = match(true) {
-                            // $entrada && strtotime($entrada) > $this->limitePuntual($fecha) && $asistenciaDia->tipo_asistencia == 2 => 4,
                             $justificacionDia && $justificacionDia->estatus == 0 => 0,
                             default => $asistenciaDia->tipo_asistencia,
                         };

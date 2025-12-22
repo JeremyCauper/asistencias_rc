@@ -142,7 +142,7 @@ class AsistenciaController extends Controller
                     $sinJustificar = empty($justificacion);
 
                     $tipo_asistencia = match (true) {
-                        empty($entrada) && in_array($tipo_modalidad, [1]) && $previo == 1 && $this->horaActual < $this->limitePuntual($fecha) && $hoy => 0,
+                        empty($entrada) && in_array($tipo_modalidad, [1]) && $previo == 1 && $this->horaActual < $this->limitePuntual($fecha, $p->rol_system) && $hoy => 0,
                         empty($entrada) && in_array($tipo_modalidad, [2]) && $previo == 1 && $this->horaActual < $this->limiteRemoto($fecha) && $hoy => 100,
                         !$sinJustificar && $just === 10 && $this->horaActual < $this->limiteDerivado($fecha) && $hoy => 100,
                         !$sinJustificar && $just === 0 => 0,
@@ -176,7 +176,7 @@ class AsistenciaController extends Controller
                         if (
                             $sePuedeJustificar &&
                             (
-                                ($sinJustificar && $this->horaActual > $this->limitePuntual($fecha)) ||
+                                ($sinJustificar && $this->horaActual > $this->limitePuntual($fecha, $p->rol_system)) ||
                                 (!$sinJustificar && $justificacion?->estatus == 10 && $this->horaActual > $this->limiteDerivado($fecha))
                             )
                         ) {
@@ -253,7 +253,7 @@ class AsistenciaController extends Controller
             // Obtener datos relacionados
             $personal = DB::table('personal')
                 ->where('user_id', $asistencia->user_id)
-                ->select('dni', 'nombre', 'apellido')
+                ->select('dni', 'nombre', 'apellido', 'rol_system')
                 ->first();
 
             $descuento = DB::table('descuentos_asistencia')
@@ -284,7 +284,7 @@ class AsistenciaController extends Controller
             $just = $justificacion?->estatus ?? null;
 
             $tipo_asistencia = match (true) {
-                empty($entrada) && in_array($tipo_modalidad, [1]) && $previo == 1 && $this->horaActual < $this->limitePuntual($fecha) && $fechaActual => 0,
+                empty($entrada) && in_array($tipo_modalidad, [1]) && $previo == 1 && $this->horaActual < $this->limitePuntual($fecha, $personal->rol_system) && $fechaActual => 0,
                 empty($entrada) && in_array($tipo_modalidad, [2]) && $previo == 1 && $this->horaActual < $this->limiteRemoto($fecha) && $fechaActual => 0,
                 !empty($justificacion) && $just === 10 && $this->horaActual < $this->limiteDerivado($fecha) && $fechaActual => 0,
                 !empty($justificacion) && $just === 0 && !in_array($tipo_modalidad, [2]) => 0,
