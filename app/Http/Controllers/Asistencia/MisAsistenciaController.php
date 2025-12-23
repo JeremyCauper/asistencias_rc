@@ -122,7 +122,7 @@ class MisAsistenciaController extends Controller
 
                     } elseif (
                         $esPendiente &&
-                        !$sinJustificar &&
+                        $sinJustificar &&
                         $tipo_modalidad != 2 &&
                         $this->horaActual < $this->limitePuntual($a->fecha) &&
                         $hoy

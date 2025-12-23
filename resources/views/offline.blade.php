@@ -81,7 +81,7 @@
 <body style="font-family: 'Segoe UI', Tahoma, sans-serif;font-size:75%;">
     <div id="centerContainer">
         <div id="appIconContainer">
-            <img id="icon" src="../front/images/app/icons/icon-192.webp?v=6.4.5" class="app-icon" alt="Asistencias RC">
+            <img id="icon" src="../front/images/app/icons/icon-192.webp?v=6.4.6" class="app-icon" alt="Asistencias RC">
         </div>
         <div id="errorContainer">
             <svg id="offlineIcon" xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 -960 960 960" width="48"
