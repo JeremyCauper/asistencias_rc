@@ -35,7 +35,7 @@ class Controller extends BaseController
         $this->horaLimiteDerivado = $config_system['horaLimiteDerivado']?->values ?? "10:30:00";
     }
 
-    public function limitePuntual($str_fecha = null, $rol) {
+    public function limitePuntual($str_fecha = null, $rol = null) {
         $tipoPersonal = $rol ?? Auth::user()->rol_system;
         $limiteHora = in_array($tipoPersonal, [2, 4, 5, 7]) ? $this->horaLimitePuntualAdmin : $this->horaLimitePuntual;
         $str_fecha = $str_fecha ?? $this->strFecha;
