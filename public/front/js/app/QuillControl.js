@@ -369,7 +369,7 @@ class EditorJustificacion {
             console.log(error);
             boxAlert.box({
                 i: "error",
-                t: "No se pudo subir el archivo",
+                t: "Parece que hubo un problema",
                 h: error.message || error || "Verifica tu conexión e inténtalo nuevamente."
             });
         }

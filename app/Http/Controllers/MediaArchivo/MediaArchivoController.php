@@ -68,7 +68,7 @@ class MediaArchivoController extends Controller
             DB::table('media_archivos')->insert([
                 'nombre_archivo' => $nombre_archivo,
                 'path_archivo' => $path,
-                'created_at' => now()->format('Y-m-d H:i:S')
+                'created_at' => now()->format('Y-m-d H:i:s')
             ]);
             DB::commit();
 
