@@ -65,15 +65,15 @@ class PushController extends Controller
                 ])));
             }
 
-            Log::info("PUSH debug: iniciando flush()", ['count' => $subscriptions->count()]);
+            // Log::info("PUSH debug: iniciando flush()", ['count' => $subscriptions->count()]);
 
             foreach ($webPush->flush() as $report) {
-                Log::info('PUSH DEBUG', [
-                    'endpoint' => $report->getRequest()->getUri()->__toString(),
-                    'success' => $report->isSuccess(),
-                    'statusCode' => $report->getResponse()->getStatusCode(),
-                    'reason' => $report->getReason(),
-                ]);
+                // Log::info('PUSH DEBUG', [
+                //     'endpoint' => $report->getRequest()->getUri()->__toString(),
+                //     'success' => $report->isSuccess(),
+                //     'statusCode' => $report->getResponse()->getStatusCode(),
+                //     'reason' => $report->getReason(),
+                // ]);
 
                 $endpoint = $report->getRequest()->getUri()->__toString();
 
