@@ -306,5 +306,5 @@
             return datos;
         }
     </script>
-    <script src="{{ secure_asset('front/js/mantenimiento_dev/menu/menu.js') }}?v=6.83.0.7"></script>
+    <script src="{{ secure_asset('front/js/mantenimiento_dev/menu/menu.js') }}?v={{ env('APP_VERSION') }}"></script>
 @endsection

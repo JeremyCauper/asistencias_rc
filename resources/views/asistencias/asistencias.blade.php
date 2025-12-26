@@ -621,11 +621,11 @@
     <script src="{{ secure_asset($ft_js->quill) }}"></script>
     <script src="{{ secure_asset($ft_js->QuillControl) }}"></script>
 
-    <script src="{{ secure_asset('front/js/asistencias/asistencias.js') }}?v=6.83.0.7"></script>
+    <script src="{{ secure_asset('front/js/asistencias/asistencias.js') }}?v={{ env('APP_VERSION') }}"></script>
     @if (!in_array(Auth::user()->rol_system, [1, 5, 6]) || $tipo_sistema)
         <script src="{{ secure_asset($ft_js->exceljs) }}"></script>
         <script src="{{ secure_asset($ft_js->FileSaver) }}"></script>
-        <script src="{{ secure_asset('front/js/asistencias/export-excel-asistencias.js') }}?v=6.83.0.7"></script>
+        <script src="{{ secure_asset('front/js/asistencias/export-excel-asistencias.js') }}?v={{ env('APP_VERSION') }}"></script>
     @endif
-    <script src="{{ secure_asset('front/js/asistencias/asistencias-justificaciones.js') }}?v=6.83.0.7"></script>
+    <script src="{{ secure_asset('front/js/asistencias/asistencias-justificaciones.js') }}?v={{ env('APP_VERSION') }}"></script>
 @endsection

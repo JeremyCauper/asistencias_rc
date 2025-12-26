@@ -526,5 +526,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ secure_asset('front/js/inventario_vehicular/inventario_vehicular.js') }}?v=6.83.0.7"></script>
+    <script src="{{ secure_asset('front/js/inventario_vehicular/inventario_vehicular.js') }}?v={{ env('APP_VERSION') }}"></script>
 @endsection

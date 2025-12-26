@@ -1,5 +1,5 @@
 <?php
-$version = '6.4.6';
+$version = env('APP_VERSION');
 return [
     'version' => $version,
     'css' => (object) [
