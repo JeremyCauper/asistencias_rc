@@ -147,50 +147,6 @@ $(document).ready(function () {
 
         return valido;
     }
-
-    // Array con los IDs de los inputs file y sus correspondientes inputs date
-    /*const campos = [
-        { file: '#fileSoat', date: '#soat', label: 'label[for="fileSoat"]' },
-        { file: '#fileInspeccion', date: '#inspeccion', label: 'label[for="fileInspeccion"]' },
-        { file: '#fileChip', date: '#chip', label: 'label[for="fileChip"]' },
-        { file: '#fileCilindro', date: '#cilindro', label: 'label[for="fileCilindro"]' }
-    ];
-
-    // Deshabilitar todos los inputs date al cargar la página
-    campos.forEach(campo => {
-        $(campo.date).prop('disabled', true);
-    });
-
-    // Función para manejar el cambio de archivo
-    function manejarCambioArchivo(campo) {
-        $(campo.file).on('change', function () {
-            const archivo = this.files[0];
-            const label = $(campo.label);
-            const inputDate = $(campo.date);
-
-            if (archivo) {
-                // Si se seleccionó un archivo
-                // Cambiar por el icono de check
-                label.html('<i class="fas fa-check text-success"></i>');
-
-                // Habilitar el input date
-                inputDate.prop('disabled', false);
-            } else {
-                // Si no hay archivo (se canceló la selección)
-                // Restaurar el texto "Subir"
-                label.html('<i class="far fa-file-pdf text-danger"></i> Subir');
-
-                // Deshabilitar el input date
-                inputDate.prop('disabled', true);
-                inputDate.val(date('Y-m-d'));
-            }
-        });
-    }
-
-    // Aplicar el evento a cada campo
-    campos.forEach(campo => {
-        manejarCambioArchivo(campo);
-    });*/
 });
 
 const url_base = `${__url}/inventario-vehicular`;
@@ -223,6 +179,7 @@ $('#form-inventario-vehicular').on('submit', async function (event) {
         }
     };
 
+    appendFile('fileTarjetaPropiedad', 'file_tarjeta_propiedad');
     appendFile('fileSoat', 'file_soat');
     appendFile('fileInspeccion', 'file_inspeccion');
     appendFile('fileChip', 'file_chip');
