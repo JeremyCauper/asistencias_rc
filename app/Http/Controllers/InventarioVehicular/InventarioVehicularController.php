@@ -96,7 +96,7 @@ class InventarioVehicularController extends Controller
             'r_tecnica' => 'nullable|date',
             'v_chip' => 'nullable|date',
             'v_cilindro' => 'nullable|date',
-            
+
             'file_tarjeta_propiedad' => 'nullable|file|mimes:pdf|max:5120',
             'file_soat' => 'nullable|file|mimes:pdf|max:5120',
             'file_inspeccion' => 'nullable|file|mimes:pdf|max:5120',
@@ -116,33 +116,7 @@ class InventarioVehicularController extends Controller
 
         try {
 
-            $soatPdf = null;
-            $rTecnicaPdf = null;
-            $vChipPdf = null;
-            $vCilindroPdf = null;
-
-            if ($request->hasFile('file_tarjeta_propiedad')) {
-                $tarjetaPropiedadPdf = $this->uploadFileToS3($request->file('file_tarjeta_propiedad'), $request->placa, 'tarjeta_propiedad');
-            }
-
-            if ($request->hasFile('file_soat')) {
-                $soatPdf = $this->uploadFileToS3($request->file('file_soat'), $request->placa, 'soat');
-            }
-
-            if ($request->hasFile('file_inspeccion')) {
-                $rTecnicaPdf = $this->uploadFileToS3($request->file('file_inspeccion'), $request->placa, 'r_tecnica');
-            }
-
-            if ($request->hasFile('file_chip')) {
-                $vChipPdf = $this->uploadFileToS3($request->file('file_chip'), $request->placa, 'chip');
-            }
-
-            if ($request->hasFile('file_cilindro')) {
-                $vCilindroPdf = $this->uploadFileToS3($request->file('file_cilindro'), $request->placa, 'cilindro');
-            }
-
-            DB::beginTransaction();
-            DB::table('inventario_vehicular')->insert([
+            $payload = [
                 'placa' => $request->placa,
                 'tipo_registro' => $request->tipo_registro,
                 'user_id' => $request->popietario,
@@ -152,13 +126,31 @@ class InventarioVehicularController extends Controller
                 'r_tecnica' => $request->r_tecnica,
                 'v_chip' => $request->v_chip,
                 'v_cilindro' => $request->v_cilindro,
-                'tarjeta_propiedad_pdf' => $tarjetaPropiedadPdf,
-                'soat_pdf' => $soatPdf,
-                'r_tecnica_pdf' => $rTecnicaPdf,
-                'v_chip_pdf' => $vChipPdf,
-                'v_cilindro_pdf' => $vCilindroPdf,
                 'created_at' => now()->format('Y-m-d H:i:s')
-            ]);
+            ];
+
+            if ($request->hasFile('file_tarjeta_propiedad')) {
+                $payload['tarjeta_propiedad_pdf'] = $this->uploadFileToS3($request->file('file_tarjeta_propiedad'), $request->placa, 'tarjeta_propiedad');
+            }
+
+            if ($request->hasFile('file_soat')) {
+                $payload['soat_pdf'] = $this->uploadFileToS3($request->file('file_soat'), $request->placa, 'soat');
+            }
+
+            if ($request->hasFile('file_inspeccion')) {
+                $payload['r_tecnica_pdf'] = $this->uploadFileToS3($request->file('file_inspeccion'), $request->placa, 'r_tecnica');
+            }
+
+            if ($request->hasFile('file_chip')) {
+                $payload['v_chip_pdf'] = $this->uploadFileToS3($request->file('file_chip'), $request->placa, 'chip');
+            }
+
+            if ($request->hasFile('file_cilindro')) {
+                $payload['v_cilindro_pdf'] = $this->uploadFileToS3($request->file('file_cilindro'), $request->placa, 'cilindro');
+            }
+
+            DB::beginTransaction();
+            DB::table('inventario_vehicular')->insert($payload);
             DB::commit();
 
             return ApiResponse::success('El registro se creó correctamente.');
@@ -222,50 +214,42 @@ class InventarioVehicularController extends Controller
 
         try {
 
-            $soatPdf = null;
-            $rTecnicaPdf = null;
-            $vChipPdf = null;
-            $vCilindroPdf = null;
+            $payload = [
+                'placa' => $request->placa,
+                'tipo_registro' => $request->tipo_registro,
+                'user_id' => $request->popietario,
+                'modelo' => $request->modelo,
+                'marca' => $request->marca,
+                'soat' => $request->soat,
+                'r_tecnica' => $request->r_tecnica,
+                'v_chip' => $request->v_chip,
+                'v_cilindro' => $request->v_cilindro,
+                'updated_at' => now()->format('Y-m-d H:i:s')
+            ];
 
             if ($request->hasFile('file_tarjeta_propiedad')) {
-                $tarjetaPropiedadPdf = $this->uploadFileToS3($request->file('file_tarjeta_propiedad'), $request->placa, 'tarjeta_propiedad');
+                $payload['tarjeta_propiedad_pdf'] = $this->uploadFileToS3($request->file('file_tarjeta_propiedad'), $request->placa, 'tarjeta_propiedad');
             }
 
             if ($request->hasFile('file_soat')) {
-                $soatPdf = $this->uploadFileToS3($request->file('file_soat'), $request->placa, 'soat');
+                $payload['soat_pdf'] = $this->uploadFileToS3($request->file('file_soat'), $request->placa, 'soat');
             }
 
             if ($request->hasFile('file_inspeccion')) {
-                $rTecnicaPdf = $this->uploadFileToS3($request->file('file_inspeccion'), $request->placa, 'r_tecnica');
+                $payload['r_tecnica_pdf'] = $this->uploadFileToS3($request->file('file_inspeccion'), $request->placa, 'r_tecnica');
             }
 
             if ($request->hasFile('file_chip')) {
-                $vChipPdf = $this->uploadFileToS3($request->file('file_chip'), $request->placa, 'chip');
+                $payload['v_chip_pdf'] = $this->uploadFileToS3($request->file('file_chip'), $request->placa, 'chip');
             }
 
             if ($request->hasFile('file_cilindro')) {
-                $vCilindroPdf = $this->uploadFileToS3($request->file('file_cilindro'), $request->placa, 'cilindro');
+                $payload['v_cilindro_pdf'] = $this->uploadFileToS3($request->file('file_cilindro'), $request->placa, 'cilindro');
             }
 
             DB::beginTransaction();
             DB::table('inventario_vehicular')->where('id', $request->id)
-                ->update([
-                    'placa' => $request->placa,
-                    'tipo_registro' => $request->tipo_registro,
-                    'user_id' => $request->popietario,
-                    'modelo' => $request->modelo,
-                    'marca' => $request->marca,
-                    'soat' => $request->soat,
-                    'r_tecnica' => $request->r_tecnica,
-                    'v_chip' => $request->v_chip,
-                    'v_cilindro' => $request->v_cilindro,
-                    'tarjeta_propiedad_pdf' => $tarjetaPropiedadPdf,
-                    'soat_pdf' => $soatPdf,
-                    'r_tecnica_pdf' => $rTecnicaPdf,
-                    'v_chip_pdf' => $vChipPdf,
-                    'v_cilindro_pdf' => $vCilindroPdf,
-                    'updated_at' => now()->format('Y-m-d H:i:s')
-                ]);
+                ->update($payload);
             DB::commit();
 
             return ApiResponse::success('El registro se actualizó correctamente.');
