@@ -59,6 +59,7 @@ class InventarioVehicularController extends Controller
                         'r_tecnica' => $val->r_tecnica,
                         'v_chip' => $val->v_chip,
                         'v_cilindro' => $val->v_cilindro,
+                        'tarjeta_propiedad_pdf' => $val->tarjeta_propiedad_pdf,
                         'soat_pdf' => $val->soat_pdf,
                         'r_tecnica_pdf' => $val->r_tecnica_pdf,
                         'v_chip_pdf' => $val->v_chip_pdf,
@@ -95,7 +96,8 @@ class InventarioVehicularController extends Controller
             'r_tecnica' => 'nullable|date',
             'v_chip' => 'nullable|date',
             'v_cilindro' => 'nullable|date',
-
+            
+            'file_tarjeta_propiedad' => 'nullable|file|mimes:pdf|max:5120',
             'file_soat' => 'nullable|file|mimes:pdf|max:5120',
             'file_inspeccion' => 'nullable|file|mimes:pdf|max:5120',
             'file_chip' => 'nullable|file|mimes:pdf|max:5120',
@@ -118,6 +120,10 @@ class InventarioVehicularController extends Controller
             $rTecnicaPdf = null;
             $vChipPdf = null;
             $vCilindroPdf = null;
+
+            if ($request->hasFile('file_tarjeta_propiedad')) {
+                $tarjetaPropiedadPdf = $this->uploadFileToS3($request->file('file_tarjeta_propiedad'), $request->placa, 'tarjeta_propiedad');
+            }
 
             if ($request->hasFile('file_soat')) {
                 $soatPdf = $this->uploadFileToS3($request->file('file_soat'), $request->placa, 'soat');
@@ -146,6 +152,7 @@ class InventarioVehicularController extends Controller
                 'r_tecnica' => $request->r_tecnica,
                 'v_chip' => $request->v_chip,
                 'v_cilindro' => $request->v_cilindro,
+                'tarjeta_propiedad_pdf' => $tarjetaPropiedadPdf,
                 'soat_pdf' => $soatPdf,
                 'r_tecnica_pdf' => $rTecnicaPdf,
                 'v_chip_pdf' => $vChipPdf,
@@ -196,6 +203,7 @@ class InventarioVehicularController extends Controller
             'v_chip' => 'nullable|date',
             'v_cilindro' => 'nullable|date',
 
+            'file_tarjeta_propiedad' => 'nullable|file|mimes:pdf|max:5120',
             'file_soat' => 'nullable|file|mimes:pdf|max:5120',
             'file_inspeccion' => 'nullable|file|mimes:pdf|max:5120',
             'file_chip' => 'nullable|file|mimes:pdf|max:5120',
@@ -218,6 +226,10 @@ class InventarioVehicularController extends Controller
             $rTecnicaPdf = null;
             $vChipPdf = null;
             $vCilindroPdf = null;
+
+            if ($request->hasFile('file_tarjeta_propiedad')) {
+                $tarjetaPropiedadPdf = $this->uploadFileToS3($request->file('file_tarjeta_propiedad'), $request->placa, 'tarjeta_propiedad');
+            }
 
             if ($request->hasFile('file_soat')) {
                 $soatPdf = $this->uploadFileToS3($request->file('file_soat'), $request->placa, 'soat');
@@ -247,6 +259,7 @@ class InventarioVehicularController extends Controller
                     'r_tecnica' => $request->r_tecnica,
                     'v_chip' => $request->v_chip,
                     'v_cilindro' => $request->v_cilindro,
+                    'tarjeta_propiedad_pdf' => $tarjetaPropiedadPdf,
                     'soat_pdf' => $soatPdf,
                     'r_tecnica_pdf' => $rTecnicaPdf,
                     'v_chip_pdf' => $vChipPdf,

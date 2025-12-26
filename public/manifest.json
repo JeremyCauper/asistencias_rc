@@ -9,13 +9,13 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "front/images/app/icons/icon-192.webp?v=6.4.6",
+      "src": "front/images/app/icons/icon-192.webp?v=6.5.6",
       "sizes": "192x192",
       "type": "image/webp",
       "purpose": "any"
     },
     {
-      "src": "front/images/app/icons/icon-512.webp?v=6.4.6",
+      "src": "front/images/app/icons/icon-512.webp?v=6.5.6",
       "sizes": "512x512",
       "type": "image/webp",
       "purpose": "any"

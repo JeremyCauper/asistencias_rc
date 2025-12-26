@@ -26,6 +26,7 @@
                             <th>Propietario</th>
                             <th>Modelo</th>
                             <th>Marca</th>
+                            <th>Tarjeta de Propiedad</th>
                             <th>Soat</th>
                             <th>Revisión Técnica</th>
                             <th>Chip</th>
@@ -61,7 +62,7 @@
                                 titulo: 'CILINDRO',
                                 icon: 'fas fa-gas-pump'
                             }
-                        } [tipo];
+                        }[tipo];
                         let informacion = null;
                         let fechaExpiracionFormateada = '';
                         let estadoBadge = '';
@@ -86,7 +87,7 @@
                                 };
                             } else informacion = {
                                 estado: `Vigente`,
-                                color: 'success'
+                                color: urlPdf ? 'success' : 'info'
                             };
 
                             fechaExpiracionFormateada = obtenerFechaFormateada(fechaExp, true);
@@ -100,19 +101,40 @@
                             fechaExpiracionFormateada = 'Sin Registro';
                         }
 
+                        let color = {
+                            'danger': { cl: 'danger', bg: '#3b000a' },
+                            'warning': { cl: 'warning', bg: '#3d2800' },
+                            'success': { cl: 'success', bg: '#003113' },
+                            'info': { cl: 'info', bg: '#002430' },
+                            'secondary': { cl: 'secondary', bg: '#262a30' }
+                        }[informacion.color] || { cl: 'secondary', bg: '#262a30' };
+
                         return `
-                                                            <div class="d-flex align-items-center border border-${informacion.color} rounded-4 p-1 w-100" style="font-size: .65rem;" type="button" ${abrirPdf}>
-                                                                <div class="d-flex align-items-center me-1">
-                                                                    <span class="text-${informacion.color}"><i class="${iconos.icon}" style="font-size: .75rem;"></i></span>
-                                                                    <span class="text-start">
-                                                                        <p class="mb-0 fw-bold" style="font-size: .5rem;">${iconos.titulo}</p>
-                                                                        <p class="mb-0 text-${informacion.color} text-nowrap" style="font-size: .6rem;">${fechaExpiracionFormateada}</p>
-                                                                    </span>
-                                                                </div>
-                                                                ${estadoBadge}
-                                                            </div>
-                                                            `;
+                            <div class="d-flex align-items-center border border-${color.cl} rounded-4 p-1 w-100" style="font-size: .65rem;background-color: ${color.bg};" type="button" ${abrirPdf}>
+                                <div class="d-flex align-items-center me-1">
+                                    <span class="text-${color.cl}"><i class="${iconos.icon}" style="font-size: .75rem;"></i></span>
+                                    <span class="text-start">
+                                        <p class="mb-0 fw-bold text-white" style="font-size: .5rem;">${iconos.titulo}</p>
+                                        <p class="mb-0 text-${color.cl} text-nowrap" style="font-size: .6rem;">${fechaExpiracionFormateada}</p>
+                                    </span>
+                                </div>
+                                ${estadoBadge}
+                            </div>
+                            `;
                     }
+
+                    const ver_tarjeta_propiedad = (urlPdf, movil = false) => {
+                        if (!urlPdf && movil) return '';
+
+                        let abrirPdf = urlPdf ? `onclick="abrirPdf('${urlPdf}')" data-mdb-ripple-init type="button"` : 'style="cursor: default;"';
+
+                        return `
+                        <div class="text-center">
+                            <span class="badge badge-dark p-2" style="font-size: .65rem;" ${abrirPdf}>
+                                ${urlPdf ? `<i class="fas fa-eye me-2"></i>Tarjeta de Propiedad` : 'Sin Registro de Tarjeta'}
+                            </span>
+                        </div>`;
+                    };
 
                     if (esCelular()) {
                         $('#cardsInventarioVehicular').removeAttr('style');
@@ -120,83 +142,84 @@
                             ajax: {
                                 url: getUrlListar(),
                                 dataSrc: dataSet,
-                                error: function(xhr, error, thrown) {
+                                error: function (xhr, error, thrown) {
                                     boxAlert.table();
                                     console.log('Respuesta del servidor:', xhr);
                                 }
                             },
                             columns: [{
-                                    data: 'placa'
-                                },
-                                {
-                                    data: 'tipo_registro'
-                                },
-                                {
-                                    data: 'propietario'
-                                },
-                                {
-                                    data: 'modelo'
-                                },
-                                {
-                                    data: 'marca'
-                                },
-                                {
-                                    data: 'soat'
-                                },
-                                {
-                                    data: 'r_tecnica'
-                                },
-                                {
-                                    data: 'v_chip'
-                                },
-                                {
-                                    data: 'v_cilindro'
-                                },
+                                data: 'placa'
+                            },
+                            {
+                                data: 'tipo_registro'
+                            },
+                            {
+                                data: 'propietario'
+                            },
+                            {
+                                data: 'modelo'
+                            },
+                            {
+                                data: 'marca'
+                            },
+                            {
+                                data: 'soat'
+                            },
+                            {
+                                data: 'r_tecnica'
+                            },
+                            {
+                                data: 'v_chip'
+                            },
+                            {
+                                data: 'v_cilindro'
+                            },
                             ],
                             cardTemplate: (data, index) => {
                                 return `
-                                        <div class="d-flex align-items-center pb-1">
-                                            <div class="align-content-center d-grid rounded-6 text-bg-dark" style="width: 48px;height: 47px;">
-                                                <i class="fas fa-${data.tipo_registro.toLocaleLowerCase() != 'motorizado' ? 'car' : 'motorcycle'}"></i>
-                                            </div>
-                                            <div class="ms-2">
-                                                <p class="fw-bold mb-1" style="font-size: 1.25rem;">
-                                                    ${data.placa}
-                                                    <span class="text-muted mb-0 ms-2" style="font-size: .65rem;">${data.tipo_registro}</span>
-                                                </p>
-                                                <p class="text-muted mb-0" style="font-size: .65rem;">${data.propietario}</p>
-                                            </div>
-                                            <div class="btn-acciones-movil ms-auto">${data.acciones}</div>
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center my-2">
-                                            <div class="col-6">
-                                                <p class="text-muted mb-0" style="font-size: .65rem;">Modelo</p>
-                                                <p class="fw-bold mb-0" style="font-size: .8rem;">${data.modelo}</p>
-                                            </div>
-                                            <div class="col-6">
-                                                <p class="text-muted mb-0" style="font-size: .65rem;">Marca</p>
-                                                <p class="fw-bold mb-0" style="font-size: .8rem;">${data.marca}</p>
-                                            </div>
-                                        </div>
-                                        <hr class="m-1">
-                                        <div class="col-12 text-muted my-1" style="font-size: .65rem;">Estado de Mantenimientos</div>
-                                        <div class="col-12">
-                                            <div class="row">
-                                                <div class="col-6 p-0 pb-1" style="padding-right: .1rem !important;">${evaluarExpiracion(data.soat, 'soat', data.soat_pdf)}</div>
-                                                <div class="col-6 p-0 pb-1" style="padding-left: .1rem !important;">${evaluarExpiracion(data.r_tecnica, 'r_tecnica', data.r_tecnica_pdf)}</div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-6 p-0 pb-1" style="padding-right: .1rem !important;">${evaluarExpiracion(data.v_chip, 'v_chip', data.v_chip_pdf)}</div>
-                                                <div class="col-6 p-0 pb-1" style="padding-left: .1rem !important;">${evaluarExpiracion(data.v_cilindro, 'v_cilindro', data.v_cilindro_pdf)}</div>
-                                            </div>
-                                        </div>
-                                        `;
+                                                <div class="d-flex align-items-center pb-1">
+                                                    <div class="align-content-center d-grid rounded-6 text-bg-dark" style="width: 48px;height: 47px;">
+                                                        <i class="fas fa-${data.tipo_registro.toLocaleLowerCase() != 'motorizado' ? 'car' : 'motorcycle'}"></i>
+                                                    </div>
+                                                    <div class="ms-2">
+                                                        <p class="fw-bold mb-1" style="font-size: 1.25rem;">
+                                                            ${data.placa}
+                                                            <span class="text-muted mb-0 ms-2" style="font-size: .65rem;">${data.tipo_registro}</span>
+                                                        </p>
+                                                        <p class="text-muted mb-0" style="font-size: .65rem;">${data.propietario}</p>
+                                                    </div>
+                                                    <div class="btn-acciones-movil ms-auto">${data.acciones}</div>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center my-2">
+                                                    <div class="col-6">
+                                                        <p class="text-muted mb-0" style="font-size: .65rem;">Modelo</p>
+                                                        <p class="fw-bold mb-0" style="font-size: .8rem;">${data.modelo}</p>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <p class="text-muted mb-0" style="font-size: .65rem;">Marca</p>
+                                                        <p class="fw-bold mb-0" style="font-size: .8rem;">${data.marca}</p>
+                                                    </div>
+                                                </div>
+                                                <hr class="m-1">
+                                                <div class="col-12 text-muted my-1" style="font-size: .65rem;">Estado de Mantenimientos</div>
+                                                <div class="col-12">
+                                                    <div class="row">
+                                                        <div class="col-6 p-0 pb-1" style="padding-right: .1rem !important;">${evaluarExpiracion(data.soat, 'soat', data.soat_pdf)}</div>
+                                                        <div class="col-6 p-0 pb-1" style="padding-left: .1rem !important;">${evaluarExpiracion(data.r_tecnica, 'r_tecnica', data.r_tecnica_pdf)}</div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-6 p-0 pb-1" style="padding-right: .1rem !important;">${evaluarExpiracion(data.v_chip, 'v_chip', data.v_chip_pdf)}</div>
+                                                        <div class="col-6 p-0 pb-1" style="padding-left: .1rem !important;">${evaluarExpiracion(data.v_cilindro, 'v_cilindro', data.v_cilindro_pdf)}</div>
+                                                    </div>
+                                                </div>
+                                                ${ver_tarjeta_propiedad(data.tarjeta_propiedad_pdf, true)}
+                                                `;
                             },
                             scrollY: '600px',
                             perPage: 50,
                             searchPlaceholder: 'Buscar',
                             order: ['apellido', 'asc'],
-                            drawCallback: function() {
+                            drawCallback: function () {
                                 if (typeof mdb !== 'undefined') {
                                     document.querySelectorAll('[data-mdb-dropdown-init]').forEach(el => {
                                         new mdb.Dropdown(el);
@@ -212,74 +235,80 @@
                             scrollX: true,
                             scrollY: 400,
                             dom: `<"row"
-                                <"col-lg-12 mb-2"B>>
-                                <"row"
-                                    <"col-sm-6 text-sm-start text-center my-1 botones-accion">
-                                    <"col-sm-6 text-sm-end text-center my-1"f>>
-                                <"contenedor_tabla my-2"tr>
-                                <"row"
-                                    <"col-md-5 text-md-start text-center my-1"i>
-                                    <"col-md-7 text-md-end text-center my-1"p>>`,
+                                        <"col-lg-12 mb-2"B>>
+                                        <"row"
+                                            <"col-sm-6 text-sm-start text-center my-1 botones-accion">
+                                            <"col-sm-6 text-sm-end text-center my-1"f>>
+                                        <"contenedor_tabla my-2"tr>
+                                        <"row"
+                                            <"col-md-5 text-md-start text-center my-1"i>
+                                            <"col-md-7 text-md-end text-center my-1"p>>`,
                             ajax: {
                                 url: getUrlListar(),
                                 dataSrc: dataSet,
-                                error: function(xhr, error, thrown) {
+                                error: function (xhr, error, thrown) {
                                     boxAlert.table();
                                     console.log('Respuesta del servidor:', xhr);
                                 }
                             },
                             columns: [{
-                                    data: 'placa'
-                                },
-                                {
-                                    data: 'tipo_registro'
-                                },
-                                {
-                                    data: 'propietario'
-                                },
-                                {
-                                    data: 'modelo'
-                                },
-                                {
-                                    data: 'marca'
-                                },
-                                {
-                                    data: 'soat',
-                                    render: function(data, type, row) {
-                                        return evaluarExpiracion(data, 'soat', row.soat_pdf);
-                                    }
-                                },
-                                {
-                                    data: 'r_tecnica',
-                                    render: function(data, type, row) {
-                                        return evaluarExpiracion(data, 'r_tecnica', row.r_tecnica_pdf);
-                                    }
-                                },
-                                {
-                                    data: 'v_chip',
-                                    render: function(data, type, row) {
-                                        return evaluarExpiracion(data, 'v_chip', row.v_chip_pdf);
-                                    }
-                                },
-                                {
-                                    data: 'v_cilindro',
-                                    render: function(data, type, row) {
-                                        return evaluarExpiracion(data, 'v_cilindro', row.v_cilindro_pdf);
-                                    }
-                                },
-                                {
-                                    data: 'created_at'
-                                },
-                                {
-                                    data: 'updated_at'
-                                },
-                                {
-                                    data: 'acciones'
+                                data: 'placa'
+                            },
+                            {
+                                data: 'tipo_registro'
+                            },
+                            {
+                                data: 'propietario'
+                            },
+                            {
+                                data: 'modelo'
+                            },
+                            {
+                                data: 'marca'
+                            },
+                            {
+                                data: 'tarjeta_propiedad_pdf',
+                                render: function (data, type, row) {
+                                    return ver_tarjeta_propiedad(data);
                                 }
+                            },
+                            {
+                                data: 'soat',
+                                render: function (data, type, row) {
+                                    return evaluarExpiracion(data, 'soat', row.soat_pdf);
+                                }
+                            },
+                            {
+                                data: 'r_tecnica',
+                                render: function (data, type, row) {
+                                    return evaluarExpiracion(data, 'r_tecnica', row.r_tecnica_pdf);
+                                }
+                            },
+                            {
+                                data: 'v_chip',
+                                render: function (data, type, row) {
+                                    return evaluarExpiracion(data, 'v_chip', row.v_chip_pdf);
+                                }
+                            },
+                            {
+                                data: 'v_cilindro',
+                                render: function (data, type, row) {
+                                    return evaluarExpiracion(data, 'v_cilindro', row.v_cilindro_pdf);
+                                }
+                            },
+                            {
+                                data: 'created_at'
+                            },
+                            {
+                                data: 'updated_at'
+                            },
+                            {
+                                data: 'acciones'
+                            }
                             ],
-                            createdRow: function(row, data, dataIndex) {
+                            createdRow: function (row, data, dataIndex) {
                                 $(row).addClass('text-center');
-                                $(row).find('td:eq(11)').addClass(`td-acciones`);
+                                $(row).find('td:eq(12)').addClass(`td-acciones`);
                             },
                             processing: true
                         });
@@ -355,7 +384,7 @@
                         </ul>
                     </div>
                     <script>
-                        document.getElementById('searchPersonal').addEventListener('input', function() {
+                        document.getElementById('searchPersonal').addEventListener('input', function () {
                             const search = this.value.toLowerCase().trim();
                             const items = document.querySelectorAll('#personal_asignados li');
 
@@ -370,8 +399,7 @@
                     </script>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" data-mdb-ripple-init
-                        data-mdb-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init data-mdb-dismiss="modal">Cerrar</button>
                     <button type="button" class="btn btn-primary" id="btnAsignar" data-mdb-ripple-init>Asignar</button>
                 </div>
             </div>
@@ -418,16 +446,20 @@
                             </select>
                         </div>
 
+                        <div class="col-12 mb-2">
+                            <label class="form-label mb-1" for="fileTarjetaPropiedad">Tarjeta de Propiedad</label>
+                            <input type="file" class="form-control" id="fileTarjetaPropiedad" accept=".pdf" />
+                        </div>
+
                         <div class="col-6 mb-2">
                             <label class="form-label mb-1" for="soat">Soat</label>
                             <div class="input-group">
-                                <label class="input-group-text px-2" style="font-size: .7rem" for="fileSoat"
-                                    type="button" data-mdb-ripple-init>
+                                <label class="input-group-text px-2" style="font-size: .7rem" for="fileSoat" type="button"
+                                    data-mdb-ripple-init>
                                     <i class="far fa-file-pdf text-danger"></i>
                                 </label>
                                 <input type="file" hidden id="fileSoat" accept=".pdf" />
-                                <input type="date" class="form-control" id="soat" name="soat"
-                                    value="{{ date('Y-m-d') }}">
+                                <input type="date" class="form-control" id="soat" name="soat" value="{{ date('Y-m-d') }}">
                                 <label class="input-group-text px-2" style="font-size: .7rem" data-ver-pdf="soat"
                                     type="button" data-mdb-ripple-init>
                                     <i class="fas fa-upload"></i>
@@ -453,13 +485,12 @@
                         <div class="col-6 mb-2">
                             <label class="form-label mb-1" for="chip">Chip</label>
                             <div class="input-group">
-                                <label class="input-group-text px-2" style="font-size: .7rem" for="fileChip"
-                                    type="button" data-mdb-ripple-init>
+                                <label class="input-group-text px-2" style="font-size: .7rem" for="fileChip" type="button"
+                                    data-mdb-ripple-init>
                                     <i class="far fa-file-pdf text-danger"></i>
                                 </label>
                                 <input type="file" hidden id="fileChip" accept=".pdf" />
-                                <input type="date" class="form-control" id="chip" name="chip"
-                                    value="{{ date('Y-m-d') }}">
+                                <input type="date" class="form-control" id="chip" name="chip" value="{{ date('Y-m-d') }}">
                                 <label class="input-group-text px-2" style="font-size: .7rem" data-ver-pdf="chip"
                                     type="button" data-mdb-ripple-init>
                                     <i class="fas fa-upload"></i>
@@ -485,8 +516,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" data-mdb-ripple-init
-                        data-mdb-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init data-mdb-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Guardar</button>
                 </div>
             </form>
@@ -496,5 +526,5 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ secure_asset('front/js/inventario_vehicular/inventario_vehicular.js') }}?v=6.83.0.7"></script>
+    <script src="{{ secure_asset('front/js/inventario_vehicular/inventario_vehicular.js') }}?v={{ env('APP_VERSION') }}"></script>
 @endsection
