@@ -47,7 +47,7 @@
         "id": 5,
         "descripcion": "Descanso",
         "icono": "fas fa-bed",
-        "color": "#959595",
+        "color": "#7e7e7e",
         "estatus": 1,
         "selected": 0,
         "eliminado": 0,

@@ -1,15 +1,15 @@
 :root,
 [data-mdb-theme=light] {
     --bg-trail: #ffffff;
-    --bg-handler: #e2e2e2;
+    --bg-handler: #e7e7e7;
     --color-before: #e4a11b;
     --transition: all .2s ease;
     --root-border-check-color: rgb(79, 79, 79, .25);
 }
 
 [data-mdb-theme=dark] {
-    --bg-trail: #303030;
-    --bg-handler: #424242;
+    --bg-trail: #0f1117;
+    --bg-handler: #2e3034;
     --color-before: #ffffff;
     --root-border-check-color: rgb(255, 255, 255, .35);
 }

@@ -143,7 +143,7 @@
     color-scheme: dark;
     --mdb-body-color: #fff;
     --mdb-body-color-rgb: 255, 255, 255;
-    --mdb-body-bg: #303030;
+    --mdb-body-bg: #0f1117;
     --mdb-body-bg-rgb: 48, 48, 48;
     --mdb-emphasis-color: #fff;
     --mdb-emphasis-color-rgb: 255, 255, 255;
@@ -2656,7 +2656,7 @@ progress {
     line-height: 1.6;
     color: var(--mdb-surface-color);
     appearance: none;
-    background-color: var(--mdb-body-bg);
+    background-color: var(--mdb-form-control-bg);
     background-clip: padding-box;
     border: var(--mdb-border-width) solid var(--mdb-border-color);
     border-radius: var(--mdb-border-radius);
@@ -2684,7 +2684,7 @@ progress {
 
 .form-control:focus {
     color: var(--mdb-surface-color);
-    background-color: var(--mdb-body-bg);
+    background-color: var(--mdb-form-control-bg);
     border-color: #3b71ca;
     outline: 0;
     box-shadow: var(--mdb-box-shadow-inset), 0 0 0 .25rem rgba(59, 113, 202, .25)
@@ -2835,7 +2835,7 @@ textarea.form-control-lg {
     line-height: 1.6;
     color: var(--mdb-surface-color);
     appearance: none;
-    background-color: var(--mdb-body-bg);
+    background-color: var(--mdb-form-control-bg);
     background-image: var(--mdb-form-select-bg-img), var(--mdb-form-select-bg-icon, none);
     background-repeat: no-repeat;
     background-position: right .75rem center;
@@ -2918,7 +2918,7 @@ textarea.form-control-lg {
 }
 
 .form-check-input {
-    --mdb-form-check-bg: var(--mdb-body-bg);
+    --mdb-form-check-bg: var(--mdb-form-control-bg);
     flex-shrink: 0;
     width: 1em;
     height: 1em;
@@ -3221,7 +3221,7 @@ textarea.form-control-lg {
     z-index: -1;
     height: 1.5em;
     content: "";
-    background-color: var(--mdb-body-bg);
+    background-color: var(--mdb-form-control-bg);
     border-radius: var(--mdb-border-radius)
 }
 
@@ -16202,37 +16202,39 @@ fieldset:disabled .btn {
     --mdb-picker-header-bg: #3b71ca;
     --mdb-timepicker-clock-face-bg: var(--mdb-secondary-bg);
     --mdb-sidenav-backdrop-opacity: 0.1;
+    --mdb-form-control-bg: #ffffff;
     --mdb-form-control-border-color: #bdbdbd;
     --mdb-form-control-label-color: #757575;
     --mdb-form-control-disabled-bg: #e0e0e0;
     --mdb-box-shadow-color: #000;
     --mdb-box-shadow-color-rgb: 0, 0, 0;
-    --mdb-stepper-mobile-bg: #f4f4f4
+    --mdb-stepper-mobile-bg: #eeeeee
 }
 
 [data-mdb-theme=dark] {
     color-scheme: dark;
     --mdb-surface-color: #fff;
     --mdb-surface-color-rgb: 255, 255, 255;
-    --mdb-surface-bg: #424242;
-    --mdb-surface-bg-rgb: 66, 66, 66;
+    --mdb-surface-bg: #16181f;
+    --mdb-surface-bg-rgb: 22, 24, 31;
     --mdb-surface-inverted-color: #fff;
     --mdb-surface-inverted-color-rgb: 255, 255, 255;
     --mdb-surface-inverted-bg: #757575;
     --mdb-divider-color: rgba(255, 255, 255, 0.12);
     --mdb-divider-blurry-color: hsl(0, 0%, 70%);
-    --mdb-highlight-bg-color: #3c3c3c;
+    --mdb-highlight-bg-color: #101219;
     --mdb-scrollbar-rail-bg: #9e9e9e;
     --mdb-scrollbar-thumb-bg: #eeeeee;
     --mdb-picker-header-bg: #323232;
     --mdb-timepicker-clock-face-bg: #616161;
     --mdb-sidenav-backdrop-opacity: 0.5;
+    --mdb-form-control-bg: #1f222b;
     --mdb-form-control-border-color: rgba(255, 255, 255, 0.7);
     --mdb-form-control-label-color: #bdbdbd;
     --mdb-form-control-disabled-bg: #616161;
     --mdb-box-shadow-color: #000;
     --mdb-box-shadow-color-rgb: 0, 0, 0;
-    --mdb-stepper-mobile-bg: #3b3b3b
+    --mdb-stepper-mobile-bg: #1f222b
 }
 
 hr:not([size]).hr {
@@ -18048,7 +18050,7 @@ i.flag-zimbabwe:before {
     position: relative;
     width: 1.125rem;
     height: 1.125rem;
-    background-color: var(--mdb-body-bg);
+    background-color: var(--mdb-form-control-bg);
     border: .125rem solid var(--mdb-form-control-border-color)
 }
 
@@ -18128,7 +18130,7 @@ i.flag-zimbabwe:before {
     z-index: 1;
     display: block;
     border-radius: 0;
-    background-color: var(--mdb-body-bg)
+    background-color: var(--mdb-form-control-bg)
 }
 
 .form-check-input[type=checkbox]:checked {
@@ -18184,12 +18186,12 @@ i.flag-zimbabwe:before {
     z-index: 1;
     display: block;
     border-radius: 50%;
-    background-color: var(--mdb-body-bg)
+    background-color: var(--mdb-form-control-bg)
 }
 
 .form-check-input[type=radio]:checked {
     background-image: none;
-    background-color: var(--mdb-body-bg)
+    background-color: var(--mdb-form-control-bg)
 }
 
 .form-check-input[type=radio]:checked:after {
@@ -18205,7 +18207,7 @@ i.flag-zimbabwe:before {
 }
 
 .form-check-input[type=radio]:checked:focus {
-    background-color: var(--mdb-body-bg)
+    background-color: var(--mdb-form-control-bg)
 }
 
 .form-check-label {

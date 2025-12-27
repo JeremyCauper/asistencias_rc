@@ -9,7 +9,7 @@
 }
 
 [data-mdb-theme=dark] {
-    --root-body-bg: #303030;
+    --root-body-bg: #0f1117;
     --root-logo-rci-bg: url(../../images/app/LogoRC_TBlanco.webp) no-repeat center center;
 }
 

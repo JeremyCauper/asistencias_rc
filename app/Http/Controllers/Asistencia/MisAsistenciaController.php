@@ -162,7 +162,7 @@ class MisAsistenciaController extends Controller
                     }
                 }
 
-                $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object) ['color' => '#959595', 'descripcion' => 'Pendiente'];
+                $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object) ['color' => '#7e7e7e', 'descripcion' => 'Pendiente'];
 
                 $listado[] = [
                     'jornada' => $campoDia,

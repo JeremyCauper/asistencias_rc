@@ -63,7 +63,7 @@
 
     <div class="content-fluid h-100 d-flex justify-content-center align-items-center">
         <div style="width: 27rem;">
-            <div class="card shadow-4-strong m-3">
+            <div class="card m-3">
                 <div class="card-body">
                     <form id="form-login" class="m-2">
                         <div class="text-center title-login"></div>

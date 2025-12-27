@@ -15,7 +15,7 @@
     padding: .5rem .75rem .45rem .75rem;
     line-height: 1.6;
     color: var(--mdb-surface-color);
-    background-color: var(--mdb-body-bg);
+    background-color: var(--mdb-form-control-bg);
     position: relative;
     white-space: nowrap;
     -webkit-user-select: none;
@@ -495,7 +495,7 @@
 .select2-search--dropdown .select2-search__field {
     padding: .5rem 1rem;
     padding-left: 2.875rem;
-    background-color: var(--mdb-body-bg);
+    background-color: var(--mdb-form-control-bg);
     color: var(--mdb-surface-color);
     border: var(--mdb-border-width) solid var(--mdb-border-color);
     outline: 0;

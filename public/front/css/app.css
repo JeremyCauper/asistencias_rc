@@ -9,6 +9,7 @@
 
     --root-font-weight: 400;
     --root-active-multiselect-bg: #ffffff;
+    --root-dt-processing-bg: #ffffff75;
 }
 
 [data-mdb-theme=dark] {
@@ -18,7 +19,8 @@
     --row-bg-danger: 87 48 48;
 
     --root-font-weight: 100;
-    --root-active-multiselect-bg: #424141;
+    --root-active-multiselect-bg: #16181f;
+    --root-dt-processing-bg: #0f111775;
 }
 
 html {
@@ -59,7 +61,7 @@ body {
     padding: .5rem .75rem .45rem .75rem;
     text-transform: none;
     line-height: 1.6;
-    background-color: var(--mdb-body-bg);
+    background-color: var(--mdb-form-control-bg);
     border: var(--mdb-border-width) solid rgb(var(--mdb-surface-color-rgb), .2);
     /* transition: background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out; */
     overflow: hidden;
@@ -71,7 +73,7 @@ body {
 .multiselect:hover {
     box-shadow: none !important;
     border: var(--mdb-border-width) solid rgb(var(--mdb-surface-color-rgb), .2);
-    background-color: var(--mdb-body-bg);
+    background-color: var(--mdb-form-control-bg);
 }
 
 .multiselect:focus {
@@ -92,7 +94,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
     width: 35px;
     height: calc(100% - 4px);
-    background-color: var(--mdb-body-bg);
+    background-color: var(--mdb-form-control-bg);
     text-align: center;
     padding-top: 8px;
     border-radius: inherit;
@@ -688,7 +690,7 @@ label.custom-control {
     left: 0;
     width: 100%;
     height: 100%;
-    background: #d3d3d352;
+    background: var(--root-dt-processing-bg);
     align-content: center;
 }
 
@@ -1381,7 +1383,7 @@ tr .active-acciones {
 }
 
 .cardtable-container .cardtable-wrapper .card {
-    box-shadow: 0px 0px 12px -4px rgba(0, 0, 0, .65) !important;
+    box-shadow: 0px 0px 12px -4px rgba(0, 0, 0, 1.65) !important;
 }
 
 .cardtable-container .cardtable-wrapper .card .card-body .btn-acciones-movil .dropdown .dropdown-toggle::after {
@@ -1460,7 +1462,7 @@ tr .active-acciones {
 
 .ql-editor-html,
 .ql-editor-html * {
-    background-color: var(--mdb-body-bg) !important;
+    background-color: var(--mdb-form-control-bg) !important;
 }
 
 .ql-editor-html p,

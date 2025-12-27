@@ -89,7 +89,7 @@ async function modificarDescuento(id) {
         // Buscar descripción del tipo de asistencia
         const tasistencia = tipoAsistencia.find(s => s.id == json.tipo_asistencia) || {
             descripcion: 'Pendiente',
-            color: '#959595'
+            color: '#7e7e7e'
         };
 
         // Llenar campos visibles

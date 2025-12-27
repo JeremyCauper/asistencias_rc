@@ -452,7 +452,7 @@ function calcularDuracion(fechaIni, fechaFin) {
 function getBadgeAreas(estado, size = '.75', fill = true) {
     let area = tipoAreas.find(tp => tp.id == estado) || {
         descripcion: 'Sin Area',
-        color: '#959595'
+        color: '#7e7e7e'
     };
 
     return `<label ${fill
@@ -465,7 +465,7 @@ function getBadgeAreas(estado, size = '.75', fill = true) {
 function getBadgeTipoPersonal(estado, size = '.75', muted = false) {
     let tipo = tipoPersonal.find(tp => tp.id == estado) || {
         descripcion: 'Sin Tipo',
-        color: '#959595'
+        color: '#7e7e7e'
     };
 
     return `<label ${muted
@@ -477,7 +477,7 @@ function getBadgeTipoPersonal(estado, size = '.75', muted = false) {
 function getBadgeTipoModalidad(estado, size = '.75') {
     let modalidad = tipoModalidad.find(tp => tp.id == estado) || {
         descripcion: 'Sin Modalidad',
-        color: '#959595'
+        color: '#7e7e7e'
     };
     let color = modalidad?.color;
     return `<label class="badge" style="font-size: ${size}rem; background-color: ${color}20;color: ${color};border: 1px solid ${color};">
@@ -490,7 +490,7 @@ function getBadgeTipoAsistencia(estado, size = '.75') {
         ? { id: 100, descripcion: 'Justificar', color: '#c37039' }
         : tipoAsistencia.find(tp => tp.id == estado) || {
             descripcion: 'Pendiente',
-            color: '#959595'
+            color: '#7e7e7e'
         };
     return `<label class="badge" style="font-size: ${size}rem;background-color: ${tipo.color}25;color: ${tipo.color};">
         ${estado == 100 ? '<i class="fas fa-triangle-exclamation me-2" style="font-size: .75rem;"></i>' : ''}${tipo.descripcion}
@@ -704,7 +704,7 @@ function parseColor(color) {
     if (!color) return;
     let colores = {
         primary: '#3b71ca',
-        secondary: '#959595',
+        secondary: '#7e7e7e',
         success: '#14a44d',
         danger: '#dc4c64',
         warning: '#e4a11b',

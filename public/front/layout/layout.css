@@ -2,42 +2,42 @@
 [data-mdb-theme=light] {
     --root-logo-rci-bg: url(../../front/images/app/LogoRC_TNegro.webp) no-repeat center center;
     --root-height-navbar: 50px;
-    --root-layout-bg: #e9e9e9;
-    --root-layout-color: #696969;
-    --root-container-bg: #ffffff;
-    --root-border-color: rgb(79, 79, 79, .2);
+    --root-layout-bg: #ffffff;
+    --root-layout-color: #6a7282;
+    --root-container-bg: #f4f4f4;
+    --root-border-color: rgb(79, 79, 79, .25);
 
     --root-is-active-bg: rgb(29 115 255);
 
-    --navbar-sigla-container-bg: #e5e5e5;
-    --navbar-dropdown-item-hover-bg: rgb(213 213 213);
+    --navbar-sigla-container-bg: #f4f4f4;
+    --navbar-dropdown-item-hover-bg: #e9e9e9;
 }
 
 [data-mdb-theme=dark] {
     --root-logo-rci-bg: url(../../front/images/app/LogoRC_TBlanco.webp) no-repeat center center;
-    --root-layout-bg: #424242;
-    --root-layout-color: #ffffff;
-    --root-container-bg: #303030;
-    --root-border-color: rgb(255, 255, 255, .3);
+    --root-layout-bg: #16181f;
+    --root-layout-color: #99a1af;
+    --root-container-bg: #0f1117;
+    --root-border-color: rgb(255, 255, 255, .5);
 
     --root-is-active-bg: rgb(63 103 169);
 
-    --navbar-sigla-container-bg: #303030;
-    --navbar-dropdown-item-hover-bg: rgb(89 89 89);
+    --navbar-sigla-container-bg: #0f1117;
+    --navbar-dropdown-item-hover-bg: #20232e;
 }
 
 
 html, body {
-    /* height: 100%; */
+    height: 100dvh !important;
     background-color: var(--root-layout-bg);
 }
 
 body * .hover-layout:hover {
-    background-color: rgb(var(--mdb-surface-color-rgb), 6%) !important;
+    background-color: rgb(var(--mdb-surface-color-rgb), 9%) !important;
 }
 
 .layout-container {
-    /* height: 100%; */
+    height: 100%;
     overflow: hidden;
     display: flex;
 }
@@ -65,7 +65,7 @@ body * .hover-layout:hover {
     --spacing: .25rem;
     align-items: center;
     justify-content: center;
-    color: #8f8f8f;
+    color: var(--root-layout-color);
     width: calc(var(--spacing) * 9);
     min-width: calc(var(--spacing) * 9);
     height: calc(var(--spacing) * 8);
@@ -79,8 +79,8 @@ body * .hover-layout:hover {
 }
 
 .navbar .navbar-brand .btn-notification .badge-notification {
-    top: 3px;
-    right: 4px;
+    top: -3px;
+    left: 5px;
 }
 
 .navbar .navbar-brand #contenedor-sigla {
@@ -326,7 +326,7 @@ body * .hover-layout:hover {
 }
 
 .layout-container .sidebar .sidebar__body .sidebar__item .sidebar__link.is-active {
-    background-color: var(--root-is-active-bg);
+    background-color: var(--mdb-primary);
     color: white;
     font-weight: 600;
 }
@@ -353,7 +353,7 @@ body * .hover-layout:hover {
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: default;
-    color: #8f8f8f;
+    color: var(--root-layout-color);
 }
 
 .layout-container .sidebar .sidebar__body .sidebar__item .sidebar__submenu .sidebar__submenu-link {
@@ -455,7 +455,7 @@ body * .hover-layout:hover {
 .layout-container .sidebar .sidebar__footer .sidebar__footer-user .sidebar__footer-user-text h6 {
     font-size: .75rem;
     font-weight: bold;
-    color: #8f8f8f
+    color: var(--root-layout-color)
 }
 
 .layout-container .sidebar .sidebar__footer .dropdown-menu {
@@ -643,8 +643,8 @@ body * .hover-layout:hover {
     }
 
     .layout-container .navbar .navbar-brand .btn-notification .badge-notification {
-        top: 7px;
-        right: 8px;
+        top: -3px;
+        left: 8px;
     }
 
     .layout-container .navbar .navbar-brand #contenedor-sigla {

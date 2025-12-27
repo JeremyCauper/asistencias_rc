@@ -203,7 +203,7 @@ class AsistenciaController extends Controller
                         }
                     }
 
-                    $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object) ['color' => '#959595', 'descripcion' => 'Pendiente'];
+                    $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object) ['color' => '#7e7e7e', 'descripcion' => 'Pendiente'];
 
                     $listado[] = [
                         'tipo_personal' => $p->rol_system,

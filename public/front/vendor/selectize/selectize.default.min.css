@@ -31,7 +31,7 @@
     position: absolute;
     right: 8px;
     top: 50%;
-    color: #303030;
+    color: #0f1117;
     opacity: .4;
     margin-top: -12px;
     line-height: 20px;
@@ -333,7 +333,7 @@
 }
 
 .selectize-dropdown .optgroup-header {
-    color: #303030;
+    color: #0f1117;
     background: #fff;
     cursor: default
 }
@@ -562,7 +562,7 @@
     position: absolute;
     right: 8px;
     top: 50%;
-    color: #303030;
+    color: #0f1117;
     opacity: .4;
     margin-top: -12px;
     line-height: 20px;

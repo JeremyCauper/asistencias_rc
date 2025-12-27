@@ -120,7 +120,7 @@ $(document).ready(function () {
             }
 
             let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
-                || { descripcion: 'Pendiente', color: '#959595' };
+                || { descripcion: 'Pendiente', color: '#7e7e7e' };
 
             llenarInfoModal('modalJustificarDerivado', {
                 fecha: `${data.fecha} ${(data.entrada || '')}`,
@@ -237,7 +237,7 @@ $(document).ready(function () {
             fMananger.formModalLoding('modalJustificar', 'show');
 
             let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
-                || { descripcion: 'Pendiente', color: '#959595' };
+                || { descripcion: 'Pendiente', color: '#7e7e7e' };
 
             llenarInfoModal('modalJustificar', {
                 fecha: `${data.fecha} ${(data.entrada || '')}`,
@@ -359,7 +359,7 @@ $(document).ready(function () {
             const archivos = data.archivos;
 
             let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
-                || { descripcion: 'Pendiente', color: '#959595' };
+                || { descripcion: 'Pendiente', color: '#7e7e7e' };
 
             let estado = [
                 { descripcion: 'Pendiente', color: 'secondary' },

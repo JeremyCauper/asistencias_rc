@@ -102,12 +102,12 @@
                         }
 
                         let color = {
-                            'danger': { cl: 'danger', bg: '#3b000a' },
-                            'warning': { cl: 'warning', bg: '#3d2800' },
-                            'success': { cl: 'success', bg: '#003113' },
-                            'info': { cl: 'info', bg: '#002430' },
-                            'secondary': { cl: 'secondary', bg: '#262a30' }
-                        }[informacion.color] || { cl: 'secondary', bg: '#262a30' };
+                            'danger': { cl: 'danger', bg: '#52000e' },
+                            'warning': { cl: 'warning', bg: '#5f3d00' },
+                            'success': { cl: 'success', bg: '#03471d' },
+                            'info': { cl: 'info', bg: '#07495f' },
+                            'secondary': { cl: 'secondary', bg: '#343f4f' }
+                        }[informacion.color] || { cl: 'secondary', bg: '#343f4f' };
 
                         return `
                             <div class="d-flex align-items-center border border-${color.cl} rounded-4 p-1 w-100" style="font-size: .65rem;background-color: ${color.bg};" type="button" ${abrirPdf}>
@@ -129,9 +129,9 @@
                         let abrirPdf = urlPdf ? `onclick="abrirPdf('${urlPdf}')" data-mdb-ripple-init type="button"` : 'style="cursor: default;"';
 
                         return `
-                        <div class="text-center">
-                            <span class="badge badge-dark p-2" style="font-size: .65rem;" ${abrirPdf}>
-                                ${urlPdf ? `<i class="fas fa-eye me-2"></i>Tarjeta de Propiedad` : 'Sin Registro de Tarjeta'}
+                        <div class="text-center mt-1">
+                            <span class="badge bg-black p-2" style="font-size: .65rem;" ${abrirPdf}>
+                                ${urlPdf ? `<i class="fas fa-eye me-1"></i>Tarjeta de Propiedad` : 'Sin Registro de Tarjeta'}
                             </span>
                         </div>`;
                     };
@@ -178,7 +178,7 @@
                             cardTemplate: (data, index) => {
                                 return `
                                                 <div class="d-flex align-items-center pb-1">
-                                                    <div class="align-content-center d-grid rounded-6 text-bg-dark" style="width: 48px;height: 47px;">
+                                                    <div class="align-content-center d-grid rounded-6 text-white" style="width: 48px;height: 47px;background-color: #0f1117;">
                                                         <i class="fas fa-${data.tipo_registro.toLocaleLowerCase() != 'motorizado' ? 'car' : 'motorcycle'}"></i>
                                                     </div>
                                                     <div class="ms-2">
