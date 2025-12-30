@@ -1,8 +1,8 @@
 .daterangepicker {
   position: absolute;
-  color: inherit;
-  background-color: var(--mdb-surface-bg);
-  border-radius: 4px;
+  color: #cccccc;
+  background-color: #202020;
+  border-radius: .75rem;
   /* border: 1px solid #ddd; */
   width: 278px;
   max-width: none;
@@ -30,7 +30,7 @@
   top: -7px;
   border-right: 7px solid transparent;
   border-left: 7px solid transparent;
-  border-bottom: 7px solid #ccc;
+  border-bottom: 7px solid #cccccc;
 }
 
 .daterangepicker:after {
@@ -131,7 +131,7 @@
 .daterangepicker .calendar-table .next span,
 .daterangepicker .calendar-table .prev span {
   color: #fff;
-  border: solid rgb(var(--mdb-body-color-rgb));
+  border: solid #202020;
   border-width: 0 2px 2px 0;
   border-radius: 0;
   display: inline-block;
@@ -165,9 +165,9 @@
 }
 
 .daterangepicker .calendar-table {
-  border: 1px solid var(--mdb-surface-bg);
+  border: 1px solid #202020;
   border-radius: 4px;
-  background-color: var(--mdb-surface-bg);
+  background-color: #202020;
 }
 
 .daterangepicker .calendar-table table {
@@ -194,7 +194,7 @@
 .daterangepicker td.off.in-range,
 .daterangepicker td.off.start-date,
 .daterangepicker td.off.end-date {
-  background-color: var(--mdb-surface-bg);
+  background-color: #262626;
   border-color: transparent;
   color: #999;
 }
@@ -243,13 +243,14 @@
   margin: 0;
   cursor: default;
   /* border: 1px solid #ddd; */
-  background-color: var(--mdb-surface-bg);
+  background-color: #202020;
+  color: #cccccc  ;
   border-radius: inherit;
 }
 
 .daterangepicker select.monthselect:focus,
 .daterangepicker select.yearselect:focus {
-  border: 1px solid #3b71ca;
+  border: 1px solid #357ebd;
 }
 
 .daterangepicker select.monthselect:focus-visible,
@@ -360,7 +361,7 @@
 }
 
 .daterangepicker .ranges li.active {
-  background-color: #08c;
+  background-color: #357ebd;
   color: #fff;
 }
 

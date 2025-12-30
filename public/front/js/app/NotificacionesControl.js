@@ -94,7 +94,7 @@ class Notificaciones {
                 const colorBg = (n.is_admin == 0) ? '#000000' : colores(n.sigla[0]);
 
                 const item = document.createElement('div');
-                item.className = `dropdown-item p-2 my-1 rounded`;
+                item.className = `dropdown-item p-2 rounded`;
                 item.dataset.id = n.id;
                 item.dataset.role = "button";
                 item.innerHTML = `

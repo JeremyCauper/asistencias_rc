@@ -224,13 +224,13 @@
                                 <i class="fas fa-bell"></i>
                                 <span class="badge rounded-pill badge-notification bg-danger"></span>
                             </button>
-                            <div class="dropdown-menu dropdown-menu-right py-0 ps-2 pb-1">
+                            <div class="dropdown-menu dropdown-menu-right p-0 pb-1">
                                 <div class="dropdown-header d-flex align-items-center justify-content-between px-2">
                                     <h6 class="mb-0" style="user-select: none">Notificaciones</h6>
                                     <button class="btn btn-sm px-2" noti-btn="reload" data-mdb-ripple-init><i
                                             class="fas fa-rotate"></i></button>
                                 </div>
-                                <div class="dropdown-body rounded pe-2">
+                                <div class="dropdown-body rounded px-2">
                                     <div class="dropdown-text text-center text-muted py-3">
                                         Sin notificaciones
                                     </div>

@@ -23,7 +23,7 @@ document.querySelectorAll('.sidebar__link-menu').forEach(link => {
 
         // 2. Abrir/cerrar el seleccionado
         parent.setAttribute('data-collapse', isOpen ? 'false' : 'true');
-        submenu.style.maxHeight = isOpen ? null : submenu.scrollHeight + 'px';
+        submenu.style.maxHeight = isOpen ? null : (parseInt(submenu.scrollHeight) + 100) + 'px';
     });
 });
 

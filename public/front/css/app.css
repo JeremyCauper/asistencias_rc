@@ -1,7 +1,5 @@
 :root,
 [data-mdb-theme=light] {
-    --root-box-shadow: 0 0px 30px -15px rgba(var(--mdb-box-shadow-color-rgb), .5), 0 10px 20px -2px rgba(var(--mdb-box-shadow-color-rgb), .1);
-
     --row-bg-warning: 255 227 177;
     --row-bg-info: 187 242 255;
     --row-bg-primary: 174 208 255;
@@ -1383,7 +1381,7 @@ tr .active-acciones {
 }
 
 .cardtable-container .cardtable-wrapper .card {
-    box-shadow: 0px 0px 12px -4px rgba(0, 0, 0, 1.65) !important;
+    box-shadow: 0px 0px 12px -5px rgba(0, 0, 0, 1) !important;
 }
 
 .cardtable-container .cardtable-wrapper .card .card-body .btn-acciones-movil .dropdown .dropdown-toggle::after {
