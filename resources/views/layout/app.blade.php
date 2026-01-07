@@ -222,7 +222,7 @@
                             <button data-mdb-dropdown-init class="btn-notification hover-layout" role="button"
                                 data-mdb-auto-close="outside" aria-expanded="false">
                                 <i class="fas fa-bell"></i>
-                                <span class="badge rounded-pill badge-notification bg-danger"></span>
+                                <span class="badge rounded-pill bg-danger" badge-notification></span>
                             </button>
                             <div class="dropdown-menu dropdown-menu-right p-0 pb-1">
                                 <div class="dropdown-header d-flex align-items-center justify-content-between px-2">

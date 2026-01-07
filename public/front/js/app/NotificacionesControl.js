@@ -80,7 +80,7 @@ class Notificaciones {
     render(lista) {
         if (!this.container) return;
         const containerBody = this.container.querySelector('.dropdown-body');
-        const badgeNotification = this.container.querySelector('.badge-notification');
+        const badgeNotification = this.container.querySelector('[badge-notification]');
         containerBody.innerHTML = '';
         badgeNotification.innerHTML = lista.length || '';
 

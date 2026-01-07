@@ -27,7 +27,8 @@
 }
 
 
-html, body {
+html,
+body {
     height: 100dvh !important;
     background-color: var(--root-layout-bg);
 }
@@ -78,11 +79,6 @@ body * .hover-layout:hover {
     display: flex;
 }
 
-.navbar .navbar-brand .btn-notification .badge-notification {
-    top: -3px;
-    left: 5px;
-}
-
 .navbar .navbar-brand #contenedor-sigla {
     display: none;
 }
@@ -118,14 +114,24 @@ body * .hover-layout:hover {
     display: none;
 }
 
+#contenedor-notificaciones .btn-notification .badge {
+    min-width: 1.25rem;
+    min-height: .85rem;
+    position: absolute;
+    font-size: .75rem;
+    padding: .25em .1em;
+    top: -7px;
+    right: -5px;
+}
+
 #contenedor-notificaciones .dropdown-menu {
     width: 28rem;
     background-color: var(--root-layout-bg);
 }
 
 #contenedor-notificaciones .dropdown-menu .dropdown-header button[noti-btn="reload"] {
-    background-color: var(--root-layout-bg);
-    box-shadow: 0px 0px 10px -5px rgba(0, 0, 0, .891) !important;
+    background-color: var(--root-container-bg);
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, .25) !important;
 }
 
 #contenedor-notificaciones .dropdown-menu .dropdown-body {
@@ -141,8 +147,8 @@ body * .hover-layout:hover {
     position: relative;
     user-select: none;
     cursor: pointer;
-    background-color: var(--root-layout-bg);
-    box-shadow: 0px 0px 10px -5px rgba(0, 0, 0, .891) !important;
+    background-color: var(--root-container-bg);
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, .25) !important;
     margin: .35rem 0 !important;
 }
 
@@ -646,9 +652,9 @@ body * .hover-layout:hover {
         height: calc(var(--spacing) * 10);
     }
 
-    .layout-container .navbar .navbar-brand .btn-notification .badge-notification {
-        top: -3px;
-        left: 8px;
+    #contenedor-notificaciones .btn-notification .badge {
+        top: -4px;
+        right: 0px;
     }
 
     .layout-container .navbar .navbar-brand #contenedor-sigla {

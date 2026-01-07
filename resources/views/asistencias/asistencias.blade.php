@@ -142,6 +142,12 @@
                     <div class="col-12 my-1 text-end">
                         <button class="btn btn-primary" onclick="filtroBusqueda()" data-mdb-ripple-init>Filtrar</button>
                     </div>
+                    <div class="col-md-4 col-6 my-1">
+                        <label class="form-label-filter" for="">Fecha</label>
+                        <input type="date" class="form-control">
+                        <input type="time" class="form-control" value="12:21:21">
+                        <input type="datetime" class="form-control">
+                    </div>
                 </div>
             </div>
 

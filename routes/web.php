@@ -194,3 +194,7 @@ Route::get('/previsualizar-pdf/movil', [MediaArchivoController::class, 'previewP
 
 Route::get('/push/test/{id}', [PushController::class, 'test']);
 Route::get('/delete-s3', [MediaArchivoController::class, 'deleteFile']);
+
+Route::get('/picker', function () {
+    return view('picker');
+});
