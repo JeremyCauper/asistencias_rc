@@ -92,35 +92,17 @@
         }
 
         /* Desktop: centered modal */
-        @media (min-width: 600px) {
-            .mdtp-picker {
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%) scale(0.9);
-                opacity: 0;
-                transition: all 0.3s var(--mdtp-transition);
-            }
-
-            .mdtp-picker.active {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 1;
-            }
+        .mdtp-picker {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            opacity: 0;
+            transition: all 0.3s var(--mdtp-transition);
         }
 
-        /* Mobile: bottom sheet */
-        @media (max-width: 599px) {
-            .mdtp-picker {
-                bottom: 0;
-                left: 0;
-                right: 0;
-                transform: translateY(100%);
-                transition: transform 0.3s var(--mdtp-transition);
-                border-radius: var(--mdtp-radius) var(--mdtp-radius) 0 0;
-            }
-
-            .mdtp-picker.active {
-                transform: translateY(0);
-            }
+        .mdtp-picker.active {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
         }
 
         /* ==================== MODAL CONTENT ==================== */
@@ -131,14 +113,6 @@
             overflow: hidden;
             width: 360px;
             max-width: 90vw;
-        }
-
-        @media (max-width: 599px) {
-            .mdtp-container {
-                width: 100%;
-                max-width: 100%;
-                border-radius: var(--mdtp-radius) var(--mdtp-radius) 0 0;
-            }
         }
 
         /* ==================== HEADER ==================== */
@@ -170,7 +144,7 @@
             padding: 20px;
             min-height: 280px;
             max-height: 400px;
-            overflow-y: hidden    ;
+            overflow-y: hidden;
             position: relative;
         }
 
@@ -218,10 +192,15 @@
         .mdtp-picker-list {
             position: absolute;
             width: 100%;
+            height: 100%;
+            /* top: 0; left: 0; handled by container */
             transition: transform 0.3s var(--mdtp-transition);
         }
 
         .mdtp-picker-item {
+            position: absolute;
+            left: 0;
+            right: 0;
             height: 56px;
             display: flex;
             align-items: center;
@@ -229,9 +208,11 @@
             font-size: 16px;
             color: var(--mdtp-on-surface);
             opacity: 0.4;
-            transition: all 0.2s;
+            transition: opacity 0.2s, font-size 0.2s, font-weight 0.2s;
+            /* Animate visuals but not transform */
             user-select: none;
             cursor: pointer;
+            will-change: transform, opacity;
         }
 
         .mdtp-picker-item.active {
@@ -528,9 +509,13 @@
             width: 5px;
             height: 5px;
             border: 16px solid var(--mdtp-primary);
-            background: white;
+            background: var(--mdtp-primary);
             border-radius: 50%;
             transform: translate(-50%, 0);
+        }
+
+        .mdtp-clock-hand.minutes::after {
+            background: white;
         }
 
         .mdtp-clock-number {
@@ -863,8 +848,8 @@
                     theme: options.theme || 'light',
                     closeOnConfirm: options.closeOnConfirm !== false,
                     format24h: options.format24h !== undefined ? options.format24h : false,
-                    onConfirm: options.onConfirm || (() => {}),
-                    onCancel: options.onCancel || (() => {})
+                    onConfirm: options.onConfirm || (() => { }),
+                    onCancel: options.onCancel || (() => { })
                 };
 
                 if (!this.options.inputId) {
@@ -1143,6 +1128,13 @@
                 return container;
             }
 
+            /**
+             * Crea una columna de selección (Año o Mes) con scroll virtualizado.
+             * Utiliza un pool de elementos DOM reutilizables para optimizar el rendimiento.
+             * 
+             * @param {string} type - El tipo de selector ('year' o 'month').
+             * @return {HTMLElement} - El elemento de la columna creado.
+             */
             createPickerColumn(type) {
                 const column = document.createElement('div');
                 column.className = 'mdtp-picker-column';
@@ -1155,208 +1147,224 @@
                 list.className = 'mdtp-picker-list';
 
                 const itemHeight = 56;
+                const poolSize = 9; // 9 elementos son suficientes para cubrir la vista + buffers
 
-                // Base values (no infinite scroll, finite list)
+                // Definir valores base (Lista completa de años o meses)
                 const baseValues = type === 'year'
                     ? Array.from({ length: 3027 }, (_, i) => i + 1)
                     : this.locale.months;
 
                 list.dataset.type = type;
-                list.dataset.baseLength = baseValues.length;
 
-                // Add padding at top and bottom for centering
-                const padding = 0;
-
-                // Top padding
-                for (let i = 0; i < 2; i++) {
+                // Crear Pool de elementos DOM (para virtual scroll)
+                const pool = [];
+                for (let i = 0; i < poolSize; i++) {
                     const item = document.createElement('div');
                     item.className = 'mdtp-picker-item';
-                    item.innerHTML = '&nbsp;';
+                    item.style.top = '0px';
+                    // Se moverán usando transform para mejorar rendimiento (GPU)
                     list.appendChild(item);
+                    pool.push(item);
                 }
-
-                // Actual values
-                baseValues.forEach((val, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'mdtp-picker-item';
-                    item.textContent = val;
-                    item.dataset.value = type === 'year' ? val : index;
-                    item.dataset.index = index;
-                    list.appendChild(item);
-                });
-
-                // Bottom padding
-                // for (let i = 0; i < padding; i++) {
-                //     const item = document.createElement('div');
-                //     item.className = 'mdtp-picker-item';
-                //     item.innerHTML = '&nbsp;';
-                //     list.appendChild(item);
-                // }
 
                 column.appendChild(list);
 
-                // Initialize position
+                // Determinar posición inicial
                 const initialValue = type === 'year' ? this.state.viewYear : this.state.viewMonth;
-                const initialIndex = type === 'year' ?
-                    baseValues.indexOf(initialValue) :
-                    initialValue;
+                let initialIndex = type === 'year' ? baseValues.indexOf(initialValue) : initialValue;
+                if (initialIndex === -1) initialIndex = 0;
 
-                // Store state
+                // Estado interno del scroll
                 const state = {
                     type,
                     baseValues,
                     totalItems: baseValues.length,
                     itemHeight,
-                    padding,
+                    centerOffset: 112, // (280px altura contenedor - 56px altura item) / 2
                     currentIndex: initialIndex,
-                    offsetY: 0,
+                    offsetY: -initialIndex * itemHeight, // Posición global del scroll (negativa)
                     isDragging: false,
                     startY: 0,
                     startTranslate: 0,
                     velocity: 0,
                     lastY: 0,
                     lastTime: Date.now(),
-                    lastAngle: 0 // For time picker hand rotation
+                    pool,
+                    poolSize
                 };
 
                 list.pickerState = state;
 
-                // Initial render and position
-                this.scrollPickerToIndex(list, state, initialIndex);
-
-                // Initialize scroll interaction (non-infinite)
+                // Renderizado inicial
+                this.renderVirtualList(list, state);
                 this.initPickerScrollFinite(column, list, state);
 
                 return column;
             }
 
+            /**
+             * Mueve el picker a un índice específico de forma programática.
+             * 
+             * @param {HTMLElement} list - El elemento de la lista.
+             * @param {Object} state - El estado del picker.
+             * @param {number} targetIndex - El índice al que scrollear.
+             */
             scrollPickerToIndex(list, state, targetIndex) {
-                // Clamp index to valid range
+                // Asegurar que el índice esté dentro de límites válidos
                 targetIndex = Math.max(0, Math.min(targetIndex, state.totalItems - 1));
 
                 state.currentIndex = targetIndex;
-                // Calculate offset: center the selected item
-                state.offsetY = -(state.padding + targetIndex) * state.itemHeight;
+                const targetOffset = -targetIndex * state.itemHeight;
 
-                list.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                list.style.transform = `translateY(${state.offsetY}px)`;
+                // Animar hacia la posición
+                this.animateScrollTo(list, state, targetOffset, 300);
+            }
 
-                this.updatePickerActiveItem(list, state);
+            /**
+             * Renderiza la lista virtual basándose en la posición actual de scroll (offsetY).
+             * Calcula qué elementos deben ser visibles y recicla los nodos del DOM.
+             * 
+             * @param {HTMLElement} list - El contenedor de la lista.
+             * @param {Object} state - El estado del scroll.
+             */
+            renderVirtualList(list, state) {
+                const { offsetY, itemHeight, pool, baseValues, totalItems, centerOffset } = state;
 
-                // Update value
-                requestAnimationFrame(() => {
-                    this.updatePickerValueFinite(state);
+                // Calcular el índice del primer elemento visible
+                // offsetY es negativo, por eso lo invertimos.
+                // Restamos 4 para usar el buffer superior.
+                const firstVisibleIndex = Math.floor(-offsetY / itemHeight) - 4;
+
+                pool.forEach((item, i) => {
+                    const index = firstVisibleIndex + i; // Índice real en los datos
+
+                    if (index >= 0 && index < totalItems) {
+                        item.style.display = 'flex';
+                        item.textContent = baseValues[index];
+                        item.dataset.index = index;
+                        item.dataset.value = state.type === 'year' ? baseValues[index] : index;
+
+                        // Calcular posición visual absoluta
+                        const visualY = (index * itemHeight) + offsetY + centerOffset;
+                        item.style.transform = `translateY(${visualY}px)`;
+
+                        // Lógica de elemento "activo" (centro de la vista)
+                        // Si está cerca del centro (112px), es el activo.
+                        const dist = Math.abs(visualY - centerOffset);
+                        if (dist < itemHeight / 2) {
+                            item.classList.add('active');
+                        } else {
+                            item.classList.remove('active');
+                        }
+                    } else {
+                        // Ocultar elementos fuera de rango
+                        item.style.display = 'none';
+                    }
                 });
             }
 
-            updatePickerActiveItem(list, state) {
-                const items = list.children;
-                const centerIndex = state.padding + state.currentIndex;
-
-                for (let i = 0; i < items.length; i++) {
-                    items[i].classList.toggle('active', i - 2 === centerIndex);
-                }
-            }
-
-            updatePickerValueFinite(state) {
-                const {
-                    type,
-                    baseValues,
-                    currentIndex
-                } = state;
-
-                // Clamp to valid range
-                const clampedIndex = Math.max(0, Math.min(currentIndex, state.totalItems - 1));
-                const value = type === 'year' ? baseValues[clampedIndex] : clampedIndex;
-
-                if (type === 'year') {
-                    this.state.viewYear = value;
-                    this.updateHeaderLabel();
-                } else {
-                    this.state.viewMonth = value;
-                }
-
-                // Update selected date immediately
-                const currentDay = this.state.selectedDate.getDate();
-                const daysInNewMonth = new Date(this.state.viewYear, this.state.viewMonth + 1, 0).getDate();
-                const newDay = Math.min(currentDay, daysInNewMonth);
-
-                this.state.selectedDate = new Date(this.state.viewYear, this.state.viewMonth, newDay);
-                this.updateHeaderValue();
-            }
-
+            /**
+             * Inicializa la lógica unificada de scroll (Touch, Mouse, Wheel).
+             * Maneja la física, inercia (momentum) y snap (ajuste magnético).
+             * 
+             * @param {HTMLElement} column - La columna contenedora (escucha eventos).
+             * @param {HTMLElement} list - La lista interna.
+             * @param {Object} state - El estado del scroll.
+             */
             initPickerScrollFinite(column, list, state) {
-                const {
-                    itemHeight,
-                    padding,
-                    totalItems
-                } = state;
+                const { itemHeight, totalItems } = state;
                 let animationFrame = null;
-                const scrollSensitivity = 0.3;
+                const scrollSensitivity = 1.0; // 1:1 movimiento dedo-pantalla
 
-                const updatePosition = () => {
-                    // Calculate current index from offset
-                    const rawIndex = Math.round(-state.offsetY / itemHeight) - padding;
+                // --- Funciones Auxiliares ---
+
+                // Actualiza el índice seleccionado basado en la posición final
+                const updateSelectedValue = () => {
+                    const rawIndex = Math.round(-state.offsetY / itemHeight);
                     state.currentIndex = Math.max(0, Math.min(rawIndex, totalItems - 1));
 
-                    this.updatePickerActiveItem(list, state);
                     this.updatePickerValueFinite(state);
                 };
 
+                // Render loop simple para actualizaciones suaves
+                const smoothPositionUpdate = () => {
+                    this.renderVirtualList(list, state);
+                }
+
+                // Ajuste magnético (Snap) al elemento más cercano
                 const snap = () => {
-                    // Snap to nearest valid item
-                    const targetIndex = state.currentIndex;
-                    const targetOffset = -(padding + targetIndex) * itemHeight;
+                    const targetIndex = Math.max(0, Math.min(Math.round(-state.offsetY / itemHeight), totalItems - 1));
+                    const targetOffset = -targetIndex * itemHeight;
 
-                    state.offsetY = targetOffset;
-                    list.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                    list.style.transform = `translateY(${state.offsetY}px)`;
+                    // Si ya estamos ahí, solo actualizar valor
+                    if (Math.abs(state.offsetY - targetOffset) < 0.5) {
+                        state.offsetY = targetOffset;
+                        smoothPositionUpdate();
+                        updateSelectedValue();
+                        return;
+                    }
 
-                    setTimeout(() => {
-                        updatePosition();
-                    }, 300);
+                    // Animar el snap
+                    this.animateScrollTo(list, state, targetOffset, 400, () => {
+                        updateSelectedValue();
+                    });
                 };
 
+                // inercia (Momentum) después de soltar el arrastre
                 const momentumScroll = () => {
+                    // Umbral mínimo de velocidad para continuar
                     if (Math.abs(state.velocity) > 0.5) {
                         state.offsetY += state.velocity;
-                        state.velocity *= 0.92;
+                        state.velocity *= 0.96; // Fricción suave
 
-                        // Clamp to bounds
-                        const minOffset = -(padding + totalItems - 1) * itemHeight;
-                        const maxOffset = -padding * itemHeight;
-                        state.offsetY = Math.max(minOffset, Math.min(maxOffset, state.offsetY));
+                        // Límites elásticos (Bouncing)
+                        const minOffset = -(totalItems - 1) * itemHeight;
+                        const maxOffset = 0;
 
-                        list.style.transition = 'none';
-                        list.style.transform = `translateY(${state.offsetY}px)`;
+                        // Si se pasa de los bordes, rebota suavemente
+                        if (state.offsetY > maxOffset) {
+                            state.offsetY = maxOffset + (state.offsetY - maxOffset) * 0.2;
+                            state.velocity *= 0.5;
+                        } else if (state.offsetY < minOffset) {
+                            state.offsetY = minOffset + (state.offsetY - minOffset) * 0.2;
+                            state.velocity *= 0.5;
+                        }
 
-                        updatePosition();
+                        smoothPositionUpdate();
                         animationFrame = requestAnimationFrame(momentumScroll);
                     } else {
+                        // Fin de la inercia, hacer snap
                         snap();
                     }
                 };
 
+                // --- Manejadores de Eventos ---
+
                 const handleStart = (e) => {
                     state.isDragging = true;
+                    // Soporte unificado Mouse/Touch
                     state.startY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
                     state.startTranslate = state.offsetY;
                     state.velocity = 0;
                     state.lastY = state.startY;
                     state.lastTime = Date.now();
 
+                    // Cancelar animaciones en curso
                     if (animationFrame) {
                         cancelAnimationFrame(animationFrame);
                         animationFrame = null;
                     }
-
-                    list.style.transition = 'none';
+                    if (list.scrollAnimation) {
+                        cancelAnimationFrame(list.scrollAnimation);
+                        list.scrollAnimation = null;
+                    }
                 };
 
                 const handleMove = (e) => {
                     if (!state.isDragging) return;
 
-                    e.preventDefault();
+                    // Prevenir scroll de la página en móviles
+                    if (e.cancelable) e.preventDefault();
 
                     const currentY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
                     const deltaY = (currentY - state.startY) * scrollSensitivity;
@@ -1365,26 +1373,24 @@
 
                     state.offsetY = state.startTranslate + deltaY;
 
-                    // Clamp to bounds
-                    const minOffset = -(padding + totalItems - 1) * itemHeight;
-                    const maxOffset = -padding * itemHeight;
-                    state.offsetY = Math.max(minOffset, Math.min(maxOffset, state.offsetY));
-
+                    // Cálculo de velocidad para inercia (Velocity tracking)
                     if (deltaTime > 0) {
-                        state.velocity = ((currentY - state.lastY) / deltaTime * 16) * scrollSensitivity;
+                        const v = ((currentY - state.lastY) / deltaTime * 16) * scrollSensitivity;
+                        // Filtro paso bajo para suavizar picos de velocidad
+                        state.velocity = state.velocity * 0.2 + v * 0.8;
                     }
 
                     state.lastY = currentY;
                     state.lastTime = currentTime;
 
-                    list.style.transform = `translateY(${state.offsetY}px)`;
-                    updatePosition();
+                    smoothPositionUpdate();
                 };
 
                 const handleEnd = () => {
                     if (!state.isDragging) return;
                     state.isDragging = false;
 
+                    // Decidir entre inercia o snap inmediato
                     if (Math.abs(state.velocity) > 1) {
                         momentumScroll();
                     } else {
@@ -1393,56 +1399,134 @@
                 };
 
                 const handleWheel = (e) => {
-                    e.preventDefault();
+                    if (e.cancelable) e.preventDefault();
+                    if (animationFrame) cancelAnimationFrame(animationFrame);
+                    if (list.scrollAnimation) cancelAnimationFrame(list.scrollAnimation);
 
+                    // Scroll directo con rueda
                     const delta = e.deltaY * scrollSensitivity;
                     state.offsetY -= delta;
 
-                    // Clamp to bounds
-                    const minOffset = -(padding + totalItems - 1) * itemHeight;
-                    const maxOffset = -padding * itemHeight;
+                    // Clamp inmediato para la rueda (sin rebote elástico)
+                    const minOffset = -(totalItems - 1) * itemHeight;
+                    const maxOffset = 0;
                     state.offsetY = Math.max(minOffset, Math.min(maxOffset, state.offsetY));
 
-                    if (animationFrame) {
-                        cancelAnimationFrame(animationFrame);
-                    }
+                    smoothPositionUpdate();
 
-                    list.style.transition = 'none';
-                    list.style.transform = `translateY(${state.offsetY}px)`;
-
-                    updatePosition();
-
+                    // Debounce para hacer snap al terminar de rodar
                     clearTimeout(list.snapTimeout);
-                    list.snapTimeout = setTimeout(() => snap(), 150);
+                    list.snapTimeout = setTimeout(() => {
+                        snap();
+                    }, 100);
                 };
 
+                // Listeners
                 column.addEventListener('mousedown', handleStart);
-                column.addEventListener('touchstart', handleStart, {
-                    passive: false
-                });
+                column.addEventListener('touchstart', handleStart, { passive: false });
 
-                document.addEventListener('mousemove', handleMove);
-                document.addEventListener('touchmove', handleMove, {
-                    passive: false
-                });
-
+                // Eventos globales para no perder el drag si sales del elemento
+                document.addEventListener('mousemove', handleMove, { passive: false });
+                document.addEventListener('touchmove', handleMove, { passive: false });
                 document.addEventListener('mouseup', handleEnd);
                 document.addEventListener('touchend', handleEnd);
 
-                column.addEventListener('wheel', handleWheel, {
-                    passive: false
-                });
+                column.addEventListener('wheel', handleWheel, { passive: false });
 
+                // Limpieza de eventos al destruir
                 column.addEventListener('remove', () => {
                     document.removeEventListener('mousemove', handleMove);
                     document.removeEventListener('touchmove', handleMove);
                     document.removeEventListener('mouseup', handleEnd);
                     document.removeEventListener('touchend', handleEnd);
                     if (animationFrame) cancelAnimationFrame(animationFrame);
+                    if (list.scrollAnimation) cancelAnimationFrame(list.scrollAnimation);
                     clearTimeout(list.snapTimeout);
                 });
+            }
 
-                updatePosition();
+            /**
+             * Anima el scroll hacia una posición objetivo usando una curva Bezier suave.
+             * 
+             * @param {HTMLElement} list - Elemento lista.
+             * @param {Object} state - Estado del scroll.
+             * @param {number} targetOffset - Posición final.
+             * @param {number} duration - Duración en ms.
+             * @param {Function} callback - Función a ejecutar al terminar.
+             */
+            animateScrollTo(list, state, targetOffset, duration = 400, callback = null) {
+                const startOffset = state.offsetY;
+                const change = targetOffset - startOffset;
+                const startTime = performance.now();
+
+                // Curva "Ease Out Quint" para paradas suaves
+                const easeOutQuint = (t) => 1 + (--t) * t * t * t * t;
+
+                const animate = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    if (elapsed >= duration) {
+                        state.offsetY = targetOffset;
+                        this.renderVirtualList(list, state);
+                        if (callback) callback();
+                        list.scrollAnimation = null;
+                        return;
+                    }
+
+                    const t = elapsed / duration;
+                    const ease = easeOutQuint(t);
+
+                    state.offsetY = startOffset + change * ease;
+                    this.renderVirtualList(list, state);
+
+                    list.scrollAnimation = requestAnimationFrame(animate);
+                };
+
+                if (list.scrollAnimation) cancelAnimationFrame(list.scrollAnimation);
+                list.scrollAnimation = requestAnimationFrame(animate);
+            }
+
+            /**
+             * Actualiza el valor seleccionado en el estado global del componente.
+             * Sincroniza la visualización (Header, Calendario).
+             * 
+             * @param {Object} state - Estado local del picker.
+             */
+            updatePickerValueFinite(state) {
+                const { type, baseValues, currentIndex } = state;
+
+                // Validación de seguridad de rango
+                const clampedIndex = Math.max(0, Math.min(currentIndex, state.totalItems - 1));
+                const value = type === 'year' ? baseValues[clampedIndex] : clampedIndex;
+
+                if (type === 'year') {
+                    if (this.state.viewYear !== value) {
+                        this.state.viewYear = value;
+                        this.updateHeaderLabel();
+                        // Importante: Actualizar fecha seleccionada para reflejar cambios en calendario
+                        this.syncSelectedDate();
+                    }
+                } else {
+                    if (this.state.viewMonth !== value) {
+                        this.state.viewMonth = value;
+                        this.syncSelectedDate();
+                    }
+                }
+            }
+
+            /**
+             * Sincroniza la fecha seleccionada `this.state.selectedDate`
+             * con los valores actuales de vista (viewYear, viewMonth).
+             * Maneja desbordamiento de días (ej: 31 Feb -> 28 Feb).
+             */
+            syncSelectedDate() {
+                const currentDay = this.state.selectedDate.getDate();
+                // Obtener último día del nuevo mes/año seleccionado
+                const daysInNewMonth = new Date(this.state.viewYear, this.state.viewMonth + 1, 0).getDate();
+                // Ajustar día si excede el máximo del mes
+                const newDay = Math.min(currentDay, daysInNewMonth);
+
+                this.state.selectedDate = new Date(this.state.viewYear, this.state.viewMonth, newDay);
+                this.updateHeaderValue();
             }
 
             createDatePicker() {
@@ -1642,6 +1726,10 @@
                         this.elements.clockNumbers.appendChild(number);
                     });
                 } else {
+                    const clockHand = this.elements.clockHand;
+                    let hasActiveSelection = false;
+                    // clockHand.classList.add('minutes');
+
                     // Minute numbers (0, 5, 10, ..., 55)
                     for (let minute = 0; minute < 60; minute += 5) {
                         const angle = ((minute / 5) * 30 - 90) * (Math.PI / 180);
@@ -1658,6 +1746,7 @@
 
                         if (minute === this.state.minute) {
                             number.classList.add('selected');
+                            hasActiveSelection = true;
                         }
 
                         number.addEventListener('click', () => {
@@ -1665,6 +1754,12 @@
                         });
 
                         this.elements.clockNumbers.appendChild(number);
+                    }
+
+                    if (!hasActiveSelection) {
+                        clockHand.classList.add('minutes');
+                    } else {
+                        clockHand.classList.remove('minutes');
                     }
                 }
 
@@ -1720,9 +1815,14 @@
                         if (hour === 0) hour = 12;
 
                         if (this.options.format24h) {
-                            if (isInner && hour === 12) hour = 0;
-                            if (!isInner && hour !== 12) hour = hour === 12 ? 12 : hour + 12;
-                            if (hour === 24) hour = 12;
+                            if (isInner) {
+                                // Inner circle is 1-12
+                                // No change needed, angle maps 1-12 correctly
+                            } else {
+                                // Outer circle is 00, 13-23
+                                if (hour === 12) hour = 0;
+                                else hour += 12;
+                            }
                         }
 
                         this.selectClockValue(hour, 'hour', true);
@@ -1741,7 +1841,9 @@
 
                 const startDrag = (e) => {
                     if (e.type === 'touchstart') {
-                        e.preventDefault();
+                        // REMOVED: e.preventDefault(); 
+                        // Letting the event propagate allows 'click' to fire on numbers
+                        // if the user just taps without dragging.
                     }
                     isDragging = true;
                     lastAngle = null;
@@ -1825,8 +1927,60 @@
                     }
                 }
 
-                this.renderClockNumbers();
+                // OPTIMIZED: Update partial selection instead of full re-render
+                this.updateClockSelection();
                 this.updateHeaderValue();
+            }
+
+            updateClockSelection() {
+                if (!this.elements.clockNumbers) return;
+
+                const isHourView = this.state.timeView === 'hour';
+                const numbers = this.elements.clockNumbers.querySelectorAll('.mdtp-clock-number');
+                const clockHand = this.elements.clockHand;
+                let hasActiveSelection = false;
+
+                numbers.forEach(number => {
+                    const val = parseInt(number.dataset.value, 10);
+                    let isSelected = false;
+
+                    if (isHourView) {
+                        const currentHour = this.options.format24h ? this.state.hour : (this.state.hour % 12 || 12);
+                        // Handle 0 vs 12 edge cases
+                        if (val === 0 && currentHour === 12 && !this.options.format24h) isSelected = false;
+                        else if (val === 12 && currentHour === 0 && this.options.format24h) isSelected = true;
+                        else isSelected = val === currentHour;
+
+                        // Fix for 12/0 ambiguity in 24h
+                        if (this.options.format24h) {
+                            if (val === 0 && this.state.hour === 0) isSelected = true;
+                            if (val === 0 && this.state.hour === 12) isSelected = false;
+                            if (val === 12 && this.state.hour === 12) isSelected = true;
+                            if (val === 12 && this.state.hour === 0) isSelected = false;
+                        }
+                    } else {
+                        isSelected = val === this.state.minute;
+                    }
+
+                    if (isSelected) {
+                        number.classList.add('selected');
+                        hasActiveSelection = true;
+                    } else {
+                        number.classList.remove('selected');
+                    }
+                });
+
+                // User Request: If minutes view and no number is selected (e.g. minute 13), add 'minutes' class to hand
+                // This likely changes the dot color to white to indicate precise selection
+                if (!isHourView) {
+                    if (!hasActiveSelection) {
+                        clockHand.classList.add('minutes');
+                    } else {
+                        clockHand.classList.remove('minutes');
+                    }
+                } else {
+                    clockHand.classList.remove('minutes');
+                }
             }
 
             updateClockHand() {
@@ -1844,7 +1998,7 @@
 
                 // Use cumulative angle for continuous rotation
                 // const angle = this.state.clockHandAngle;
-                const angle = isHourView ? this.state.hour * 30 : this.state.clockHandAngle;
+                const angle = isHourView ? this.state.hour * 30 : this.state.minute * 6;
 
                 this.elements.clockHand.style.height = `${length}px`;
                 this.elements.clockHand.style.transform = `translate(-50%, -100%) rotate(${angle}deg)`;
