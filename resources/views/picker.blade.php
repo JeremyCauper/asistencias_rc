@@ -170,7 +170,7 @@
             padding: 20px;
             min-height: 280px;
             max-height: 400px;
-            overflow-y: auto;
+            overflow-y: hidden    ;
             position: relative;
         }
 
@@ -408,6 +408,7 @@
 
         .mdtp-time-header {
             display: flex;
+            justify-content: center;
             align-items: center;
             gap: 4px;
             font-size: 56px;
@@ -522,11 +523,12 @@
         .mdtp-clock-hand::after {
             content: '';
             position: absolute;
-            top: -20px;
+            top: -25px;
             left: 50%;
-            width: 40px;
-            height: 40px;
-            background: var(--mdtp-primary);
+            width: 5px;
+            height: 5px;
+            border: 16px solid var(--mdtp-primary);
+            background: white;
             border-radius: 50%;
             transform: translate(-50%, 0);
         }
@@ -545,6 +547,7 @@
             cursor: pointer;
             transition: all 0.2s;
             user-select: none;
+            z-index: 999;
         }
 
         .mdtp-clock-number:hover {
@@ -791,12 +794,8 @@
         /* ==================== LOCALES ==================== */
         const LOCALES = {
             es: {
-                months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre',
-                    'Octubre', 'Noviembre', 'Diciembre'
-                ],
-                monthsShort: ['ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sep.', 'oct.', 'nov.',
-                    'dic.'
-                ],
+                months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                monthsShort: ['ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sep.', 'oct.', 'nov.', 'dic.'],
                 days: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
                 daysShort: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
                 daysAbbr: ['Dom.', 'Lun.', 'Mar.', 'Mié.', 'Jue.', 'Vie.', 'Sáb.'],
@@ -808,9 +807,7 @@
                 minute: 'Minuto'
             },
             en: {
-                months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
-                    'October', 'November', 'December'
-                ],
+                months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
                 monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
                 daysShort: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
@@ -1125,7 +1122,7 @@
                 // Close button
                 const closeBtn = document.createElement('button');
                 closeBtn.className = 'mdtp-close-month-year';
-                closeBtn.innerHTML = '❌';
+                closeBtn.innerHTML = '➜';
                 closeBtn.setAttribute('aria-label', 'Cerrar');
                 closeBtn.addEventListener('click', () => {
                     // The state is already updated by the pickers, just close
@@ -1160,20 +1157,18 @@
                 const itemHeight = 56;
 
                 // Base values (no infinite scroll, finite list)
-                const baseValues = type === 'year' ?
-                    Array.from({
-                        length: 3027
-                    }, (_, i) => i + 1) :
-                    this.locale.months;
+                const baseValues = type === 'year'
+                    ? Array.from({ length: 3027 }, (_, i) => i + 1)
+                    : this.locale.months;
 
                 list.dataset.type = type;
                 list.dataset.baseLength = baseValues.length;
 
                 // Add padding at top and bottom for centering
-                const padding = 4;
+                const padding = 0;
 
                 // Top padding
-                for (let i = 0; i < padding; i++) {
+                for (let i = 0; i < 2; i++) {
                     const item = document.createElement('div');
                     item.className = 'mdtp-picker-item';
                     item.innerHTML = '&nbsp;';
@@ -1191,12 +1186,12 @@
                 });
 
                 // Bottom padding
-                for (let i = 0; i < padding; i++) {
-                    const item = document.createElement('div');
-                    item.className = 'mdtp-picker-item';
-                    item.innerHTML = '&nbsp;';
-                    list.appendChild(item);
-                }
+                // for (let i = 0; i < padding; i++) {
+                //     const item = document.createElement('div');
+                //     item.className = 'mdtp-picker-item';
+                //     item.innerHTML = '&nbsp;';
+                //     list.appendChild(item);
+                // }
 
                 column.appendChild(list);
 
@@ -1259,7 +1254,7 @@
                 const centerIndex = state.padding + state.currentIndex;
 
                 for (let i = 0; i < items.length; i++) {
-                    items[i].classList.toggle('active', i === centerIndex);
+                    items[i].classList.toggle('active', i - 2 === centerIndex);
                 }
             }
 
@@ -1604,9 +1599,9 @@
                 existingNumbers.forEach(num => num.remove());
 
                 const isHourView = this.state.timeView === 'hour';
-                const radius = 110; // Distance from center
+                const radius = 107; // Distance from center
                 const centerX = 130;
-                const centerY = 130;
+                const centerY = 129;
 
                 if (isHourView) {
                     // Hour numbers (1-12 or 0-23 for 24h format)
@@ -1848,7 +1843,8 @@
                 }
 
                 // Use cumulative angle for continuous rotation
-                const angle = this.state.clockHandAngle;
+                // const angle = this.state.clockHandAngle;
+                const angle = isHourView ? this.state.hour * 30 : this.state.clockHandAngle;
 
                 this.elements.clockHand.style.height = `${length}px`;
                 this.elements.clockHand.style.transform = `translate(-50%, -100%) rotate(${angle}deg)`;
