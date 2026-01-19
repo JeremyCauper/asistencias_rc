@@ -47,19 +47,19 @@ $(document).ready(function () {
 
     // ⬅️ Retroceder un día
     $('#btn-fecha-left').on('click', function () {
-        var fecha = new Date($inputFecha.val());
+        var fecha = new Date(filtro_fecha.val());
         fecha.setDate(fecha.getDate() - 1);
         var nuevaFecha = fecha.toISOString().split('T')[0];
-        $inputFecha.val(nuevaFecha);
+        filtro_fecha.val(nuevaFecha);
         debounceFiltro();
     });
 
     // ➡️ Avanzar un día
     $('#btn-fecha-right').on('click', function () {
-        var fecha = new Date($inputFecha.val());
+        var fecha = new Date(filtro_fecha.val());
         fecha.setDate(fecha.getDate() + 1);
         var nuevaFecha = fecha.toISOString().split('T')[0];
-        $inputFecha.val(nuevaFecha);
+        filtro_fecha.val(nuevaFecha);
         debounceFiltro();
     });
 });

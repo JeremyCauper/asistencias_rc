@@ -72,6 +72,26 @@ $(document).ready(function () {
         rangoSeleccionado = null;
     }
 
+    // --- ACTIVAR FECHA MENSUAL ---
+    let fecha_export_mensual = null;
+    function activarMensual() {
+        if (fecha_export_mensual) return;
+        fecha_export_mensual = new MaterialDateTimePicker({
+            inputId: 'fechaExport',
+            mode: 'month',
+            format: 'MMMM de YYYY'
+        });
+        fecha_export_mensual.val(date('Y-m'));
+    }
+    activarMensual();
+
+    function desactivarMensual() {
+        console.log(fecha_export_mensual);
+        if (!fecha_export_mensual) return;
+        fecha_export_mensual.destroy();
+        fecha_export_mensual = null;
+    }
+
     // --- MODO MENSUAL ---
     $('#btnMensual').on('click', function () {
         modo = 'mensual';
@@ -80,9 +100,8 @@ $(document).ready(function () {
         $titulo.text('EXPORTAR MENSUAL');
 
         desactivarRango();
-        $fechaExport.attr('type', 'month');
-        $fechaExport.removeAttr('readonly');
-        $fechaExport.val(new Date().toISOString().slice(0, 7)); // YYYY-MM
+        activarMensual();
+        fecha_export_mensual.val(new Date().toISOString().slice(0, 7)); // YYYY-MM
     });
 
     // --- MODO RANGO ---
@@ -92,17 +111,9 @@ $(document).ready(function () {
         $('#btnMensual').removeClass('active');
         $titulo.text('EXPORTAR POR RANGO');
 
-        $fechaExport.attr('type', 'button');
-        $fechaExport.attr('readonly', '');
+        desactivarMensual();
         $fechaExport.val('');
         activarRango();
-    });
-
-    // --- SHOW PICKER SOLO EN MENSUAL ---
-    $fechaExport.on('click', function () {
-        if (modo === 'mensual') {
-            this.showPicker();
-        }
     });
 
     // --- EXPORTAR ---

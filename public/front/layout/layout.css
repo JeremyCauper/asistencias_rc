@@ -115,13 +115,13 @@ body * .hover-layout:hover {
 }
 
 #contenedor-notificaciones .btn-notification .badge {
-    min-width: 1.25rem;
-    min-height: .85rem;
+    min-width: 1rem;
+    min-height: 0.875rem;
     position: absolute;
-    font-size: .75rem;
-    padding: .25em .1em;
-    top: -7px;
-    right: -5px;
+    font-size: .65rem;
+    padding: .15em .1em;
+    top: -4px;
+    right: -3px;
 }
 
 #contenedor-notificaciones .dropdown-menu {
@@ -653,8 +653,8 @@ body * .hover-layout:hover {
     }
 
     #contenedor-notificaciones .btn-notification .badge {
-        top: -4px;
-        right: 0px;
+        top: -2px;
+        right: 2px;
     }
 
     .layout-container .navbar .navbar-brand #contenedor-sigla {

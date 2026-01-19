@@ -3,6 +3,10 @@
 
 @section('cabecera')
     <link rel="stylesheet" href="{{ secure_asset($ft_css->quill_show) }}">
+    
+    <link rel="stylesheet" href="{{ secure_asset('front/vendor/mdtp/mdtp.min.css') }}">
+    <script src="{{ secure_asset('front/vendor/mdtp/mdtp.min.js') }}"></script>
+
     <script src="{{ secure_asset($ft_js->bootstrap_bundle) }}"></script>
     <script src="{{ secure_asset($ft_js->bootstrap_multiselect) }}"></script>
     <script src="{{ secure_asset($ft_js->form_multiselect) }}"></script>
@@ -32,7 +36,7 @@
                             <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
                                 <i class="fas fa-angle-left"></i>
                             </button>
-                            <input type="month" id="filtro_fecha" class="form-control" value="{{ date('Y-m') }}">
+                            <input type="text" id="filtro_fecha" class="form-control text-center">
                             <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
                                 <i class="fas fa-angle-right"></i>
                             </button>
@@ -60,9 +64,16 @@
                 </thead>
             </table>
             <script>
+                const filtro_fecha = new MaterialDateTimePicker({
+                    inputId: 'filtro_fecha',
+                    mode: 'month',
+                    format: 'MMMM de YYYY'
+                });
+                filtro_fecha.val("{{ date('Y-m-d') }}");
+
                 let tablaMisAsistencias;
                 let getUrlListar = () => generateUrl(`${__url}/asistencias/listar`, {
-                    fecha: $('#filtro_fecha').val()
+                    fecha: filtro_fecha.val()
                 });
                 let dataSet = (json) => {
                     let feriado = json.data?.feriado || {};
@@ -71,25 +82,25 @@
 
                     let lista = json.data?.listado || [];
                     let estadosAsistencias = [{
-                            name: "estado-faltas",
-                            value: lista.filter(a => a.tipo_asistencia === 1).length
-                        },
-                        {
-                            name: "estado-asistencias",
-                            value: lista.filter(a => a.tipo_asistencia === 2).length
-                        },
-                        {
-                            name: "estado-justificados",
-                            value: lista.filter(a => a.tipo_asistencia === 3).length
-                        },
-                        {
-                            name: "estado-tardanzas",
-                            value: lista.filter(a => a.tipo_asistencia === 4).length
-                        },
-                        {
-                            name: "estado-derivados",
-                            value: lista.filter(a => a.tipo_asistencia === 7).length
-                        },
+                        name: "estado-faltas",
+                        value: lista.filter(a => a.tipo_asistencia === 1).length
+                    },
+                    {
+                        name: "estado-asistencias",
+                        value: lista.filter(a => a.tipo_asistencia === 2).length
+                    },
+                    {
+                        name: "estado-justificados",
+                        value: lista.filter(a => a.tipo_asistencia === 3).length
+                    },
+                    {
+                        name: "estado-tardanzas",
+                        value: lista.filter(a => a.tipo_asistencia === 4).length
+                    },
+                    {
+                        name: "estado-derivados",
+                        value: lista.filter(a => a.tipo_asistencia === 7).length
+                    },
                     ];
                     setEstados(estadosAsistencias, lista.length);
                     return lista;
@@ -101,61 +112,61 @@
                         ajax: {
                             url: getUrlListar(),
                             dataSrc: dataSet,
-                            error: function(xhr, error, thrown) {
+                            error: function (xhr, error, thrown) {
                                 boxAlert.table();
                                 console.log('Respuesta del servidor:', xhr);
                             }
                         },
                         columns: [{
-                                data: 'jornada',
-                                title: 'Jornada'
-                            },
-                            {
-                                data: 'fecha',
-                                title: 'Fecha'
-                            },
-                            {
-                                data: 'tipo_modalidad',
-                                title: 'Modalidad'
-                            },
-                            {
-                                data: 'tipo_asistencia',
-                                title: 'Estado'
-                            },
-                            {
-                                data: 'entrada',
-                                title: 'Entrada'
-                            },
-                            {
-                                data: 'salida',
-                                title: 'Salida'
-                            }
+                            data: 'jornada',
+                            title: 'Jornada'
+                        },
+                        {
+                            data: 'fecha',
+                            title: 'Fecha'
+                        },
+                        {
+                            data: 'tipo_modalidad',
+                            title: 'Modalidad'
+                        },
+                        {
+                            data: 'tipo_asistencia',
+                            title: 'Estado'
+                        },
+                        {
+                            data: 'entrada',
+                            title: 'Entrada'
+                        },
+                        {
+                            data: 'salida',
+                            title: 'Salida'
+                        }
                         ],
                         cardTemplate: (data, index) => {
                             return `
-                                <div class="d-flex align-items-center justify-content-between pb-1">
-                                    <div class="fw-medium mb-0" style="overflow: hidden;font-size: 3.25vw;">
-                                        <span>${obtenerFechaFormateada(new Date(data.fecha + ' 00:00:00'))}</span>
-                                    </div>
-                                    <div class="btn-acciones-movil">${data.acciones}</div>
-                                </div>
-                                <div class="d-flex justify-content-start align-items-center">
-                                    <span>
-                                        ${getBadgeTipoModalidad(data.tipo_modalidad, '.85')}
-                                        ${getBadgeTipoAsistencia(data.tipo_asistencia, '.85')}
-                                    </span>
-                                </div>
-                                <hr class="mx-1 my-2">
-                                <div class="d-flex align-items-center justify-content-between pt-1" style="font-size: 2.85vw;color: #909090;">
-                                    ${getFormatJornada(data)}
-                                    ${getBadgeDescuento(data)}
-                                </div>`;
+                                        <div class="d-flex align-items-center justify-content-between pb-1">
+                                            <div class="fw-medium mb-0" style="overflow: hidden;font-size: 3.25vw;">
+                                                <span>${obtenerFechaFormateada(new Date(data.fecha + ' 00:00:00'))}</span>
+                                            </div>
+                                            <div class="btn-acciones-movil">${data.acciones}</div>
+                                        </div>
+                                        <div class="d-flex justify-content-start align-items-center">
+                                            <span>
+                                                ${getBadgeTipoModalidad(data.tipo_modalidad, '.85')}
+                                                ${getBadgeTipoAsistencia(data.tipo_asistencia, '.85')}
+                                            </span>
+                                        </div>
+                                        <hr class="mx-1 my-2">
+                                        <div class="d-flex align-items-center justify-content-between pt-1" style="font-size: 2.85vw;color: #909090;">
+                                            ${getFormatJornada(data)}
+                                            ${getBadgeDescuento(data)}
+                                        </div>`;
                         },
                         scrollY: '600px',
                         perPage: 40,
                         searchPlaceholder: 'Buscar por nombre...',
                         order: ['fecha', 'desc'],
-                        drawCallback: function() {
+                        drawCallback: function () {
                             if (typeof mdb !== 'undefined') {
                                 document.querySelectorAll('[data-mdb-dropdown-init]').forEach(el => {
                                     new mdb.Dropdown(el);
@@ -173,50 +184,50 @@
                             dataSrc: dataSet
                         },
                         columns: [{
-                                data: 'jornada',
-                                render: function(data, type, row) {
-                                    let dia = (data || 'domingo');
-                                    return dia.charAt(0).toUpperCase() + dia.slice(1);
-                                }
-                            },
-                            {
-                                data: 'fecha'
-                            },
-                            {
-                                data: 'entrada',
-                                render: function(data, type, row) {
-                                    return data || '-';
-                                }
-                            },
-                            {
-                                data: 'salida',
-                                render: function(data, type, row) {
-                                    return data || '-';
-                                }
-                            },
-                            {
-                                data: 'tipo_modalidad',
-                                render: function(data, type, row) {
-                                    return getBadgeTipoModalidad(data);
-                                }
-                            },
-                            {
-                                data: 'tipo_asistencia',
-                                render: function(data, type, row) {
-                                    return getBadgeTipoAsistencia(data);
-                                }
-                            },
-                            {
-                                data: 'descuento',
-                                render: function(data, type, row) {
-                                    return getBadgeDescuento(row);
-                                }
-                            },
-                            {
-                                data: 'acciones'
+                            data: 'jornada',
+                            render: function (data, type, row) {
+                                let dia = (data || 'domingo');
+                                return dia.charAt(0).toUpperCase() + dia.slice(1);
                             }
+                        },
+                        {
+                            data: 'fecha'
+                        },
+                        {
+                            data: 'entrada',
+                            render: function (data, type, row) {
+                                return data || '-';
+                            }
+                        },
+                        {
+                            data: 'salida',
+                            render: function (data, type, row) {
+                                return data || '-';
+                            }
+                        },
+                        {
+                            data: 'tipo_modalidad',
+                            render: function (data, type, row) {
+                                return getBadgeTipoModalidad(data);
+                            }
+                        },
+                        {
+                            data: 'tipo_asistencia',
+                            render: function (data, type, row) {
+                                return getBadgeTipoAsistencia(data);
+                            }
+                        },
+                        {
+                            data: 'descuento',
+                            render: function (data, type, row) {
+                                return getBadgeDescuento(row);
+                            }
+                        },
+                        {
+                            data: 'acciones'
+                        }
                         ],
-                        createdRow: function(row, data, dataIndex) {
+                        createdRow: function (row, data, dataIndex) {
                             $(row).addClass('text-center');
                             $(row).find('td:eq(0)').addClass('text-start');
                             $(row).find('td:eq(7)').addClass(`td-acciones`);
@@ -373,8 +384,8 @@
                         Detalle de Justificación
                         <span aria-item="ver_estatus">--</span>
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init
-                        data-mdb-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <!-- Asunto -->

@@ -5,6 +5,9 @@
     <link rel="stylesheet" href="{{ secure_asset($ft_css->quill_show) }}">
     <link rel="stylesheet" type="text/css" href="{{ secure_asset($ft_css->daterangepicker) }}">
 
+    <link rel="stylesheet" href="{{ secure_asset('front/vendor/mdtp/mdtp.min.css') }}">
+    <script src="{{ secure_asset('front/vendor/mdtp/mdtp.min.js') }}"></script>
+
     <script type="text/javascript" src="{{ secure_asset($ft_js->daterangepicker_moment) }}"></script>
     <script type="text/javascript" src="{{ secure_asset($ft_js->daterangepicker) }}"></script>
 
@@ -27,47 +30,6 @@
 @section('content')
     <!-- Cards resumen -->
     @include('asistencias.partials.estados_card')
-
-    {{-- <div class="card my-3">
-        <div class="card-body p-3">
-            <div class="d-flex align-items-center justify-content-between my-1">
-                <div class="fw-bold mb-0" style="overflow: hidden;font-size: 2.5vw;">
-                    <span>ALBORNOZ MEZA, KATHERINE ANDREA</span>
-                </div>
-                <div class="btn-group dropdown shadow-0">
-                    <button type="button" class="dropdown-toggle btn btn-tertiary hover-btn btn-sm p-1 shadow-0"
-                        data-mdb-ripple-init="" aria-expanded="false" data-mdb-dropdown-init="" data-mdb-ripple-color="dark"
-                        data-mdb-parent=".dataTables_scrollBody" data-mdb-dropdown-animation="off"
-                        data-mdb-dropdown-initialized="true">
-                        <i class="fas fa-bars" style="font-size: 1.125em;"></i>
-                    </button>
-                    <div class="dropdown-menu">
-                        <h6 class="dropdown-header text-secondary d-flex justify-content-between align-items-center"><label
-                                class="badge" style="background-color: #dc3545">Falta</label> <i class="fas fa-gear"></i>
-                        </h6><button class="dropdown-item py-2 " onclick="modificarDescuento(19510)"><i
-                                class="fas fa-file-invoice-dollar me-2 text-secondary"></i> Aplicar
-                            Descuento</button><button class="dropdown-item py-2 " onclick="justificarAsistencia(19510)"><i
-                                class="fas fa-scale-balanced me-2" style="color: #dc3545;"></i>Justificar Falta</button>
-                    </div>
-                </div>
-            </div>
-            <div class="d-flex justify-content-between align-items-center my-2">
-                <label class="badge" style="font-size: 0.75rem;background-color: #54b4d3;">Sistemas</label>
-                <span>
-                    <label class="badge" style="font-size: 0.75rem; background-color: #28a745;"><i
-                            class="fas fa-house-laptop fa-1x me-1"></i>Remoto</label>
-                    <label class="badge" style="font-size: 0.75rem; background-color: #dc3545;">Falta</label>
-                    <label class="ms-auto"><span style="font-size: 2.5vw;"> S/ -50.00</span></label>
-                </span>
-            </div>
-            <div class="text-center">
-                <label>
-                    <i class="far fa-clock"></i>
-                    <span style="font-size: 2.5vw;">08:25:08 - 18:05:00</span>
-                </label>
-            </div>
-        </div>
-    </div> --}}
 
     <!-- Tabla -->
     <div class="card">
@@ -98,9 +60,7 @@
                             <label class="form-label-filter" for="areas">Areas</label>
                             <select id="areas" name="areas" multiple="multiple" class="multiselect-select-all">
                                 @foreach ($areas as $v)
-                                    <option
-                                        {{ in_array(Auth::user()->rol_system, [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
-                                        value="{{ $v->id }}">
+                                    <option {{ in_array(Auth::user()->rol_system, [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }} value="{{ $v->id }}">
                                         {{ $v->descripcion }}
                                     </option>
                                 @endforeach
@@ -133,7 +93,7 @@
                             <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
                                 <i class="fas fa-angle-left"></i>
                             </button>
-                            <input type="date" id="filtro_fecha" class="form-control" value="{{ date('Y-m-d') }}">
+                            <input type="text" id="filtro_fecha" class="form-control" readonly role="button">
                             <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
                                 <i class="fas fa-angle-right"></i>
                             </button>
@@ -141,12 +101,6 @@
                     </div>
                     <div class="col-12 my-1 text-end">
                         <button class="btn btn-primary" onclick="filtroBusqueda()" data-mdb-ripple-init>Filtrar</button>
-                    </div>
-                    <div class="col-md-4 col-6 my-1">
-                        <label class="form-label-filter" for="">Fecha</label>
-                        <input type="date" class="form-control">
-                        <input type="time" class="form-control" value="12:21:21">
-                        <input type="datetime" class="form-control">
                     </div>
                 </div>
             </div>
@@ -173,9 +127,16 @@
     </div>
 
     <script>
+        const filtro_fecha = new MaterialDateTimePicker({
+            inputId: 'filtro_fecha',
+            mode: 'date',
+            format: 'MMMM DD de YYYY'
+        });
+        filtro_fecha.val("{{ date('Y-m-d') }}");
+
         let tablaAsistencias;
         let getUrlListar = () => generateUrl(`${__url}/asistencias-diarias/listar`, {
-            fecha: $('#filtro_fecha').val(),
+            fecha: filtro_fecha.val(),
             empresas: $('#empresas').val(),
             tipoModalidad: $('#tipoModalidad').val(),
             tipoPersonal: $('#tipoPersonal').val(),
@@ -188,25 +149,25 @@
 
             let lista = json.data?.listado || [];
             let estadosAsistencias = [{
-                    name: "estado-faltas",
-                    value: lista.filter(a => a.tipo_asistencia === 1).length
-                },
-                {
-                    name: "estado-asistencias",
-                    value: lista.filter(a => a.tipo_asistencia === 2).length
-                },
-                {
-                    name: "estado-justificados",
-                    value: lista.filter(a => a.tipo_asistencia === 3).length
-                },
-                {
-                    name: "estado-tardanzas",
-                    value: lista.filter(a => a.tipo_asistencia === 4).length
-                },
-                {
-                    name: "estado-derivados",
-                    value: lista.filter(a => a.tipo_asistencia === 7).length
-                },
+                name: "estado-faltas",
+                value: lista.filter(a => a.tipo_asistencia === 1).length
+            },
+            {
+                name: "estado-asistencias",
+                value: lista.filter(a => a.tipo_asistencia === 2).length
+            },
+            {
+                name: "estado-justificados",
+                value: lista.filter(a => a.tipo_asistencia === 3).length
+            },
+            {
+                name: "estado-tardanzas",
+                value: lista.filter(a => a.tipo_asistencia === 4).length
+            },
+            {
+                name: "estado-derivados",
+                value: lista.filter(a => a.tipo_asistencia === 7).length
+            },
             ];
             setEstados(estadosAsistencias, lista.length);
             return lista;
@@ -218,62 +179,62 @@
                 ajax: {
                     url: getUrlListar(),
                     dataSrc: dataSet,
-                    error: function(xhr, error, thrown) {
+                    error: function (xhr, error, thrown) {
                         boxAlert.table();
                         console.log('Respuesta del servidor:', xhr);
                     }
                 },
                 columns: [{
-                        data: 'personal',
-                        title: 'Nombre'
-                    },
-                    {
-                        data: 'area',
-                        title: 'Área'
-                    },
-                    {
-                        data: 'tipo_modalidad',
-                        title: 'Modalidad'
-                    },
-                    {
-                        data: 'tipo_asistencia',
-                        title: 'Estado'
-                    },
-                    {
-                        data: 'entrada',
-                        title: 'Entrada'
-                    },
-                    {
-                        data: 'salida',
-                        title: 'Salida'
-                    }
+                    data: 'personal',
+                    title: 'Nombre'
+                },
+                {
+                    data: 'area',
+                    title: 'Área'
+                },
+                {
+                    data: 'tipo_modalidad',
+                    title: 'Modalidad'
+                },
+                {
+                    data: 'tipo_asistencia',
+                    title: 'Estado'
+                },
+                {
+                    data: 'entrada',
+                    title: 'Entrada'
+                },
+                {
+                    data: 'salida',
+                    title: 'Salida'
+                }
                 ],
                 cardTemplate: (data, index) => {
                     return `
-                        <div class="d-flex align-items-center justify-content-between pb-1">
-                            <div class="fw-medium mb-0" style="overflow: hidden;font-size: 3.25vw;">
-                                <span>${data.personal}</span>
-                            </div>
-                            <div class="btn-acciones-movil">${data.acciones}</div>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                                ${getBadgeAreas(data.area, '.95', false)}
-                            <span>
-                                ${getBadgeTipoModalidad(data.tipo_modalidad, '.85')}
-                                ${getBadgeTipoAsistencia(data.tipo_asistencia, '.85')}
-                            </span>
-                        </div>
-                        <hr class="mx-1 my-2">
-                        <div class="d-flex align-items-center justify-content-between pt-1" style="font-size: 2.85vw;color: #909090;">
-                            ${getFormatJornada(data)}
-                            ${getBadgeDescuento(data)}
-                        </div>`;
+                                <div class="d-flex align-items-center justify-content-between pb-1">
+                                    <div class="fw-medium mb-0" style="overflow: hidden;font-size: 3.25vw;">
+                                        <span>${data.personal}</span>
+                                    </div>
+                                    <div class="btn-acciones-movil">${data.acciones}</div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                        ${getBadgeAreas(data.area, '.95', false)}
+                                    <span>
+                                        ${getBadgeTipoModalidad(data.tipo_modalidad, '.85')}
+                                        ${getBadgeTipoAsistencia(data.tipo_asistencia, '.85')}
+                                    </span>
+                                </div>
+                                <hr class="mx-1 my-2">
+                                <div class="d-flex align-items-center justify-content-between pt-1" style="font-size: 2.85vw;color: #909090;">
+                                    ${getFormatJornada(data)}
+                                    ${getBadgeDescuento(data)}
+                                </div>`;
                 },
                 scrollY: '600px',
                 perPage: 100,
                 searchPlaceholder: 'Buscar por nombre...',
                 order: ['personal', 'asc'],
-                drawCallback: function() {
+                drawCallback: function () {
                     if (typeof mdb !== 'undefined') {
                         document.querySelectorAll('[data-mdb-dropdown-init]').forEach(el => {
                             new mdb.Dropdown(el);
@@ -289,72 +250,72 @@
                 scrollX: true,
                 scrollY: 400,
                 dom: `<"row"
-                    <"col-lg-12 mb-2"B>>
-                    <"row"
-                        <"col-sm-6 text-sm-start text-center my-1 botones-accion">
-                        <"col-sm-6 text-sm-end text-center my-1"f>>
-                    <"contenedor_tabla my-2"tr>
-                    <"row"
-                        <"col-md-5 text-md-start text-center my-1"i>
-                        <"col-md-7 text-md-end text-center my-1"p>>`,
+                            <"col-lg-12 mb-2"B>>
+                            <"row"
+                                <"col-sm-6 text-sm-start text-center my-1 botones-accion">
+                                <"col-sm-6 text-sm-end text-center my-1"f>>
+                            <"contenedor_tabla my-2"tr>
+                            <"row"
+                                <"col-md-5 text-md-start text-center my-1"i>
+                                <"col-md-7 text-md-end text-center my-1"p>>`,
                 ajax: {
                     url: getUrlListar(),
                     dataSrc: dataSet,
-                    error: function(xhr, error, thrown) {
+                    error: function (xhr, error, thrown) {
                         boxAlert.table();
                         console.log('Respuesta del servidor:', xhr);
                     }
                 },
                 columns: [{
-                        data: 'personal'
-                    },
-                    {
-                        data: 'area',
-                        render: function(data, type, row) {
-                            return getBadgeAreas(data);
-                        }
-                    },
-                    {
-                        data: 'tipo_personal',
-                        render: function(data, type, row) {
-                            return getBadgeTipoPersonal(data);
-                        }
-                    },
-                    {
-                        data: 'tipo_modalidad',
-                        render: function(data, type, row) {
-                            return getBadgeTipoModalidad(data);
-                        }
-                    },
-                    {
-                        data: 'tipo_asistencia',
-                        render: function(data, type, row) {
-                            return getBadgeTipoAsistencia(data);
-                        }
-                    },
-                    {
-                        data: 'entrada',
-                        render: function(data, type, row) {
-                            return data || '-';
-                        }
-                    },
-                    {
-                        data: 'salida',
-                        render: function(data, type, row) {
-                            return data || '-';
-                        }
-                    },
-                    {
-                        data: 'descuento',
-                        render: function(data, type, row) {
-                            return getBadgeDescuento(row);
-                        }
-                    },
-                    {
-                        data: 'acciones'
+                    data: 'personal'
+                },
+                {
+                    data: 'area',
+                    render: function (data, type, row) {
+                        return getBadgeAreas(data);
                     }
+                },
+                {
+                    data: 'tipo_personal',
+                    render: function (data, type, row) {
+                        return getBadgeTipoPersonal(data);
+                    }
+                },
+                {
+                    data: 'tipo_modalidad',
+                    render: function (data, type, row) {
+                        return getBadgeTipoModalidad(data);
+                    }
+                },
+                {
+                    data: 'tipo_asistencia',
+                    render: function (data, type, row) {
+                        return getBadgeTipoAsistencia(data);
+                    }
+                },
+                {
+                    data: 'entrada',
+                    render: function (data, type, row) {
+                        return data || '-';
+                    }
+                },
+                {
+                    data: 'salida',
+                    render: function (data, type, row) {
+                        return data || '-';
+                    }
+                },
+                {
+                    data: 'descuento',
+                    render: function (data, type, row) {
+                        return getBadgeDescuento(row);
+                    }
+                },
+                {
+                    data: 'acciones'
+                }
                 ],
-                createdRow: function(row, data, dataIndex) {
+                createdRow: function (row, data, dataIndex) {
                     if (data.justificado == 0) {
                         $(row).attr({
                             'title': 'Tiene una Justificacion pendiente.'
@@ -452,8 +413,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" data-mdb-ripple-init
-                        data-mdb-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init data-mdb-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Guardar</button>
                 </div>
             </form>
@@ -513,15 +473,14 @@
     </div>
 
     <!-- Modal de Justificación -->
-    <div class="modal fade" id="modalJustificar" tabindex="-1" aria-labelledby="modalJustificarLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="modalJustificar" tabindex="-1" aria-labelledby="modalJustificarLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <form id="formJustificar" class="modal-content">
 
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="modalJustificarLabel">Justificar asistencia</h5>
-                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init
-                        data-mdb-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="col-md-12 col-sm-12 col-xs-12">
@@ -569,8 +528,8 @@
                 <!-- CABECERA -->
                 <div class="modal-header bg-primary text-white">
                     <h6 class="modal-title" id="modalExportLabel">EXPORTAR MENSUAL</h6>
-                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init
-                        data-mdb-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-ripple-init data-mdb-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
 
                 <!-- CUERPO -->
@@ -581,9 +540,7 @@
                             <label class="form-label-filter" for="tipoArea">Areas</label>
                             <select id="tipoArea" name="tipoArea" multiple="multiple" class="multiselect-select-all">
                                 @foreach ($areas as $v)
-                                    <option
-                                        {{ in_array(Auth::user()->rol_system, [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }}
-                                        value="{{ $v->id }}">
+                                    <option {{ in_array(Auth::user()->rol_system, [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }} value="{{ $v->id }}">
                                         {{ $v->descripcion }}
                                     </option>
                                 @endforeach
@@ -601,8 +558,8 @@
 
                         <!-- INPUT FECHA -->
                         <div class="col-12 py-2">
-                            <input type="month" class="form-control text-center" id="fechaExport" name="fechaExport"
-                                role="button" value="<?= date('Y-m') ?>" max="<?= date('Y-m') ?>">
+                            <input type="text" class="form-control text-center" id="fechaExport" name="fechaExport"
+                                role="button" readonly type="button">
                         </div>
 
                         <!-- EXPORTAR -->
@@ -631,7 +588,9 @@
     @if (!in_array(Auth::user()->rol_system, [1, 5, 6]) || $tipo_sistema)
         <script src="{{ secure_asset($ft_js->exceljs) }}"></script>
         <script src="{{ secure_asset($ft_js->FileSaver) }}"></script>
-        <script src="{{ secure_asset('front/js/asistencias/export-excel-asistencias.js') }}?v={{ env('APP_VERSION') }}"></script>
+        <script
+            src="{{ secure_asset('front/js/asistencias/export-excel-asistencias.js') }}?v={{ env('APP_VERSION') }}"></script>
     @endif
-    <script src="{{ secure_asset('front/js/asistencias/asistencias-justificaciones.js') }}?v={{ env('APP_VERSION') }}"></script>
+    <script
+        src="{{ secure_asset('front/js/asistencias/asistencias-justificaciones.js') }}?v={{ env('APP_VERSION') }}"></script>
 @endsection
