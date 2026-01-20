@@ -103,7 +103,7 @@
 
             <table id="tablaPersonal" class="table align-center mb-0 table-hover text-nowrap w-100" style="display: none">
                 <thead>
-                    <tr class="text-bg-primary text-center">
+                    <tr class="text-center">
                         <th>UserID</th>
                         <th>Empresa</th>
                         <th>Area</th>

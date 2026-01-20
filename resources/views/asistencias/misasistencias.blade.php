@@ -3,7 +3,7 @@
 
 @section('cabecera')
     <link rel="stylesheet" href="{{ secure_asset($ft_css->quill_show) }}">
-    
+
     <link rel="stylesheet" href="{{ secure_asset('front/vendor/mdtp/mdtp.min.css') }}">
     <script src="{{ secure_asset('front/vendor/mdtp/mdtp.min.js') }}"></script>
 
@@ -51,7 +51,7 @@
 
             <table id="tablaMisAsistencias" class="table table-hover text-nowrap w-100" style="display: none;">
                 <thead>
-                    <tr class="text-bg-primary text-center">
+                    <tr class="text-center">
                         <th>Jornada</th>
                         <th>Fecha</th>
                         <th>Entrada</th>
@@ -144,23 +144,23 @@
                         ],
                         cardTemplate: (data, index) => {
                             return `
-                                        <div class="d-flex align-items-center justify-content-between pb-1">
-                                            <div class="fw-medium mb-0" style="overflow: hidden;font-size: 3.25vw;">
-                                                <span>${obtenerFechaFormateada(new Date(data.fecha + ' 00:00:00'))}</span>
+                                            <div class="d-flex align-items-center justify-content-between pb-1">
+                                                <div class="fw-medium mb-0" style="overflow: hidden;font-size: 3.25vw;">
+                                                    <span>${obtenerFechaFormateada(new Date(data.fecha + ' 00:00:00'))}</span>
+                                                </div>
+                                                <div class="btn-acciones-movil">${data.acciones}</div>
                                             </div>
-                                            <div class="btn-acciones-movil">${data.acciones}</div>
-                                        </div>
-                                        <div class="d-flex justify-content-start align-items-center">
-                                            <span>
-                                                ${getBadgeTipoModalidad(data.tipo_modalidad, '.85')}
-                                                ${getBadgeTipoAsistencia(data.tipo_asistencia, '.85')}
-                                            </span>
-                                        </div>
-                                        <hr class="mx-1 my-2">
-                                        <div class="d-flex align-items-center justify-content-between pt-1" style="font-size: 2.85vw;color: #909090;">
-                                            ${getFormatJornada(data)}
-                                            ${getBadgeDescuento(data)}
-                                        </div>`;
+                                            <div class="d-flex justify-content-start align-items-center">
+                                                <span>
+                                                    ${getBadgeTipoModalidad(data.tipo_modalidad, '.85')}
+                                                    ${getBadgeTipoAsistencia(data.tipo_asistencia, '.85')}
+                                                </span>
+                                            </div>
+                                            <hr class="mx-1 my-2">
+                                            <div class="d-flex align-items-center justify-content-between pt-1" style="font-size: 2.85vw;color: #909090;">
+                                                ${getFormatJornada(data)}
+                                                ${getBadgeDescuento(data)}
+                                            </div>`;
                         },
                         scrollY: '600px',
                         perPage: 40,

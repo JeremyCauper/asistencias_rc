@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Syncs\SyncPersonalController;
 use App\Http\Controllers\Asistencia\AsistenciaController;
 use App\Http\Controllers\Asistencia\ExcelAsistenciaController;
 use App\Http\Controllers\Asistencia\MisAsistenciaController;
+use App\Http\Controllers\Contratos\ContratosController;
 use App\Http\Controllers\InventarioVehicular\InventarioVehicularController;
 use App\Http\Controllers\Justificacion\JustificacionController;
 use App\Http\Controllers\Mantenimientos\AreaPersonal\AreaPersonalController;
@@ -183,6 +184,16 @@ Route::middleware('auth')->group(function () {
             Route::get('/mostrar/{id}', 'show')->name('show');
             Route::post('/actualizar', 'update')->name('update');
             Route::post('/asignar', 'asignar')->name('asignar');
+        });
+
+    Route::controller(ContratosController::class)
+        ->prefix('contratos')
+        ->as('contratos.')
+        ->group(function () {
+            Route::get('/', 'view')->name('view');
+            Route::get('/listar', 'listar')->name('listar');
+            Route::post('/registrar', 'create')->name('create');
+            Route::put('/actualizar', 'update')->name('update');
         });
 
     Route::get('/notificaciones/listar', [NotificacionController::class, 'listar']);

@@ -8,6 +8,8 @@
     --root-font-weight: 400;
     --root-active-multiselect-bg: #ffffff;
     --root-dt-processing-bg: #ffffff75;
+    --root-dt-scrollHead-bg: #dce2ed;
+    --root-dt-shorting-after-bg: #2e394c;
 }
 
 [data-mdb-theme=dark] {
@@ -19,6 +21,8 @@
     --root-font-weight: 100;
     --root-active-multiselect-bg: #16181f;
     --root-dt-processing-bg: #0f111775;
+    --root-dt-scrollHead-bg: #2e394c;
+    --root-dt-shorting-after-bg: #dce2ed;
 }
 
 html {
@@ -880,7 +884,7 @@ label.custom-control {
 .dataTables_scrollHead {
     height: 36px !important;
     border-radius: .5rem;
-    background-color: var(--mdb-primary);
+    background-color: var(--root-dt-scrollHead-bg);
 }
 
 .dataTables_scrollHead .dataTables_scrollHeadInner,
@@ -903,6 +907,7 @@ label.custom-control {
     right: .5rem;
     font-size: .8125rem;
     margin-top: -.40625rem;
+    color: #a4a4a4;
     display: inline-block;
     line-height: 1;
     -webkit-font-smoothing: antialiased;
@@ -919,7 +924,7 @@ label.custom-control {
 
 .dataTables_scrollHead .dataTables_scrollHeadInner table thead tr .sorting_asc:after,
 .dataTables_scrollHead .dataTables_scrollHeadInner table thead tr .sorting_desc:before {
-    color: white;
+    color:var(--root-dt-shorting-after-bg);
     opacity: 1;
 }
 

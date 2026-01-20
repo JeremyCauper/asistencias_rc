@@ -28,7 +28,7 @@
                     <div class="col-12">
                         <table id="tb_area_personal" class="table table-hover text-nowrap" style="width:100%">
                             <thead>
-                                <tr class="text-bg-primary text-center">
+                                <tr class="text-center">
                                     <th>#</th>
                                     <th>Descripcion</th>
                                     <th>Color</th>
@@ -47,40 +47,40 @@
                                 fixedHeader: true, // Para fijar el encabezado al hacer scroll vertical
                                 ajax: {
                                     url: `${__url}/mantenimiento/area-personal/listar`,
-                                    dataSrc: function(json) {
+                                    dataSrc: function (json) {
                                         return json?.data;
                                     },
-                                    error: function(xhr, error, thrown) {
+                                    error: function (xhr, error, thrown) {
                                         boxAlert.table();
                                         console.log('Respuesta del servidor:', xhr);
                                     }
                                 },
                                 columns: [{
-                                        data: 'id'
-                                    },
-                                    {
-                                        data: 'descripcion'
-                                    },
-                                    {
-                                        data: 'color',
-                                        render: function(data, type, rows) {
-                                            return `<span style="color: ${data};">${data}</span>`
-                                        }
-                                    },
-                                    {
-                                        data: 'created_at'
-                                    },
-                                    {
-                                        data: 'updated_at'
-                                    },
-                                    {
-                                        data: 'estado'
-                                    },
-                                    {
-                                        data: 'acciones'
+                                    data: 'id'
+                                },
+                                {
+                                    data: 'descripcion'
+                                },
+                                {
+                                    data: 'color',
+                                    render: function (data, type, rows) {
+                                        return `<span style="color: ${data};">${data}</span>`
                                     }
+                                },
+                                {
+                                    data: 'created_at'
+                                },
+                                {
+                                    data: 'updated_at'
+                                },
+                                {
+                                    data: 'estado'
+                                },
+                                {
+                                    data: 'acciones'
+                                }
                                 ],
-                                createdRow: function(row, data, dataIndex) {
+                                createdRow: function (row, data, dataIndex) {
                                     $(row).addClass('text-center');
                                     $(row).find('td:eq(6)').addClass(`td-acciones`);
                                 },
@@ -121,8 +121,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" data-mdb-ripple-init
-                        data-mdb-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init data-mdb-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Guardar</button>
                 </div>
             </form>
@@ -133,5 +132,6 @@
 
 @section('scripts')
     <script></script>
-    <script src="{{ secure_asset('front/js/mantenimiento/areapersonal/areapersonal.js') }}?v={{ env('APP_VERSION') }}"></script>
+    <script
+        src="{{ secure_asset('front/js/mantenimiento/areapersonal/areapersonal.js') }}?v={{ env('APP_VERSION') }}"></script>
 @endsection

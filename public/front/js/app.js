@@ -855,6 +855,71 @@ function base64ToUtf8(base64) {
     }
 }
 
+/**
+ * Calcula la diferencia entre dos fechas en meses calendario completos y días restantes.
+ * 
+ * @param {string} fecha1 - Primera fecha en formato YYYY-MM-DD
+ * @param {string} fecha2 - Segunda fecha en formato YYYY-MM-DD
+ * @returns {string} String describiendo la diferencia en meses y/o días
+ */
+function calcularDiferenciaMesesDias(fecha1, fecha2) {
+  // Parsear las fechas
+  const d1 = new Date(fecha1 + 'T00:00:00');
+  const d2 = new Date(fecha2 + 'T00:00:00');
+  
+  // Validar que las fechas sean válidas
+  if (isNaN(d1.getTime()) || isNaN(d2.getTime())) {
+    throw new Error('Fechas inválidas. Use el formato YYYY-MM-DD');
+  }
+  
+  // Asegurar que fechaInicio sea la menor
+  let fechaInicio = d1 <= d2 ? d1 : d2;
+  let fechaFin = d1 <= d2 ? d2 : d1;
+  
+  // Función auxiliar para obtener el último día del mes
+  function ultimoDiaDelMes(year, month) {
+    return new Date(year, month + 1, 0).getDate();
+  }
+  
+  let mesesCompletos = 0;
+  let fechaActual = new Date(fechaInicio);
+  
+  // Contar meses completos
+  while (true) {
+    const yearActual = fechaActual.getFullYear();
+    const monthActual = fechaActual.getMonth();
+    const ultimoDia = ultimoDiaDelMes(yearActual, monthActual);
+    
+    // Crear la fecha del último día del mes actual
+    const finDelMes = new Date(yearActual, monthActual, ultimoDia);
+    
+    // Verificar si llegamos al último día del mes y no pasamos la fecha final
+    if (finDelMes <= fechaFin) {
+      mesesCompletos++;
+      // Avanzar al primer día del siguiente mes
+      fechaActual = new Date(yearActual, monthActual + 1, 1);
+    } else {
+      break;
+    }
+  }
+  
+  // Calcular días restantes desde fechaActual hasta fechaFin (inclusive)
+  const diasRestantes = Math.floor((fechaFin - fechaActual) / (1000 * 60 * 60 * 24)) + 1;
+  
+  // Construir el resultado
+  const partes = [];
+  
+  if (mesesCompletos > 0) {
+    partes.push(`${mesesCompletos} ${mesesCompletos === 1 ? 'mes' : 'meses'}`);
+  }
+  
+  if (diasRestantes > 0) {
+    partes.push(`${diasRestantes} ${diasRestantes === 1 ? 'día' : 'días'}`);
+  }
+  
+  return partes.join(', ') || '0 días';
+}
+
 function colores(c) {
     const coloresPorLetra = {
         A: "#E74C3C", // rojo

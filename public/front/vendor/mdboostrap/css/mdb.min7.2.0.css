@@ -223,6 +223,7 @@
     --mdb-box-shadow-color-rgb: 0, 0, 0;
     --mdb-stepper-mobile-bg: #eeeeee;
 
+    --mdb-table-hover-bg: rgb(220 226 237 / 25%);
     --mdb-box-shadow: 0 0px 15px -8px rgba(var(--mdb-box-shadow-color-rgb), .65), 0 0px 10px -8px rgba(var(--mdb-box-shadow-color-rgb), 0.25);
 }
 
@@ -251,6 +252,7 @@
     --mdb-box-shadow-color-rgb: 0, 0, 0;
     --mdb-stepper-mobile-bg: #1f222b;
 
+    --mdb-table-hover-bg: rgb(46 57 76 / 20%);
     --mdb-box-shadow: 0 0px 15px -5px rgba(var(--mdb-box-shadow-color-rgb), 1), 0 0px 10px -8px rgba(var(--mdb-box-shadow-color-rgb), 1);
 }
 
@@ -2452,7 +2454,6 @@ progress {
     --mdb-table-active-color: var(--mdb-body-color);
     --mdb-table-active-bg: rgba(var(--mdb-emphasis-color-rgb), 0.1);
     --mdb-table-hover-color: var(--mdb-body-color);
-    --mdb-table-hover-bg: rgb(200 200 200/ 10%);
     width: 100%;
     margin-bottom: 1rem;
     vertical-align: top;
