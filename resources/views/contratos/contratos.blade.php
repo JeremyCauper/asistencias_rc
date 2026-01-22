@@ -112,7 +112,6 @@
                         <th>Dias Restantes</th>
                         <th>Fecha Inicio</th>
                         <th>Fecha Expiracion</th>
-                        <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -134,6 +133,38 @@
                     $('#totalExpirados').text(expirados);
                     return json;
                 }
+                let getDiasRestantes = (data) => {
+                    if (data) {
+                        const fechaExp = new Date(data + 'T00:00:00');
+                        const hoy = new Date();
+                        hoy.setHours(0, 0, 0, 0);
+                        const diferenciaTiempo = fechaExp - hoy;
+                        const diferenciaDias = Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24));
+
+                        if (diferenciaDias < 0) {
+                            informacion = {
+                                estado: 'Expirado',
+                                color: 'danger'
+                            };
+                        } else if (diferenciaDias >= 0 && diferenciaDias <= 10) {
+                            informacion = {
+                                estado: `${diferenciaDias} dia${diferenciaDias !== 1 ? 's' : ''}`,
+                                color: 'warning'
+                            };
+                        } else informacion = {
+                            estado: `Vigente`,
+                            color: 'success'
+                        };
+                    } else {
+                        informacion = {
+                            estado: 'Sin Registro',
+                            color: 'secondary'
+                        };
+                    }
+
+                    return `<span class="ms-auto badge badge-${informacion.color} rounded-1" style="font-size: .75rem">${informacion.estado}</span>`;
+                }
+
 
                 if (esCelular()) {
                     $('#cardsContratos').removeAttr('style');
@@ -145,18 +176,18 @@
                         scrollX: true,
                         scrollY: 400,
                         dom: `<"row"
-                            <"col-lg-12 mb-2"B>>
-                            <"row"
-                                <"col-sm-6 text-sm-start text-center my-1 botones-accion">
-                                <"col-sm-6 text-sm-end text-center my-1"f>>
-                            <"contenedor_tabla my-2"tr>
-                            <"row"
-                                <"col-md-5 text-md-start text-center my-1"i>
-                                <"col-md-7 text-md-end text-center my-1"p>>`,
+                                                    <"col-lg-12 mb-2"B>>
+                                                    <"row"
+                                                        <"col-sm-6 text-sm-start text-center my-1 botones-accion">
+                                                        <"col-sm-6 text-sm-end text-center my-1"f>>
+                                                    <"contenedor_tabla my-2"tr>
+                                                    <"row"
+                                                        <"col-md-5 text-md-start text-center my-1"i>
+                                                        <"col-md-7 text-md-end text-center my-1"p>>`,
                         ajax: {
                             url: getUrlListar(),
                             dataSrc: dataSet,
-                            error: function(xhr, error, thrown) {
+                            error: function (xhr, error, thrown) {
                                 boxAlert.table();
                                 console.log('Respuesta del servidor:', xhr);
                             }
@@ -164,7 +195,7 @@
                         columns: [
                             {
                                 data: 'dni',
-                                render: function(data, type, row) {
+                                render: function (data, type, row) {
                                     let dni = (data || '') + (data ? ' - ' : '');
                                     return dni + `${row.nombre || ''} ${row.apellido || ''}`;
                                 }
@@ -174,56 +205,28 @@
                             },
                             {
                                 data: 'area',
-                                render: function(data, type, row) {
+                                render: function (data, type, row) {
                                     return getBadgeAreas(data, '.75', false);
                                 }
                             },
                             {
                                 data: 'tipo_contrato',
-                                render: function(data, type, row) {
+                                render: function (data, type, row) {
                                     let tipo = [
-                                        {id: 0, descripcion: 'Contrato'},
-                                        {id: 1, descripcion: 'Permanente'},
-                                        {id: 2, descripcion: 'Por Proyecto'}
+                                        { id: 0, descripcion: 'Contrato' },
+                                        { id: 1, descripcion: 'Permanente' },
+                                        { id: 2, descripcion: 'Por Proyecto' }
                                     ]
                                     return (tipo.find(t => t.id == data)?.descripcion || 'Contrato');
                                 }
                             },
                             {
-                                data: 'fecha_fin', render: function(data, type, row) {
-                                    if (data) {
-                                        const fechaExp = new Date(data + 'T00:00:00');
-                                        const hoy = new Date();
-                                        hoy.setHours(0, 0, 0, 0);
-                                        const diferenciaTiempo = fechaExp - hoy;
-                                        const diferenciaDias = Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24));
-
-                                        if (diferenciaDias < 0) {
-                                            informacion = {
-                                                estado: 'Expirado',
-                                                color: 'danger'
-                                            };
-                                        } else if (diferenciaDias >= 0 && diferenciaDias <= 10) {
-                                            informacion = {
-                                                estado: `${diferenciaDias} dia${diferenciaDias !== 1 ? 's' : ''}`,
-                                                color: 'warning'
-                                            };
-                                        } else informacion = {
-                                            estado: `Vigente`,
-                                            color: 'success'
-                                        };
-                                    } else {
-                                        informacion = {
-                                            estado: 'Sin Registro',
-                                            color: 'secondary'
-                                        };
-                                    }
-
-                                    return `<span class="ms-auto badge badge-${informacion.color} rounded-1" style="font-size: .75rem">${informacion.estado}</span>`;
+                                data: 'fecha_fin', render: function (data, type, row) {
+                                    return getDiasRestantes(data);
                                 }
                             },
                             {
-                                data: 'fecha_inicio', render: function(data, type, row) {
+                                data: 'fecha_inicio', render: function (data, type, row) {
                                     if (data) {
                                         const fechaExp = new Date(data + 'T00:00:00');
                                         return obtenerFechaFormateada(fechaExp, true);
@@ -231,34 +234,21 @@
                                 }
                             },
                             {
-                                data: 'fecha_fin', render: function(data, type, row) {
+                                data: 'fecha_fin', render: function (data, type, row) {
                                     if (data) {
                                         const fechaExp = new Date(data + 'T00:00:00');
                                         return obtenerFechaFormateada(fechaExp, true);
                                     } else return '-';
-                                }
-                            },
-                            {
-                                data: 'estado',
-                                render: function(data, type, row) {
-                                    let estados = [
-                                        {id: 1, descripcion: 'Activo', color: '#14a44d'},
-                                        {id: 2, descripcion: 'Pronto Expirar', color: '#e4a11b'},
-                                        {id: 3, descripcion: 'Expirado', color: '#dc4c64'}
-                                    ];
-                                    let estado = estados.find(e => e.id == data) || {id: 4, descripcion: 'Terminado', color: '#9fa6b2'};
-
-                                    return `<span class="badge" style="color: ${estado.color}; background-color: ${estado.color}20; border: 1px solid ${estado.color}; font-size: .75rem;">${estado.descripcion}</span>`;
                                 }
                             },
                             {
                                 data: 'acciones'
                             }
                         ],
-                        createdRow: function(row, data, dataIndex) {
+                        createdRow: function (row, data, dataIndex) {
                             $(row).addClass('text-center');
                             $(row).find('td:eq(0), td:eq(1)').addClass('text-start');
-                            $(row).find('td:eq(8)').addClass(`td-acciones`);
+                            $(row).find('td:eq(7)').addClass(`td-acciones`);
                         },
                         processing: true
                     });
@@ -299,7 +289,8 @@
                         </div>
                         <div class="col-md-6 mb-2">
                             <label class="form-label" for="tiempo_contable">Tiempo Contable</label>
-                            <input type="button" class="form-control" id="tiempo_contable" readonly="readonly" role="button">
+                            <input type="button" class="form-control" id="tiempo_contable" readonly="readonly"
+                                role="button">
                         </div>
                         <div class="col-md-6 mb-2">
                             <label class="form-label" for="tipo_contrato">Tipo Contrato</label>
@@ -309,11 +300,33 @@
                                 <option value="2">Por Proyecto</option>
                             </select>
                         </div>
+                        <div class="col-12 text-end mb-2">
+                            <button type="button" class="btn btn-primary" id="btnGuardar">Guardar</button>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <h6 class="fw-bold" style="font-size: small;">Historial de Contratos</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover text-center align-middle text-nowrap">
+                                <thead class="border-bottom text-primary-emphasis">
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th>Inicio</th>
+                                        <th>Fin</th>
+                                        <th>Estado</th>
+                                        <th>Registro</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaHistorialContratos">
+                                    <!-- JS will populate this -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-link" data-mdb-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="btnGuardar">Guardar</button>
                 </div>
             </div>
         </div>

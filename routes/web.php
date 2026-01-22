@@ -193,6 +193,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/', 'view')->name('view');
             Route::get('/listar', 'listar')->name('listar');
             Route::post('/registrar', 'create')->name('create');
+            Route::get('/listar-usuario/{id}', 'listarPorUsuario')->name('listarPorUsuario');
             Route::put('/actualizar', 'update')->name('update');
         });
 

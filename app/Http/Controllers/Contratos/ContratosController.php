@@ -58,13 +58,23 @@ class ContratosController extends Controller
                     'estatus' => $contrato?->estatus,
                     'acciones' => $this->DropdownAcciones([
                         'button' => [
-                            ['clase' => 'btnNuevoContrato', 'attr' => 'data-id="' . $p->user_id . '"', 'texto' => '<i class="fa fa-edit me-2 text-info"></i> Nuevo Contrato'],
+                            ['clase' => 'btnContratos', 'attr' => 'data-id="' . $p->user_id . '"', 'texto' => '<i class="far fa-clipboard me-2 text-primary"></i> Contratos'],
                         ],
                     ])
                 ];
             });
 
         return response()->json($personal);
+    }
+
+    public function listarPorUsuario($user_id)
+    {
+        $contratos = DB::table('contratos')
+            ->where('user_id', $user_id)
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json($contratos);
     }
 
     /**
@@ -100,6 +110,21 @@ class ContratosController extends Controller
 
             if ($validator->fails()) {
                 return response()->json(['required' => $validator->errors()], 422);
+            }
+
+            $contratoActivo = DB::table('contratos')
+                ->where('user_id', $request->user_id)
+                ->where('estatus', '!=', 3) // 3: VENCIDO
+                ->orderBy('fecha_fin', 'desc')
+                ->first();
+
+            if ($contratoActivo) {
+                $fechaFinContrato = \Carbon\Carbon::parse($contratoActivo->fecha_fin);
+                $hoy = \Carbon\Carbon::now()->startOfDay();
+
+                if ($fechaFinContrato->gte($hoy)) {
+                    return response()->json(['success' => false, 'message' => 'El usuario tiene un contrato vigente.'], 400);
+                }
             }
 
             DB::table('contratos')->insert([

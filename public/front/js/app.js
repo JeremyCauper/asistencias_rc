@@ -210,24 +210,34 @@ function formatUnique(data) {
 }
 
 function date(format, strtime = null) {
-    const now = strtime ? new Date(strtime) : new Date();
+    const baseDate = strtime ? new Date(strtime) : new Date();
+
+    // Intentar extraer año y mes del format si existen
+    const yearMatch = format.match(/(\d{4})/);
+    const monthMatch = format.match(/-(\d{2})-/);
+
+    const year = yearMatch ? Number(yearMatch[1]) : baseDate.getFullYear();
+    const month = monthMatch ? Number(monthMatch[1]) : baseDate.getMonth() + 1;
+
+    const lastDay = new Date(year, month, 0).getDate();
 
     const map = {
-        'Y': now.getFullYear(),                // Año completo (2024)
-        'm': String(now.getMonth() + 1).padStart(2, '0'),  // Mes (01-12)
-        'd': String(now.getDate()).padStart(2, '0'),       // Día del mes (01-31)
-        'H': String(now.getHours()).padStart(2, '0'),      // Horas (00-23)
-        'i': String(now.getMinutes()).padStart(2, '0'),    // Minutos (00-59)
-        's': String(now.getSeconds()).padStart(2, '0'),    // Segundos (00-59)
-        'j': now.getDate(),                                // Día del mes sin ceros iniciales (1-31)
-        'n': now.getMonth() + 1,                           // Mes sin ceros iniciales (1-12)
-        'w': now.getDay(),                                 // Día de la semana (0 = domingo, 6 = sábado)
-        'G': now.getHours(),                               // Horas sin ceros iniciales (0-23)
-        'a': now.getHours() >= 12 ? 'pm' : 'am',           // am o pm
-        'A': now.getHours() >= 12 ? 'PM' : 'AM'            // AM o PM en mayúsculas
+        'Y': year,
+        'm': String(month).padStart(2, '0'),
+        'd': String(baseDate.getDate()).padStart(2, '0'),
+        'H': String(baseDate.getHours()).padStart(2, '0'),
+        'i': String(baseDate.getMinutes()).padStart(2, '0'),
+        's': String(baseDate.getSeconds()).padStart(2, '0'),
+        't': String(lastDay).padStart(2, '0'),
+        'j': baseDate.getDate(),
+        'n': month,
+        'w': baseDate.getDay(),
+        'G': baseDate.getHours(),
+        'a': baseDate.getHours() >= 12 ? 'pm' : 'am',
+        'A': baseDate.getHours() >= 12 ? 'PM' : 'AM'
     };
 
-    return format.replace(/[YmdHisjwnGaA]/g, (match) => map[match]);
+    return format.replace(/[YmdHistjwnGaA]/g, match => map[match]);
 }
 
 let xhrConsultaDni = null;
@@ -863,61 +873,61 @@ function base64ToUtf8(base64) {
  * @returns {string} String describiendo la diferencia en meses y/o días
  */
 function calcularDiferenciaMesesDias(fecha1, fecha2) {
-  // Parsear las fechas
-  const d1 = new Date(fecha1 + 'T00:00:00');
-  const d2 = new Date(fecha2 + 'T00:00:00');
-  
-  // Validar que las fechas sean válidas
-  if (isNaN(d1.getTime()) || isNaN(d2.getTime())) {
-    throw new Error('Fechas inválidas. Use el formato YYYY-MM-DD');
-  }
-  
-  // Asegurar que fechaInicio sea la menor
-  let fechaInicio = d1 <= d2 ? d1 : d2;
-  let fechaFin = d1 <= d2 ? d2 : d1;
-  
-  // Función auxiliar para obtener el último día del mes
-  function ultimoDiaDelMes(year, month) {
-    return new Date(year, month + 1, 0).getDate();
-  }
-  
-  let mesesCompletos = 0;
-  let fechaActual = new Date(fechaInicio);
-  
-  // Contar meses completos
-  while (true) {
-    const yearActual = fechaActual.getFullYear();
-    const monthActual = fechaActual.getMonth();
-    const ultimoDia = ultimoDiaDelMes(yearActual, monthActual);
-    
-    // Crear la fecha del último día del mes actual
-    const finDelMes = new Date(yearActual, monthActual, ultimoDia);
-    
-    // Verificar si llegamos al último día del mes y no pasamos la fecha final
-    if (finDelMes <= fechaFin) {
-      mesesCompletos++;
-      // Avanzar al primer día del siguiente mes
-      fechaActual = new Date(yearActual, monthActual + 1, 1);
-    } else {
-      break;
+    // Parsear las fechas
+    const d1 = new Date(fecha1 + 'T00:00:00');
+    const d2 = new Date(fecha2 + 'T00:00:00');
+
+    // Validar que las fechas sean válidas
+    if (isNaN(d1.getTime()) || isNaN(d2.getTime())) {
+        throw new Error('Fechas inválidas. Use el formato YYYY-MM-DD');
     }
-  }
-  
-  // Calcular días restantes desde fechaActual hasta fechaFin (inclusive)
-  const diasRestantes = Math.floor((fechaFin - fechaActual) / (1000 * 60 * 60 * 24)) + 1;
-  
-  // Construir el resultado
-  const partes = [];
-  
-  if (mesesCompletos > 0) {
-    partes.push(`${mesesCompletos} ${mesesCompletos === 1 ? 'mes' : 'meses'}`);
-  }
-  
-  if (diasRestantes > 0) {
-    partes.push(`${diasRestantes} ${diasRestantes === 1 ? 'día' : 'días'}`);
-  }
-  
-  return partes.join(', ') || '0 días';
+
+    // Asegurar que fechaInicio sea la menor
+    let fechaInicio = d1 <= d2 ? d1 : d2;
+    let fechaFin = d1 <= d2 ? d2 : d1;
+
+    // Función auxiliar para obtener el último día del mes
+    function ultimoDiaDelMes(year, month) {
+        return new Date(year, month + 1, 0).getDate();
+    }
+
+    let mesesCompletos = 0;
+    let fechaActual = new Date(fechaInicio);
+
+    // Contar meses completos
+    while (true) {
+        const yearActual = fechaActual.getFullYear();
+        const monthActual = fechaActual.getMonth();
+        const ultimoDia = ultimoDiaDelMes(yearActual, monthActual);
+
+        // Crear la fecha del último día del mes actual
+        const finDelMes = new Date(yearActual, monthActual, ultimoDia);
+
+        // Verificar si llegamos al último día del mes y no pasamos la fecha final
+        if (finDelMes <= fechaFin) {
+            mesesCompletos++;
+            // Avanzar al primer día del siguiente mes
+            fechaActual = new Date(yearActual, monthActual + 1, 1);
+        } else {
+            break;
+        }
+    }
+
+    // Calcular días restantes desde fechaActual hasta fechaFin (inclusive)
+    const diasRestantes = Math.floor((fechaFin - fechaActual) / (1000 * 60 * 60 * 24)) + 1;
+
+    // Construir el resultado
+    const partes = [];
+
+    if (mesesCompletos > 0) {
+        partes.push(`${mesesCompletos} ${mesesCompletos === 1 ? 'mes' : 'meses'}`);
+    }
+
+    if (diasRestantes > 0) {
+        partes.push(`${diasRestantes} ${diasRestantes === 1 ? 'día' : 'días'}`);
+    }
+
+    return partes.join(', ') || '0 días';
 }
 
 function colores(c) {
