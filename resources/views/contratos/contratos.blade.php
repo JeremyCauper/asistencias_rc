@@ -2,7 +2,7 @@
 @section('title', 'Control del Contratos')
 
 @section('cabecera')
-    <!-- <link rel="stylesheet" href="{{ secure_asset('front/css/app/contratos/contratos.css') }}?v={{ env('APP_VERSION') }}"> -->
+    <link rel="stylesheet" href="{{ secure_asset('front/css/app/contratos/contratos.css') }}?v={{ env('APP_VERSION') }}">
 
     <link rel="stylesheet" href="{{ secure_asset('front/vendor/mdtp/mdtp.min.css') }}">
     <script src="{{ secure_asset('front/vendor/mdtp/mdtp.min.js') }}"></script>
@@ -21,11 +21,11 @@
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="p-md-3 p-2 rounded-7" style="background-color: #3b71ca20">
-                                <i class="far fa-clipboard text-primary fa-fw"></i>
+                            <div class="card-icon rounded-7" style="background-color: #3b71ca20">
+                                <i class="far fa-clipboard text-primary fa-fw fs-4"></i>
                             </div>
                         </div>
-                        <div class="flex-grow-1 ms-2">
+                        <div class="content-text flex-grow-1 ms-2">
                             <p class="text-muted mb-1">Total Contratos</p>
                             <p class="fw-bold mb-0 fs-4" id="totalContratos">0</p>
                         </div>
@@ -39,11 +39,11 @@
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="p-md-3 p-2 rounded-7" style="background-color: #14a44d20">
-                                <i class="fas fa-circle-check text-success fa-fw"></i>
+                            <div class="card-icon rounded-7" style="background-color: #14a44d20">
+                                <i class="fas fa-circle-check text-success fa-fw fs-4"></i>
                             </div>
                         </div>
-                        <div class="flex-grow-1 ms-2">
+                        <div class="content-text flex-grow-1 ms-2">
                             <p class="text-muted mb-1">Activos</p>
                             <p class="fw-bold mb-0 fs-4" id="totalActivos">0</p>
                         </div>
@@ -57,11 +57,11 @@
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="p-md-3 p-2 rounded-7" style="background-color: #e4a11b20">
-                                <i class="fas fa-triangle-exclamation text-warning fa-fw"></i>
+                            <div class="card-icon rounded-7" style="background-color: #e4a11b20">
+                                <i class="fas fa-triangle-exclamation text-warning fa-fw fs-4"></i>
                             </div>
                         </div>
-                        <div class="flex-grow-1 ms-2">
+                        <div class="content-text flex-grow-1 ms-2">
                             <p class="text-muted mb-1">Pronto a Expirar</p>
                             <p class="fw-bold mb-0 fs-4" id="totalProntoExpirar">0</p>
                         </div>
@@ -75,11 +75,11 @@
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="p-md-3 p-2 rounded-7" style="background-color: #dc4c6420">
-                                <i class="fas fa-xmark text-danger fa-fw"></i>
+                            <div class="card-icon rounded-7" style="background-color: #dc4c6420">
+                                <i class="fas fa-xmark text-danger fa-fw fs-4"></i>
                             </div>
                         </div>
-                        <div class="flex-grow-1 ms-2">
+                        <div class="content-text flex-grow-1 ms-2">
                             <p class="text-muted mb-1">Expirados</p>
                             <p class="fw-bold mb-0 fs-4" id="totalExpirados">0</p>
                         </div>

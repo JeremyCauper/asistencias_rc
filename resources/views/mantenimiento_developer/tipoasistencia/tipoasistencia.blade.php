@@ -91,7 +91,7 @@
                                 }
                                 ],
                                 createdRow: function (row, data, dataIndex) {
-                                    $(row).find('td:eq(6)').addClass(`td-acciones`);
+                                    $(row).find('td:eq(7)').addClass(`td-acciones`);
                                     $(row).addClass('text-center');
                                 },
                                 // order: [["3", "asc"]],
@@ -123,14 +123,18 @@
                         <div class="col-6 mb-2">
                             <input class="form-control" id="descripcion">
                         </div>
-                        <div class="col-6 col-md-3 mb-2">
-                            <input class="form-control" id="color">
-                        </div>
-                        <div class="col-6 col-md-3 mb-2">
+                        <div class="col-6 mx-auto mb-2">
                             <select class="select" id="estado">
                                 <option selected value="1">Activo</option>
                                 <option value="0">Inactivo</option>
                             </select>
+                        </div>
+                        <div class="col-12 row">
+                            <div class="col-6 rounded mb-2 p-4" data-badge="light"></div>
+                            <div class="col-6 rounded mb-2 p-4" data-badge="dark"></div>
+                        </div>
+                        <div class="col-6 mx-auto mb-2">
+                            <input class="form-control" id="color">
                         </div>
                     </div>
                 </div>

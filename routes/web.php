@@ -62,6 +62,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/personal/{id}', [SyncPersonalController::class, 'marcarEliminar']);
     Route::get('/personal/cargar-vacaciones/{id}', [SyncPersonalController::class, 'cargarVacaciones']);
     Route::post('/personal/crear-vacaciones', [SyncPersonalController::class, 'crearVacaciones']);
+    Route::get('/personal/cargar-descansos/{id}', [SyncPersonalController::class, 'cargarDescansos']);
+    Route::post('/personal/crear-descansos', [SyncPersonalController::class, 'crearDescansos']);
 
     Route::controller(AsistenciaController::class)
         ->prefix('asistencias-diarias')

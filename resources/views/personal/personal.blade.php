@@ -20,13 +20,13 @@
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="p-md-3 p-2 rounded-4" style="background-color: #e2eaf7">
-                                <i class="fa-solid fa-users text-primary fa-fw"></i>
+                            <div class="card-icon rounded-7" style="background-color: #3b71ca20">
+                                <i class="fa-solid fa-users text-primary fa-fw fs-4"></i>
                             </div>
                         </div>
-                        <div class="flex-grow-1 ms-2">
-                            <p class="fw-bold mb-1">Total</p>
-                            <p class="text-muted mb-0 fs-4" id="totalSync">0</p>
+                        <div class="content-text flex-grow-1 ms-2">
+                            <p class="text-muted mb-1">Total</p>
+                            <p class="fw-bold mb-0 fs-4" id="totalSync">0</p>
                         </div>
                     </div>
                 </div>
@@ -38,13 +38,13 @@
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="p-md-3 p-2 rounded-4" style="background-color: #e2eaf7">
-                                <i class="fa-solid fa-cloud-arrow-up text-primary fa-fw"></i>
+                            <div class="card-icon rounded-7" style="background-color: #14a44d20">
+                                <i class="fa-solid fa-cloud-arrow-up text-success fa-fw fs-4"></i>
                             </div>
                         </div>
-                        <div class="flex-grow-1 ms-2">
-                            <p class="fw-bold mb-1">Sincronizando</p>
-                            <p class="text-muted mb-0 fs-4" id="totalCreando">0</p>
+                        <div class="content-text flex-grow-1 ms-2">
+                            <p class="text-muted mb-1">Sincronizando</p>
+                            <p class="fw-bold mb-0 fs-4" id="totalCreando">0</p>
                         </div>
                     </div>
                 </div>
@@ -56,13 +56,13 @@
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="p-md-3 p-2 rounded-4" style="background-color: #e2eaf7">
-                                <i class="fa-solid fa-pen-to-square text-primary fa-fw"></i>
+                            <div class="card-icon rounded-7" style="background-color: #e4a11b20">
+                                <i class="fa-solid fa-pen-to-square text-warning fa-fw fs-4"></i>
                             </div>
                         </div>
-                        <div class="flex-grow-1 ms-2">
-                            <p class="fw-bold mb-1">Modificando</p>
-                            <p class="text-muted mb-0 fs-4" id="totalModificando">0</p>
+                        <div class="content-text flex-grow-1 ms-2">
+                            <p class="text-muted mb-1">Modificando</p>
+                            <p class="fw-bold mb-0 fs-4" id="totalModificando">0</p>
                         </div>
                     </div>
                 </div>
@@ -74,13 +74,13 @@
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="p-md-3 p-2 rounded-4" style="background-color: #e2eaf7">
-                                <i class="fa-solid fa-exclamation-triangle text-primary fa-fw"></i>
+                            <div class="card-icon rounded-7" style="background-color: #dc4c6420">
+                                <i class="fa-solid fa-exclamation-triangle text-danger fa-fw fs-4"></i>
                             </div>
                         </div>
-                        <div class="flex-grow-1 ms-2">
-                            <p class="fw-bold mb-1">Eliminando</p>
-                            <p class="text-muted mb-0 fs-4" id="totalEliminando">0</p>
+                        <div class="content-text flex-grow-1 ms-2">
+                            <p class="text-muted mb-1">Eliminando</p>
+                            <p class="fw-bold mb-0 fs-4" id="totalEliminando">0</p>
                         </div>
                     </div>
                 </div>
@@ -467,7 +467,7 @@
         </div>
     </div>
 
-    <!-- 🔹 Modal -->
+    <!-- 🔹 Modal Vacaciones -->
     <div class="modal fade" id="modalVacaciones" tabindex="-1" aria-labelledby="modalVacacionesLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog">
@@ -478,15 +478,41 @@
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="calendar"></div>
+                    <div id="calendarVacaciones"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-link" data-mdb-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="btnVerDatos">Guardar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarVacaciones">Guardar</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- 🔹 Modal Descansos -->
+    <div class="modal fade" id="modalDescansos" tabindex="-1" aria-labelledby="modalDescansosLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalDescansosLabel">Programar Descansos</h5>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- <div class="mb-3">
+                        <label for="archivoDescanso" class="form-label">Subir Archivo (Constancia/Certificado)</label>
+                        <input class="form-control" type="file" id="archivoDescanso" accept=".pdf, .jpg, .jpeg, .png">
+                    </div> -->
+                    <div id="calendarDescansos"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-mdb-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarDescansos">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}?v={{ env('APP_VERSION') }}"></script>
 
 

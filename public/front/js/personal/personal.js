@@ -80,7 +80,9 @@ $(document).ready(function () {
         $('#tpjueves1').click();
         $('#tpviernes1').click();
         $('#tpsabado1').click();
-        limpiarCalendario();
+        calendarVacaciones.clear();
+        calendarDescansos.clear();
+        $('#archivoDescanso').val(''); // Limpiar file input
     });
 
     // 🧠 Evento: cuando el campo DNI cambia o se completa con 8 dígitos
@@ -124,10 +126,11 @@ $(document).ready(function () {
     $(document).on('click', '.btnVacaciones', async function () {
         try {
             setTimeout(() => {
-                calendario.updateSize();
+                calendarVacaciones.updateSize();
             }, 300);
             let id = $(this).data('id');
             $('#modalVacaciones').modal('show');
+
             fMananger.formModalLoding('modalVacaciones', 'show');
 
             const res = await $.getJSON(`${__url}/personal/cargar-vacaciones/${id}`);
@@ -142,9 +145,9 @@ $(document).ready(function () {
             }
 
             const data = res.data;
-            window.currentUserId = id; // Guardar el ID del usuario actual
-            window.currentFechasVacaciones = data; // Guardar las fechas de vacaciones actuales
-            cargarFechas(data);
+            window.currentUserIdVacaciones = id;
+            window.currentFechasVacaciones = data;
+            calendarVacaciones.loadDates(data);
         } catch (error) {
             fMananger.formModalLoding('modalVacaciones', 'hide');
             console.error(error);
@@ -156,10 +159,43 @@ $(document).ready(function () {
         }
     });
 
-    $("#btnVerDatos").on("click", async function () {
+    // 🏥 Programar Descansos Médicos (Boton)
+    $(document).on('click', '.btnDescansos', async function () {
         try {
-            let fechas = extractDatesFromEvents();
-            if (fechas.fechasNuevas.length === 0 && fechas.fechasEliminadas.length === 0) {
+            setTimeout(() => {
+                calendarDescansos.updateSize();
+            }, 300);
+            let id = $(this).data('id');
+            $('#modalDescansos').modal('show');
+
+            fMananger.formModalLoding('modalDescansos', 'show');
+
+            const res = await $.getJSON(`${__url}/personal/cargar-descansos/${id}`);
+            fMananger.formModalLoding('modalDescansos', 'hide');
+
+            if (!res?.data || !res?.success) {
+                return boxAlert.box({
+                    i: 'error',
+                    t: 'No se pudo obtener la información',
+                    h: res.message || 'No se encontraron datos.'
+                });
+            }
+
+            const data = res.data;
+            window.currentUserIdDescanso = id;
+            window.currentFechasDescansos = data;
+            calendarDescansos.loadDates(data);
+        } catch (error) {
+            fMananger.formModalLoding('modalDescansos', 'hide');
+            console.error(error);
+            boxAlert.box({ i: 'error', t: 'Aviso', h: 'No se pudo cargar la información previa o no existe historial.' });
+        }
+    });
+
+    $("#btnGuardarVacaciones").on("click", async function () {
+        try {
+            let fechas = calendarVacaciones.diffWith(window.currentFechasVacaciones);
+            if (fechas.added.length === 0 && fechas.removed.length === 0) {
                 return boxAlert.box({
                     i: 'info',
                     t: 'Sin cambios',
@@ -169,7 +205,7 @@ $(document).ready(function () {
 
             if (!await boxAlert.confirm({
                 t: '¿Estas seguro de guardar los cambios?',
-                h: `Se van a agregar <strong>${fechas.fechasNuevas.length}</strong> y eliminar <strong>${fechas.fechasEliminadas.length}</strong> fechas.`
+                h: `Se van a agregar <strong>${fechas.added.length}</strong> y eliminar <strong>${fechas.removed.length}</strong> fechas.`
             })) return;
 
             fMananger.formModalLoding('modalVacaciones', 'show');
@@ -180,9 +216,9 @@ $(document).ready(function () {
                     'X-CSRF-TOKEN': __token,
                 },
                 body: JSON.stringify({
-                    user_id: window.currentUserId,
-                    eliminadas: fechas.fechasEliminadas,
-                    nuevas: fechas.fechasNuevas
+                    user_id: window.currentUserIdVacaciones,
+                    eliminadas: fechas.removed,
+                    nuevas: fechas.added
                 }),
             });
 
@@ -192,18 +228,88 @@ $(document).ready(function () {
                 return boxAlert.box({ i: 'error', t: 'Algo salió mal...', h: mensaje });
             }
 
-            window.currentFechasVacaciones = getEvents(); // Actualizar las fechas actuales
+            // Actualizar referencia local
+            window.currentFechasVacaciones = fechas.added;
             boxAlert.box({ h: data.message });
         } catch (error) {
             console.error('Error en la solicitud:', error);
-
-            boxAlert.box({
-                i: 'error',
-                t: 'Error en la conexión',
-                h: 'Ocurrió un problema al procesar la solicitud. Verifica tu conexión e intenta nuevamente.'
-            });
+            boxAlert.box({ i: 'error', t: 'Error en la conexión', h: 'Ocurrió un problema.' });
         } finally {
             fMananger.formModalLoding('modalVacaciones', 'hide');
+        }
+    });
+
+    // 💾 Guardar Descansos Médicos
+    $("#btnGuardarDescansos").on("click", async function () {
+        try {
+            let fechas = calendarDescansos.diffWith(window.currentFechasDescansos);
+            if (fechas.added.length === 0 && fechas.removed.length === 0) {
+                return boxAlert.box({
+                    i: 'info',
+                    t: 'Sin cambios',
+                    h: 'No se realizaron modificaciones.'
+                });
+            }
+
+            if (!await boxAlert.confirm({
+                t: '¿Guardar programación de descansos?',
+                h: `Se agregan <strong>${fechas.added.length}</strong>, eliminan <strong>${fechas.removed.length}</strong>.`
+            })) return;
+
+            fMananger.formModalLoding('modalDescansos', 'show');
+
+            /*let formData = new FormData();
+            formData.append('user_id', window.currentUserIdDescanso);
+
+            // Adjuntar arrays (Laravel los lee como arrays si se usa notación [])
+            fechas.removed.forEach(f => formData.append('eliminadas[]', f));
+            fechas.added.forEach(f => formData.append('nuevas[]', f));
+
+            if (archivo) {
+                formData.append('archivo', archivo);
+            }
+
+            // Fetch con FormData
+            const response = await fetch(`${__url}/personal/crear-descansos`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': __token,
+                    // 'Content-Type': 'multipart/form-data' // NO poner esto manual con fetch, el navegador lo pone con boundary
+                },
+                body: formData
+            });
+
+            window.currentFechasDescansos = fechas.added;
+            $('#archivoDescanso').val(''); // Limpiar input
+            boxAlert.box({ h: data.message });*/
+            const response = await fetch(`${__url}/personal/crear-descansos`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': __token,
+                },
+                body: JSON.stringify({
+                    user_id: window.currentUserIdDescanso,
+                    eliminadas: fechas.removed,
+                    nuevas: fechas.added
+                }),
+            });
+
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                const mensaje = data.message || 'No se pudo completar la operación.';
+                return boxAlert.box({ i: 'error', t: 'Algo salió mal...', h: mensaje });
+            }
+
+            // Actualizar referencia local
+            window.currentFechasDescansos = fechas.added;
+            boxAlert.box({ h: data.message });
+
+        } catch (error) {
+            console.error(error);
+            boxAlert.box({ i: 'error', t: 'Error', h: 'Falló la conexión.' });
+        } finally {
+            fMananger.formModalLoding('modalDescansos', 'hide');
         }
     });
 

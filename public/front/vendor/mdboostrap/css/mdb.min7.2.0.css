@@ -204,8 +204,8 @@
     --mdb-surface-color-rgb: 79, 79, 79;
     --mdb-surface-bg: #ffffff;
     --mdb-surface-bg-rgb: 255, 255, 255;
-    --mdb-surface-inverted-color: #ffffff;
-    --mdb-surface-inverted-color-rgb: 255, 255, 255;
+    --mdb-surface-inverted-color: #16181f;
+    --mdb-surface-inverted-color-rgb: 22, 24, 31;
     --mdb-surface-inverted-bg: #6d6d6d;
     --mdb-divider-color: #f5f5f5;
     --mdb-divider-blurry-color: hsl(0, 0%, 40%);
