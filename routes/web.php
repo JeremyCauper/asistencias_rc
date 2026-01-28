@@ -212,3 +212,7 @@ Route::get('/delete-s3', [MediaArchivoController::class, 'deleteFile']);
 Route::get('/picker', function () {
     return view('picker');
 });
+
+Route::get('/principal', function () {
+    return view('principal');
+});

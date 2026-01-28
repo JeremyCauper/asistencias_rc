@@ -53,7 +53,7 @@ class Controller extends BaseController
         return strtotime(date("{$str_fecha} {$this->horaLimiteRemoto}"));
     }
 
-    public function getDay($date)
+    public static function getDay($date)
     {
         $day = strtolower(date('l', strtotime($date)));
         $map = [

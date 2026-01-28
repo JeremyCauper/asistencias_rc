@@ -68,7 +68,7 @@ class MisAsistenciaController extends Controller
                 $descuento = $descuentos->get($a->fecha) ?? null;
                 $justificacion = $justificaciones->get($a->fecha) ?? null;
                 $notificacion = false;
-                $campoDia = $this->getDay($a->fecha);
+                $campoDia = self::getDay($a->fecha);
                 $tipo_asistencia = $a?->tipo_asistencia ?? 0;
                 $tipo_modalidad = $a?->tipo_modalidad;
                 $hoy = date($this->strFecha) == $a->fecha;

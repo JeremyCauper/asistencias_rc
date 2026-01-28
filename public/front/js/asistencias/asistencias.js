@@ -41,7 +41,7 @@ $(document).ready(function () {
     }
 
     // 📅 Detectar cambio manual de fecha
-    $inputFecha.on('change', function () {
+    $inputFecha.on('input', function () {
         debounceFiltro();
     });
 

@@ -211,24 +211,24 @@
                 ],
                 cardTemplate: (data, index) => {
                     return `
-                            <div class="d-flex align-items-center justify-content-between pb-1">
-                                <div class="fw-medium mb-0" style="overflow: hidden;font-size: 3.25vw;">
-                                    <span>${data.personal}</span>
+                                <div class="d-flex align-items-center justify-content-between pb-1">
+                                    <div class="fw-medium mb-0" style="overflow: hidden;font-size: 3.25vw;">
+                                        <span>${data.personal}</span>
+                                    </div>
+                                    <div class="btn-acciones-movil">${data.acciones}</div>
                                 </div>
-                                <div class="btn-acciones-movil">${data.acciones}</div>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                    ${getBadgeAreas(data.area, '.95', false)}
-                                <span>
-                                    ${getBadgeTipoModalidad(data.tipo_modalidad, '.85')}
-                                    ${getBadgeTipoAsistencia(data.tipo_asistencia, '.85')}
-                                </span>
-                            </div>
-                            <hr class="mx-1 my-2">
-                            <div class="d-flex align-items-center justify-content-between pt-1" style="font-size: 2.85vw;color: #909090;">
-                                ${getFormatJornada(data)}
-                                ${getBadgeDescuento(data)}
-                            </div>`;
+                                <div class="d-flex justify-content-between align-items-center">
+                                        ${getBadgeAreas(data.area, '.95', false)}
+                                    <span>
+                                        ${getBadgeTipoModalidad(data.tipo_modalidad, '.85')}
+                                        ${getBadgeTipoAsistencia(data.tipo_asistencia, '.85')}
+                                    </span>
+                                </div>
+                                <hr class="mx-1 my-2">
+                                <div class="d-flex align-items-center justify-content-between pt-1" style="font-size: 2.85vw;color: #909090;">
+                                    ${getFormatJornada(data)}
+                                    ${getBadgeDescuento(data)}
+                                </div>`;
                 },
                 scrollY: '600px',
                 perPage: 100,
@@ -250,14 +250,14 @@
                 scrollX: true,
                 scrollY: 400,
                 dom: `<"row"
-                                <"col-lg-12 mb-2"B>>
-                                <"row"
-                                    <"col-sm-6 text-sm-start text-center my-1 botones-accion">
-                                    <"col-sm-6 text-sm-end text-center my-1"f>>
-                                <"contenedor_tabla my-2"tr>
-                                <"row"
-                                    <"col-md-5 text-md-start text-center my-1"i>
-                                    <"col-md-7 text-md-end text-center my-1"p>>`,
+                                    <"col-lg-12 mb-2"B>>
+                                    <"row"
+                                        <"col-sm-6 text-sm-start text-center my-1 botones-accion">
+                                        <"col-sm-6 text-sm-end text-center my-1"f>>
+                                    <"contenedor_tabla my-2"tr>
+                                    <"row"
+                                        <"col-md-5 text-md-start text-center my-1"i>
+                                        <"col-md-7 text-md-end text-center my-1"p>>`,
                 ajax: {
                     url: getUrlListar(),
                     dataSrc: dataSet,

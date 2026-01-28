@@ -221,7 +221,7 @@ class SyncPersonalController extends Controller
             );
 
             $fecha = date('Y-m-d');
-            $campoDia = $this->getDay($fecha);
+            $campoDia = self::getDay($fecha);
 
             if (!empty($campoDia)) {
                 $dia_modalidad = "tp$campoDia";

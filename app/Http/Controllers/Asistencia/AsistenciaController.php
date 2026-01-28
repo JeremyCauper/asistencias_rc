@@ -71,7 +71,7 @@ class AsistenciaController extends Controller
             }
 
             $strtoTime = strtotime($fecha);
-            $campoDia = $this->getDay($fecha);
+            $campoDia = self::getDay($fecha);
 
             // Cargar datos en memoria (una sola vez)
             $feriado = DB::table('feriados_privado_peru')
