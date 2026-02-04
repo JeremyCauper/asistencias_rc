@@ -1,5 +1,5 @@
 <?php
-$version = env('APP_VERSION');
+$version = config('app.version');
 return [
     'version' => $version,
     'css' => (object) [
@@ -12,6 +12,8 @@ return [
         'fonts' => 'front/vendor/fontGoogle/fonts.css?v=' . $version,
         'quill_show' => 'front/vendor/quill/quill.snow.css?v=' . $version,
         'daterangepicker' => 'front/vendor/daterangepicker/daterangepicker.css?v=' . $version,
+        'mdtp' => 'front/vendor/mdtp/mdtp.min.css?v=' . $version,
+
         'layout' => 'front/layout/layout.css?v=' . $version,
         'swicth_layout' => 'front/layout/swicth_layout.css?v=' . $version,
     ],
@@ -50,6 +52,8 @@ return [
         'FileSaver' => 'front/vendor/exceljs/FileSaver.min.js?v=' . $version,
         'full_calendar' => 'front/vendor/full-calendar/full-calendar.min.js?v=' . $version,
         'jquery_inputmask_bundle' => 'front/vendor/inputmask/jquery.inputmask.bundle.min.js?v=' . $version,
+        'mdtp' => 'front/vendor/mdtp/mdtp.min.js?v=' . $version,
+        
         'pdf_js' => 'front/vendor/pdfjs/pdf-js/pdf.min.js?v=' . $version,
         'pdf_worker_js' => 'front/vendor/pdfjs/pdf-js/pdf.worker.min.js?v=' . $version,
 

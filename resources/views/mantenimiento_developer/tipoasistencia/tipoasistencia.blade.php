@@ -3,10 +3,10 @@
 
 @section('cabecera')
     <script
-        src="{{ secure_asset('front/vendor/multiselect/bootstrap.bundle.min.js') }}?v={{ env('APP_VERSION') }}"></script>
+        src="{{ secure_asset('front/vendor/multiselect/bootstrap.bundle.min.js') }}?v={{ config('app.version') }}"></script>
     <script
-        src="{{ secure_asset('front/vendor/multiselect/bootstrap_multiselect.js') }}?v={{ env('APP_VERSION') }}"></script>
-    <script src="{{ secure_asset('front/vendor/multiselect/form_multiselect.js') }}?v={{ env('APP_VERSION') }}"></script>
+        src="{{ secure_asset('front/vendor/multiselect/bootstrap_multiselect.js') }}?v={{ config('app.version') }}"></script>
+    <script src="{{ secure_asset('front/vendor/multiselect/form_multiselect.js') }}?v={{ config('app.version') }}"></script>
     <script>
         const tipoModalidad = @json($tipoModalidad);
     </script>
@@ -151,5 +151,5 @@
 @section('scripts')
     <script></script>
     <script
-        src="{{ secure_asset('front/js/mantenimiento_dev/tipoasistencia/tipoasistencia.js') }}?v={{ env('APP_VERSION') }}"></script>
+        src="{{ secure_asset('front/js/mantenimiento_dev/tipoasistencia/tipoasistencia.js') }}?v={{ config('app.version') }}"></script>
 @endsection

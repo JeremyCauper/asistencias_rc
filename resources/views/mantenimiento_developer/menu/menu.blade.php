@@ -304,5 +304,5 @@
             return datos;
         }
     </script>
-    <script src="{{ secure_asset('front/js/mantenimiento_dev/menu/menu.js') }}?v={{ env('APP_VERSION') }}"></script>
+    <script src="{{ secure_asset('front/js/mantenimiento_dev/menu/menu.js') }}?v={{ config('app.version') }}"></script>
 @endsection

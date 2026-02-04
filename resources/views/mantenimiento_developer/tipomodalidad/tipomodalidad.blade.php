@@ -148,5 +148,5 @@
 @section('scripts')
     <script></script>
     <script
-        src="{{ secure_asset('front/js/mantenimiento_dev/tipomodalidad/tipomodalidad.js') }}?v={{ env('APP_VERSION') }}"></script>
+        src="{{ secure_asset('front/js/mantenimiento_dev/tipomodalidad/tipomodalidad.js') }}?v={{ config('app.version') }}"></script>
 @endsection

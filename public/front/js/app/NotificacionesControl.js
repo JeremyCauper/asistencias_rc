@@ -12,7 +12,9 @@ class Notificaciones {
             1: 'Derivación pendiente',
             2: 'Justificación Pendiente',
             3: 'Justificación de falta',
-            4: 'Justificación de tardanza'
+            4: 'Justificación de tardanza',
+            5: 'Contrato próximo a vencer',
+            6: 'Contrato vencido',
         };
 
         this.DESCRIPCION = {
@@ -20,21 +22,26 @@ class Notificaciones {
             2: ':personal registró una justificación de falta y requiere revisión.',
             3: ':personal registró una justificación de tardanza y requiere revisión.',
             4: ':personal registró una justificación de derivación y requiere revisión.',
+            5: ':personal tiene un contrato próximo a vencer, por favor verificar.',
+            6: ':personal tiene un contrato vencido, por favor verificar.',
         };
 
         this.RUTAS = {
             1: { url: '/asistencias-diarias' },
-            2: { url: '/asistencias/misasistencias' }
+            2: { url: '/asistencias/misasistencias' },
+            3: { url: '/contratos' },
         };
 
         this.ACCIONES = {
             1: (payload) => justificarDerivado(payload),
             2: (payload) => verJustificacion(payload),
+            3: (payload) => verContrato(payload),
         };
 
         this.STR_ACCIONES = {
             1: 'justificarDerivado',
             2: 'verJustificacion',
+            3: 'verContrato',
         };
     }
 

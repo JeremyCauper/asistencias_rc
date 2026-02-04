@@ -58,7 +58,7 @@ class ContratosController extends Controller
                     'estatus' => $contrato?->estatus,
                     'acciones' => $this->DropdownAcciones([
                         'button' => [
-                            ['clase' => 'btnContratos', 'attr' => 'data-id="' . $p->user_id . '"', 'texto' => '<i class="far fa-clipboard me-2 text-primary"></i> Contratos'],
+                            ['funcion' => "verContrato({$p->user_id})", 'texto' => '<i class="far fa-clipboard me-2 text-primary"></i> Contratos'],
                         ],
                     ])
                 ];

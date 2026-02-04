@@ -2,7 +2,7 @@
 @section('title', 'Control del Personal')
 
 @section('cabecera')
-    <link rel="stylesheet" href="{{ secure_asset('front/css/app/personal/personal.css') }}?v={{ env('APP_VERSION') }}">
+    <link rel="stylesheet" href="{{ secure_asset('front/css/app/personal/personal.css') }}?v={{ config('app.version') }}">
     <script>
         const empresa = @json($empresa);
         const tipoAreas = @json($areas);
@@ -16,12 +16,12 @@
     <!-- 🔹 Resumen contable -->
     <section class="row">
         <div class="col-md-3 col-6 mb-2">
-            <div class="card">
+            <div class="card" style="background-color: #549cea50; border: 1px solid #3b71ca20;">
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="card-icon rounded-7" style="background-color: #3b71ca20">
-                                <i class="fa-solid fa-users text-primary fa-fw fs-4"></i>
+                            <div class="card-icon rounded-7 text-bg-primary">
+                                <i class="fa-solid fa-users fa-fw fs-4"></i>
                             </div>
                         </div>
                         <div class="content-text flex-grow-1 ms-2">
@@ -34,12 +34,12 @@
         </div>
 
         <div class="col-md-3 col-6 mb-2">
-            <div class="card">
+            <div class="card" style="background-color: #14a44d40; border: 1px solid #14a44d20;">
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="card-icon rounded-7" style="background-color: #14a44d20">
-                                <i class="fa-solid fa-cloud-arrow-up text-success fa-fw fs-4"></i>
+                            <div class="card-icon rounded-7 text-bg-success">
+                                <i class="fa-solid fa-cloud-arrow-up fa-fw fs-4"></i>
                             </div>
                         </div>
                         <div class="content-text flex-grow-1 ms-2">
@@ -52,12 +52,12 @@
         </div>
 
         <div class="col-md-3 col-6 mb-2">
-            <div class="card">
+            <div class="card" style="background-color: #e4a11b40; border: 1px solid #e4a11b20;">
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="card-icon rounded-7" style="background-color: #e4a11b20">
-                                <i class="fa-solid fa-pen-to-square text-warning fa-fw fs-4"></i>
+                            <div class="card-icon rounded-7 text-bg-warning">
+                                <i class="fa-solid fa-pen-to-square fa-fw fs-4"></i>
                             </div>
                         </div>
                         <div class="content-text flex-grow-1 ms-2">
@@ -70,12 +70,12 @@
         </div>
 
         <div class="col-md-3 col-6 mb-2">
-            <div class="card">
+            <div class="card" style="background-color: #dc4c6440; border: 1px solid #dc4c6420;">
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="card-icon rounded-7" style="background-color: #dc4c6420">
-                                <i class="fa-solid fa-exclamation-triangle text-danger fa-fw fs-4"></i>
+                            <div class="card-icon rounded-7 text-bg-danger">
+                                <i class="fa-solid fa-exclamation-triangle fa-fw fs-4"></i>
                             </div>
                         </div>
                         <div class="content-text flex-grow-1 ms-2">
@@ -513,10 +513,10 @@
         </div>
     </div>
 
-    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}?v={{ env('APP_VERSION') }}"></script>
+    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}?v={{ config('app.version') }}"></script>
 
 
     <!-- 🔹 Scripts -->
     <script src="{{ secure_asset($ft_js->jquery_inputmask_bundle) }}"></script>
-    <script src="{{ secure_asset('front/js/personal/personal.js') }}?v={{ env('APP_VERSION') }}"></script>
+    <script src="{{ secure_asset('front/js/personal/personal.js') }}?v={{ config('app.version') }}"></script>
 @endsection

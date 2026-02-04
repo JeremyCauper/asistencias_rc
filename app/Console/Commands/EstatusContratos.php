@@ -29,22 +29,9 @@ class EstatusContratos extends Command
     public function handle()
     {
         $this->info('Actualizando estatus de contratos...');
+
         $hoy = Carbon::today();
         $limite = $hoy->copy()->addDays(10);
-
-        /*// VENCIDOS
-        DB::table('contratos')
-            ->where('estatus', '!=', 0)
-            ->where('estatus', '!=', 3)
-            ->whereDate('fecha_fin', '<', $hoy)
-            ->update(['estatus' => 3]);
-
-        // POR VENCER
-        DB::table('contratos')
-            ->where('estatus', '!=', 0)
-            ->where('estatus', '!=', 3)
-            ->whereBetween('fecha_fin', [$hoy, $limite])
-            ->update(['estatus' => 2]);*/
 
         $contratos = DB::table('contratos')
             ->where('estatus', '!=', 0)
@@ -52,25 +39,41 @@ class EstatusContratos extends Command
             ->get();
 
         foreach ($contratos as $contrato) {
-            $estatus = 3;
-            if ($limite->isBefore($contrato->fecha_fin)) {
-                $estatus = 2;
+            $fechaFin = Carbon::parse($contrato->fecha_fin);
+            $estatus = 1; // VIGENTE
+            $enviadaNotificacion = false;
+
+            if ($fechaFin->isBefore($hoy)) {
+                $estatus = 3; // VENCIDO
+                $enviadaNotificacion = true;
+            } elseif ($fechaFin->between($hoy, $limite)) {
+                $estatus = 2; // POR VENCER
+                $enviadaNotificacion = $estatus !== $contrato->estatus;
+            }
+
+            if ($enviadaNotificacion) {
+                $userId = $contrato->user_id;
+                $tipoNotificacion = ($estatus == 2) ? 5 : 6; // 5: POR VENCER, 6: VENCIDO
+
                 NotificacionController::crear([
                     'tipo_notificacion' => 1,
-                    'asignado_id' => $contrato->contrato_id,
-                    'user_id' => $contrato->user_id,
+                    'asignado_id' => $contrato->id,
+                    'user_id' => $userId,
                     'is_admin' => 1,
-                    'titulo_id' => $contrato->titulo_id,
-                    'descripcion_id' => $contrato->descripcion_id,
-                    'ruta_id' => 1,
-                    'accion_id' => 2,
-                    'payload_accion' => $contrato->contrato_id,
+                    'titulo_id' => $tipoNotificacion,
+                    'descripcion_id' => $tipoNotificacion,
+                    'ruta_id' => 3,
+                    'accion_id' => 3,
+                    'payload_accion' => $userId,
                 ]);
             }
 
-            DB::table('contratos')
-                ->where('contrato_id', $contrato->contrato_id)
-                ->update(['estatus' => $estatus]);
+            if ($estatus !== 1) {
+                $user_id = $contrato->user_id;
+                DB::table('contratos')
+                    ->where('id', $contrato->id)
+                    ->update(['estatus' => $estatus]);
+            }
         }
 
         $this->info('Estatus de contratos actualizado correctamente.');

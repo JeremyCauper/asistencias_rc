@@ -39,11 +39,9 @@ $(document).ready(function () {
 });
 
 let nuevoContrato = false;
-
 // 🧍 Para agregar un nuevo contrato
-$(document).on('click', '.btnContratos', async function () {
+async function verContrato(userId) {
     nuevoContrato = true;
-    const userId = $(this).data('id');
     $('#personal_id').val(userId);
     $('#modalContratos').modal('show');
 
@@ -96,7 +94,7 @@ $(document).on('click', '.btnContratos', async function () {
         console.error(error);
         tbody.html('<tr><td colspan="5" class="text-center text-danger">Error al cargar historial</td></tr>');
     }
-});
+};
 
 $('#btnGuardar').on('click', async function () {
     try {

@@ -873,61 +873,52 @@ function base64ToUtf8(base64) {
  * @returns {string} String describiendo la diferencia en meses y/o días
  */
 function calcularDiferenciaMesesDias(fecha1, fecha2) {
-    // Parsear las fechas
     const d1 = new Date(fecha1 + 'T00:00:00');
     const d2 = new Date(fecha2 + 'T00:00:00');
 
-    // Validar que las fechas sean válidas
-    if (isNaN(d1.getTime()) || isNaN(d2.getTime())) {
-        throw new Error('Fechas inválidas. Use el formato YYYY-MM-DD');
+    if (isNaN(d1) || isNaN(d2)) {
+        throw new Error('Formato inválido YYYY-MM-DD');
     }
 
-    // Asegurar que fechaInicio sea la menor
-    let fechaInicio = d1 <= d2 ? d1 : d2;
-    let fechaFin = d1 <= d2 ? d2 : d1;
+    let inicio = d1 <= d2 ? d1 : d2;
+    let fin = d1 <= d2 ? d2 : d1;
 
-    // Función auxiliar para obtener el último día del mes
-    function ultimoDiaDelMes(year, month) {
-        return new Date(year, month + 1, 0).getDate();
-    }
+    const MS_DIA = 1000 * 60 * 60 * 24;
 
-    let mesesCompletos = 0;
-    let fechaActual = new Date(fechaInicio);
+    let meses = 0;
+    let cursor = new Date(inicio);
 
-    // Contar meses completos
+    // mover cursor al primer día del mes siguiente
+    let primerMesCompleto = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+
+    // contar meses completos intermedios
     while (true) {
-        const yearActual = fechaActual.getFullYear();
-        const monthActual = fechaActual.getMonth();
-        const ultimoDia = ultimoDiaDelMes(yearActual, monthActual);
+        let finMes = new Date(primerMesCompleto.getFullYear(), primerMesCompleto.getMonth() + 1, 0);
 
-        // Crear la fecha del último día del mes actual
-        const finDelMes = new Date(yearActual, monthActual, ultimoDia);
-
-        // Verificar si llegamos al último día del mes y no pasamos la fecha final
-        if (finDelMes <= fechaFin) {
-            mesesCompletos++;
-            // Avanzar al primer día del siguiente mes
-            fechaActual = new Date(yearActual, monthActual + 1, 1);
+        if (finMes <= fin) {
+            meses++;
+            primerMesCompleto = new Date(primerMesCompleto.getFullYear(), primerMesCompleto.getMonth() + 1, 1);
         } else {
             break;
         }
     }
 
-    // Calcular días restantes desde fechaActual hasta fechaFin (inclusive)
-    const diasRestantes = Math.floor((fechaFin - fechaActual) / (1000 * 60 * 60 * 24)) + 1;
+    // días iniciales (desde inicio hasta fin del mes inicial)
+    let finMesInicio = new Date(inicio.getFullYear(), inicio.getMonth() + 1, 0);
+    let diasInicio = Math.max(0, Math.floor((finMesInicio - inicio) / MS_DIA) + 1);
 
-    // Construir el resultado
+    // días finales (desde inicio del mes final hasta fecha fin)
+    let inicioMesFin = new Date(fin.getFullYear(), fin.getMonth(), 1);
+    let diasFinal = Math.floor((fin - inicioMesFin) / MS_DIA) + 1;
+
+    // si no hubo meses completos intermedios, todo es días
+    let dias = meses > 0 ? diasInicio + diasFinal : Math.floor((fin - inicio) / MS_DIA) + 1;
+
     const partes = [];
+    if (meses > 0) partes.push(`${meses} mes${meses === 1 ? '' : 'es'}`);
+    if (dias > 0) partes.push(`${dias} día${dias === 1 ? '' : 's'}`);
 
-    if (mesesCompletos > 0) {
-        partes.push(`${mesesCompletos} ${mesesCompletos === 1 ? 'mes' : 'meses'}`);
-    }
-
-    if (diasRestantes > 0) {
-        partes.push(`${diasRestantes} ${diasRestantes === 1 ? 'día' : 'días'}`);
-    }
-
-    return partes.join(', ') || '0 días';
+    return partes.join(', ');
 }
 
 function colores(c) {

@@ -8,7 +8,7 @@
     --mdtp-on-surface-variant: #454c4f;
     --mdtp-outline: #747a7e;
     --mdtp-overlay: rgba(0, 0, 0, 0.5);
-    --mdtp-elevation: 0 8px 32px rgba(0, 0, 0);
+    --mdtp-elevation: 0px 0px 12px 0px rgba(0, 0, 0);
     --mdtp-radius: 28px;
     --mdtp-transition: cubic-bezier(0.4, 0, 0.2, 1);
 }

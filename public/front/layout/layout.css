@@ -4,8 +4,8 @@
     --root-height-navbar: 50px;
     --root-layout-bg: #ffffff;
     --root-layout-color: #6a7282;
-    --root-container-bg: #f9f9f9;
-    --root-border-color: rgb(79, 79, 79, .25);
+    --root-container-bg: #eef6ff;
+    --root-border-color: rgb(207 230 255);
 
     --root-is-active-bg: rgb(29 115 255);
 
@@ -261,7 +261,7 @@ body * .hover-layout:hover {
     background-size: contain !important;
     width: 1.75rem;
     height: 1.75rem;
-    background: url(../../front/images/app/icons/icon.webp?v=6.5.6) no-repeat center center;
+    background: url(../../front/images/app/icons/icon.webp?v=6.6.1) no-repeat center center;
 }
 
 .layout-container .sidebar .sidebar__header .sidebar-close i::before {
@@ -632,7 +632,7 @@ body * .hover-layout:hover {
     }
 
     .layout-container .navbar .navbar-brand .logo_rci {
-        background: url(../../front/images/app/icons/icon.webp?v=6.5.6) no-repeat center center;
+        background: url(../../front/images/app/icons/icon.webp?v=6.6.1) no-repeat center center;
         width: 40px;
         height: 40px;
     }

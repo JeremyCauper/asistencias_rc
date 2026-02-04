@@ -2,10 +2,10 @@
 @section('title', 'Control del Contratos')
 
 @section('cabecera')
-    <link rel="stylesheet" href="{{ secure_asset('front/css/app/contratos/contratos.css') }}?v={{ env('APP_VERSION') }}">
+    <link rel="stylesheet" href="{{ secure_asset('front/css/app/contratos/contratos.css') }}?v={{ config('app.version') }}">
 
-    <link rel="stylesheet" href="{{ secure_asset('front/vendor/mdtp/mdtp.min.css') }}">
-    <script src="{{ secure_asset('front/vendor/mdtp/mdtp.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->mdtp) }}">
+    <script src="{{ secure_asset($ft_js->mdtp) }}"></script>
 
     <script>
         const empresa = @json($empresa);
@@ -17,16 +17,16 @@
     <!-- 🔹 Resumen contable -->
     <section class="row">
         <div class="col-md-3 col-6 mb-2">
-            <div class="card">
+            <div class="card" style="background-color: #549cea50; border: 1px solid #3b71ca20;">
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="card-icon rounded-7" style="background-color: #3b71ca20">
-                                <i class="far fa-clipboard text-primary fa-fw fs-4"></i>
+                            <div class="card-icon rounded-7 text-bg-primary">
+                                <i class="far fa-clipboard fa-fw fs-4"></i>
                             </div>
                         </div>
                         <div class="content-text flex-grow-1 ms-2">
-                            <p class="text-muted mb-1">Total Contratos</p>
+                            <p class="text-muted mb-1">Total Personal</p>
                             <p class="fw-bold mb-0 fs-4" id="totalContratos">0</p>
                         </div>
                     </div>
@@ -35,12 +35,12 @@
         </div>
 
         <div class="col-md-3 col-6 mb-2">
-            <div class="card">
+            <div class="card" style="background-color: #14a44d40; border: 1px solid #14a44d20;">
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="card-icon rounded-7" style="background-color: #14a44d20">
-                                <i class="fas fa-circle-check text-success fa-fw fs-4"></i>
+                            <div class="card-icon rounded-7 text-bg-success">
+                                <i class="fas fa-circle-check fa-fw fs-4"></i>
                             </div>
                         </div>
                         <div class="content-text flex-grow-1 ms-2">
@@ -53,12 +53,12 @@
         </div>
 
         <div class="col-md-3 col-6 mb-2">
-            <div class="card">
+            <div class="card" style="background-color: #e4a11b40; border: 1px solid #e4a11b20;">
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="card-icon rounded-7" style="background-color: #e4a11b20">
-                                <i class="fas fa-triangle-exclamation text-warning fa-fw fs-4"></i>
+                            <div class="card-icon rounded-7 text-bg-warning">
+                                <i class="fas fa-triangle-exclamation fa-fw fs-4"></i>
                             </div>
                         </div>
                         <div class="content-text flex-grow-1 ms-2">
@@ -71,12 +71,12 @@
         </div>
 
         <div class="col-md-3 col-6 mb-2">
-            <div class="card">
+            <div class="card" style="background-color: #dc4c6440; border: 1px solid #dc4c6420;">
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="card-icon rounded-7" style="background-color: #dc4c6420">
-                                <i class="fas fa-xmark text-danger fa-fw fs-4"></i>
+                            <div class="card-icon rounded-7 text-bg-danger">
+                                <i class="fas fa-xmark fa-fw fs-4"></i>
                             </div>
                         </div>
                         <div class="content-text flex-grow-1 ms-2">
@@ -335,5 +335,5 @@
 
     <!-- 🔹 Scripts -->
     <script src="{{ secure_asset($ft_js->jquery_inputmask_bundle) }}"></script>
-    <script src="{{ secure_asset('front/js/contratos/contratos.js') }}?v={{ env('APP_VERSION') }}"></script>
+    <script src="{{ secure_asset('front/js/contratos/contratos.js') }}?v={{ config('app.version') }}"></script>
 @endsection

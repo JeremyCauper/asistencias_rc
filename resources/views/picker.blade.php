@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Material Date Time Picker - Input Integration</title>
-    <link rel="stylesheet" href="{{ asset('front/vendor/mdtp/mdtp.min.css') }}">
-    <script src="{{ asset('front/vendor/mdtp/mdtp.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset($ft_css->mdtp) }}">
+    <script src="{{ asset($ft_js->mdtp) }}"></script>
     <style>
         /* ==================== DEMO STYLES ==================== */
         * {

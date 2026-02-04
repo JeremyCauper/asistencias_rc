@@ -4,8 +4,8 @@
 @section('cabecera')
     <link rel="stylesheet" href="{{ secure_asset($ft_css->quill_show) }}">
 
-    <link rel="stylesheet" href="{{ secure_asset('front/vendor/mdtp/mdtp.min.css') }}">
-    <script src="{{ secure_asset('front/vendor/mdtp/mdtp.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->mdtp) }}">
+    <script src="{{ secure_asset($ft_js->mdtp) }}"></script>
 
     <script src="{{ secure_asset($ft_js->bootstrap_bundle) }}"></script>
     <script src="{{ secure_asset($ft_js->bootstrap_multiselect) }}"></script>
@@ -417,5 +417,5 @@
     <script src="{{ secure_asset($ft_js->compressor) }}"></script>
     <script src="{{ secure_asset($ft_js->quill) }}"></script>
     <script src="{{ secure_asset($ft_js->QuillControl) }}"></script>
-    <script src="{{ secure_asset('front/js/misasistencias/misasistencias.js') }}?v={{ env('APP_VERSION') }}"></script>
+    <script src="{{ secure_asset('front/js/misasistencias/misasistencias.js') }}?v={{ config('app.version') }}"></script>
 @endsection

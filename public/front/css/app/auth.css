@@ -1,8 +1,8 @@
 :root,
 [data-mdb-theme=light] {
-    --root-body-bg: #e9e9e9;
-    --root-logo-navbar: url(../../images/app/LogoRC_WBlanco.webp) no-repeat center center;
-    --root-logo-rci-bg: url(../../images/app/LogoRC_TNegro.webp) no-repeat center center;
+    --root-body-bg: #eef6ff;
+    --root-logo-navbar: url(../../images/app/LogoRC_WNormal.webp) no-repeat center center;
+    --root-logo-rci-bg: url(../../images/app/login_light.webp) no-repeat center center;
     --root-font-size-span: small;
     --root-logo-width-navbar: 12rem;
     --root-logo-height-navbar: 48px;
@@ -10,7 +10,8 @@
 
 [data-mdb-theme=dark] {
     --root-body-bg: #0f1117;
-    --root-logo-rci-bg: url(../../images/app/LogoRC_TBlanco.webp) no-repeat center center;
+    --root-logo-navbar: url(../../images/app/LogoRC_WBlanco.webp) no-repeat center center;
+    --root-logo-rci-bg: url(../../images/app/login_dark.webp) no-repeat center center;
 }
 
 body {
@@ -49,11 +50,11 @@ body {
     background: var(--root-logo-rci-bg);
     background-size: contain;
     width: 100%;
-    height: 30px;
+    height: 160px;
     display: block;
 }
 
-.title-login::before,
+/* .title-login::before,
 .title-login::after {
     content: "";
     height: 2px;
@@ -74,7 +75,7 @@ body {
     border-top-left-radius: 15px;
     border-bottom-left-radius: 15px;
     right: 0;
-}
+} */
 
 
 
@@ -145,7 +146,7 @@ body {
 }
 
 .form-icon.icon-usuario::after {
-    content: "\f4fe";
+    content: "\f2bd";
     left: .75rem;
 }
 
@@ -155,7 +156,7 @@ body {
 }
 
 .form-icon.icon-contrasena::after {
-    content: "\f023";
+    content: "\f084";
     left: .75rem;
 }
 
