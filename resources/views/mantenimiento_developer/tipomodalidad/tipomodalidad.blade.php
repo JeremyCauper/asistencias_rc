@@ -28,7 +28,7 @@
                     <div class="col-12">
                         <table id="tb_tipo_modalidad" class="table table-hover text-nowrap" style="width:100%">
                             <thead>
-                                <tr class="text-bg-primary text-center">
+                                <tr class="text-center">
                                     <th>#</th>
                                     <th>Descripcion</th>
                                     <th>Icono</th>
@@ -48,46 +48,46 @@
                                 fixedHeader: true, // Para fijar el encabezado al hacer scroll vertical
                                 ajax: {
                                     url: `${__url}/mantenimiento-dev/tipo-modalidad/listar`,
-                                    dataSrc: function(json) {
+                                    dataSrc: function (json) {
                                         return json?.data;
                                     },
-                                    error: function(xhr, error, thrown) {
+                                    error: function (xhr, error, thrown) {
                                         boxAlert.table();
                                         console.log('Respuesta del servidor:', xhr);
                                     }
                                 },
                                 columns: [{
-                                        data: 'id'
-                                    },
-                                    {
-                                        data: 'descripcion'
-                                    },
-                                    {
-                                        data: 'icono',
-                                        render: function(data, type, rows) {
-                                            return `<i class="${data}"></i> ${data}`
-                                        }
-                                    },
-                                    {
-                                        data: 'color',
-                                        render: function(data, type, rows) {
-                                            return `<span style="color: ${data};">${data}</span>`
-                                        }
-                                    },
-                                    {
-                                        data: 'created_at'
-                                    },
-                                    {
-                                        data: 'updated_at'
-                                    },
-                                    {
-                                        data: 'estado'
-                                    },
-                                    {
-                                        data: 'acciones'
+                                    data: 'id'
+                                },
+                                {
+                                    data: 'descripcion'
+                                },
+                                {
+                                    data: 'icono',
+                                    render: function (data, type, rows) {
+                                        return `<i class="${data}"></i> ${data}`
                                     }
+                                },
+                                {
+                                    data: 'color',
+                                    render: function (data, type, rows) {
+                                        return `<span style="color: ${data};">${data}</span>`
+                                    }
+                                },
+                                {
+                                    data: 'created_at'
+                                },
+                                {
+                                    data: 'updated_at'
+                                },
+                                {
+                                    data: 'estado'
+                                },
+                                {
+                                    data: 'acciones'
+                                }
                                 ],
-                                createdRow: function(row, data, dataIndex) {
+                                createdRow: function (row, data, dataIndex) {
                                     $(row).addClass('text-center');
                                     $(row).find('td:eq(7)').addClass(`td-acciones`);
                                 },
@@ -121,8 +121,7 @@
                             <div class="input-group">
                                 <span class="input-group-text rounded me-1 px-2"><i class="fas fa-question"
                                         aria-label="icono"></i></span>
-                                <input type="text" class="form-control rounded" id="icono" name="icono"
-                                    requested="Icono">
+                                <input type="text" class="form-control rounded" id="icono" name="icono" requested="Icono">
                             </div>
                         </div>
                         <div class="col-6 mb-2">
@@ -137,8 +136,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" data-mdb-ripple-init
-                        data-mdb-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init data-mdb-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Guardar</button>
                 </div>
             </form>
@@ -149,5 +147,6 @@
 
 @section('scripts')
     <script></script>
-    <script src="{{ secure_asset('front/js/mantenimiento_dev/tipomodalidad/tipomodalidad.js') }}?v={{ env('APP_VERSION') }}"></script>
+    <script
+        src="{{ secure_asset('front/js/mantenimiento_dev/tipomodalidad/tipomodalidad.js') }}?v={{ config('app.version') }}"></script>
 @endsection

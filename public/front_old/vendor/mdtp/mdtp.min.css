@@ -1,0 +1,599 @@
+/* ==================== CSS VARIABLES ==================== */
+:root {
+    --mdtp-primary: #3b71ca;
+    --mdtp-on-primary: #FFFFFF;
+    --mdtp-surface: #FFFFFF;
+    --mdtp-on-surface: #1b1e1f;
+    --mdtp-surface-variant: #e0e6ec;
+    --mdtp-on-surface-variant: #454c4f;
+    --mdtp-outline: #747a7e;
+    --mdtp-overlay: rgba(0, 0, 0, 0.5);
+    --mdtp-elevation: 0px 0px 12px 0px rgba(0, 0, 0);
+    --mdtp-radius: 28px;
+    --mdtp-transition: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+    --mdtp-primary: #3b71ca;
+    --mdtp-on-primary: #1b1e1f;
+    --mdtp-surface: #1b1e1f;
+    --mdtp-on-surface: #ffffff;
+    --mdtp-surface-variant: #4a4a4a;
+    --mdtp-on-surface-variant: #d0d0d0;
+    --mdtp-outline: #4a4a4a;
+    --mdtp-overlay: rgba(0, 0, 0, 0.7);
+}
+
+/* ==================== RESET & BASE ==================== */
+.mdtp-picker * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ==================== INPUT STYLES ==================== */
+.mdtp-input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    border: 2px solid var(--mdtp-outline);
+    border-radius: 8px;
+    background: var(--mdtp-surface);
+    color: var(--mdtp-on-surface);
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.mdtp-input:focus {
+    border-color: var(--mdtp-primary);
+    box-shadow: 0 0 0 3px rgba(59, 113, 202, 0.1);
+}
+
+.mdtp-input:hover {
+    border-color: var(--mdtp-primary);
+}
+
+.mdtp-input::placeholder {
+    color: var(--mdtp-on-surface-variant);
+    opacity: 0.6;
+}
+
+/* ==================== OVERLAY ==================== */
+.mdtp-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--mdtp-overlay);
+    z-index: 9998;
+    opacity: 0;
+    transition: opacity 0.3s var(--mdtp-transition);
+}
+
+.mdtp-overlay.active {
+    opacity: 1;
+}
+
+/* ==================== MODAL CONTAINER ==================== */
+.mdtp-picker {
+    position: fixed;
+    z-index: 9999;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    color: var(--mdtp-on-surface);
+}
+
+/* Desktop: centered modal */
+.mdtp-picker {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0;
+    transition: all 0.3s var(--mdtp-transition);
+}
+
+.mdtp-picker.active {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+/* ==================== MODAL CONTENT ==================== */
+.mdtp-container {
+    background: var(--mdtp-surface);
+    border-radius: var(--mdtp-radius);
+    box-shadow: var(--mdtp-elevation);
+    overflow: hidden;
+    width: 360px;
+    max-width: 90vw;
+}
+
+/* ==================== HEADER ==================== */
+.mdtp-header {
+    background: var(--mdtp-surface-variant);
+    padding: 24px;
+    text-align: left;
+}
+
+.mdtp-header-label {
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--mdtp-on-surface-variant);
+}
+
+.mdtp-header-value {
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--mdtp-on-surface);
+    user-select: none;
+    line-height: 1.2;
+}
+
+/* ==================== BODY ==================== */
+.mdtp-body {
+    padding: 20px;
+    min-height: 280px;
+    max-height: 400px;
+    overflow-y: hidden;
+    position: relative;
+}
+
+/* ==================== MONTH/YEAR PICKER ==================== */
+.mdtp-month-year-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    height: 280px;
+    position: relative;
+}
+
+.mdtp-close-month-year {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--mdtp-surface-variant);
+    color: var(--mdtp-on-surface);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.mdtp-close-month-year:hover {
+    background: var(--mdtp-primary);
+    color: var(--mdtp-on-primary);
+}
+
+.mdtp-picker-column {
+    position: relative;
+    height: 280px;
+    width: 120px;
+    overflow: hidden;
+}
+
+.mdtp-picker-list {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /* top: 0; left: 0; handled by container */
+    transition: transform 0.3s var(--mdtp-transition);
+}
+
+.mdtp-picker-item {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--mdtp-on-surface);
+    opacity: 0.4;
+    transition: opacity 0.2s, font-size 0.2s, font-weight 0.2s;
+    /* Animate visuals but not transform */
+    user-select: none;
+    cursor: pointer;
+    will-change: transform, opacity;
+}
+
+.mdtp-picker-item.active {
+    opacity: 1;
+    font-weight: 500;
+    font-size: 20px;
+}
+
+/* --- DISABLED STATE FOR PICKER ITEMS --- */
+.mdtp-picker-item.disabled {
+    opacity: 0.1 !important;
+    pointer-events: none;
+    text-decoration: line-through;
+    cursor: not-allowed;
+}
+
+.mdtp-picker-column::before,
+.mdtp-picker-column::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 112px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.mdtp-picker-column::before {
+    top: 0;
+    background: linear-gradient(to bottom, var(--mdtp-surface), transparent);
+}
+
+.mdtp-picker-column::after {
+    bottom: 0;
+    background: linear-gradient(to top, var(--mdtp-surface), transparent);
+}
+
+.mdtp-picker-selector {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 56px;
+    transform: translateY(-50%);
+    border-top: 2px solid var(--mdtp-primary);
+    border-bottom: 2px solid var(--mdtp-primary);
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* ==================== DATE PICKER NAV ==================== */
+.mdtp-date-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.mdtp-date-nav-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--mdtp-on-surface);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    user-select: none;
+}
+
+.mdtp-date-nav-title:hover {
+    background: var(--mdtp-surface-variant);
+}
+
+.mdtp-date-nav-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--mdtp-on-surface);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    font-size: 18px;
+}
+
+.mdtp-date-nav-btn:hover {
+    background: var(--mdtp-surface-variant);
+}
+
+/* ==================== YEAR SELECTOR ==================== */
+.mdtp-year-grid {
+    display: none;
+}
+
+/* ==================== MONTH SELECTOR ==================== */
+.mdtp-month-grid {
+    display: none;
+}
+
+/* ==================== CALENDAR ==================== */
+.mdtp-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.mdtp-calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mdtp-on-surface-variant);
+    text-transform: uppercase;
+}
+
+.mdtp-calendar-date {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    border: none;
+    background: transparent;
+    color: var(--mdtp-on-surface);
+    transition: all 0.2s;
+    position: relative;
+}
+
+.mdtp-calendar-date:hover {
+    background: var(--mdtp-surface-variant);
+}
+
+.mdtp-calendar-date.other-month {
+    color: var(--mdtp-on-surface-variant);
+    opacity: 0.4;
+}
+
+.mdtp-calendar-date.selected {
+    background: var(--mdtp-primary);
+    color: white;
+}
+
+.mdtp-calendar-date.today {
+    border: 2px solid var(--mdtp-primary);
+}
+
+.mdtp-calendar-date.selected.today::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    border: none;
+    background: white;
+}
+
+/* --- DISABLED DATE --- */
+.mdtp-calendar-date.disabled {
+    color: var(--mdtp-on-surface-variant);
+    opacity: 0.15;
+    pointer-events: none;
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+
+.mdtp-calendar-date.disabled:hover {
+    background: transparent;
+}
+
+
+/* ==================== TIME PICKER - ANALOG CLOCK STYLE ==================== */
+.mdtp-time-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 0;
+}
+
+.mdtp-time-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    font-size: 56px;
+    font-weight: 300;
+    user-select: none;
+}
+
+.mdtp-time-segment {
+    min-width: 90px;
+    padding: 8px;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.mdtp-time-segment:hover {
+    background: rgba(59, 113, 202, 0.08);
+}
+
+.mdtp-time-segment.active {
+    background: rgba(59, 113, 202);
+}
+
+.mdtp-time-colon {
+    opacity: 0.6;
+}
+
+.mdtp-time-period-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-left: 8px;
+}
+
+.mdtp-time-period-inline-btn {
+    padding: 6px 14px;
+    border-radius: 16px;
+    border: none;
+    background: transparent;
+    color: var(--mdtp-on-surface);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.2s;
+    opacity: 0.5;
+}
+
+.mdtp-time-period-inline-btn.active {
+    background: rgba(59, 113, 202);
+    opacity: 1;
+}
+
+.mdtp-time-period-inline-btn:hover:not(.active) {
+    background: rgba(59, 113, 202, 0.05);
+}
+
+.mdtp-analog-clock-container {
+    position: relative;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    justify-content: center;
+}
+
+.mdtp-analog-clock {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    background: var(--mdtp-surface-variant);
+    border-radius: 50%;
+    user-select: none;
+    touch-action: none;
+}
+
+.mdtp-clock-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background: var(--mdtp-primary);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.mdtp-clock-hand {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    background: var(--mdtp-primary);
+    border-radius: 2px;
+    transform-origin: 50% 100%;
+    transition: none;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.mdtp-clock-hand::before {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background: var(--mdtp-primary);
+    border-radius: 50%;
+    transform: translate(-50%, 0);
+}
+
+.mdtp-clock-hand::after {
+    content: '';
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    border: 16px solid var(--mdtp-primary);
+    background: var(--mdtp-primary);
+    border-radius: 50%;
+    transform: translate(-50%, 0);
+}
+
+.mdtp-clock-hand.minutes::after {
+    background: white;
+}
+
+.mdtp-clock-number {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--mdtp-on-surface);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    z-index: 999;
+}
+
+.mdtp-clock-number.selected {
+    background: transparent;
+    color: white;
+    font-weight: 500;
+}
+
+.mdtp-clock-number.inner {
+    font-size: 14px;
+}
+
+.mdtp-time-period {
+    display: none;
+}
+
+/* ==================== ACTIONS ==================== */
+.mdtp-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--mdtp-outline);
+}
+
+.mdtp-btn {
+    padding: 10px 24px;
+    border-radius: 20px;
+    border: 2px solid var(--mdtp-primary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mdtp-btn-text {
+    background: transparent;
+    color: var(--mdtp-primary);
+}
+
+.mdtp-btn-text:hover {
+    background: rgba(59, 113, 202, 0.08);
+}
+
+.mdtp-btn-filled {
+    background: var(--mdtp-primary);
+    color: white;
+}
+
+.mdtp-btn-filled:hover {
+    box-shadow: 0 2px 8px rgba(59, 113, 202, 0.3);
+}
+
+/* ==================== UTILITY ==================== */
+.mdtp-hidden {
+    display: none !important;
+}

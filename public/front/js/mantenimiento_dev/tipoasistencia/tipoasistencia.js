@@ -6,8 +6,6 @@ $(document).ready(function () {
         { control: ['#estado'], requested: true },
     ]);
 
-    formatSelect('modal_tipo_asistencia');
-
     $('.modal').on('hidden.bs.modal', function () {
         $('#modal_tipo_asistenciaLabel').html('REGISTRAR TIPO ASISTENCIA');
         $('#id').val('');
@@ -16,7 +14,32 @@ $(document).ready(function () {
     fObservador('.content-wrapper', () => {
         tb_tipo_asistencia.columns.adjust().draw();
     });
+
+    $('#color').on('input', function () {
+        renderBadge();
+    });
+
+    $('#descripcion').on('keyup', function () {
+        renderBadge();
+    });
 });
+
+const renderBadge = () => {
+    let color = $('#color').val();
+    let descripcion = $('#descripcion').val();
+    $('[data-badge]').each(function () {
+        $(this).html(`
+                <label class="badge mx-1" style="font-size: .75rem;background-color: ${color};color: white;">${descripcion}</label>
+                <label class="badge mx-1" style="font-size: .75rem;background-color: ${color}25;color: ${color};">${descripcion}</label>
+                <label class="badge mx-1" style="font-size: .75rem;background-color: ${color}25;color: ${color};border: 1px solid ${color};">${descripcion}</label>
+            `);
+
+        let bgColor = $(this).data('badge');
+        if (bgColor == 'dark') {
+            $(this).css({ 'background-color': 'var(--mdb-surface-inverted-color)' });
+        }
+    });
+}
 
 function updateTable() {
     tb_tipo_asistencia.ajax.reload();
@@ -97,7 +120,7 @@ async function Editar(id) {
         $('#id').val(json.id);
         $('#simbolo').val(json.simbolo);
         $('#descripcion').val(json.descripcion);
-        $('#color').val(json.color);
+        $('#color').val(json.color).trigger('input');
         $('#estado').val(json.estatus).trigger('change');
 
         fMananger.formModalLoding('modal_tipo_asistencia', 'hide');

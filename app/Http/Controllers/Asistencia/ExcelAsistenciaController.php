@@ -116,7 +116,7 @@ class ExcelAsistenciaController extends Controller
                     $asistenciaDia = $asistenciasUsuario->firstWhere('fecha', $fecha);
                     $descuentoDia = $descuentosUsuario->firstWhere('fecha', $fecha);
                     $justificacionDia = $justificacionUsuario->firstWhere('fecha', $fecha);
-                    $campoDia = $this->getDay($fecha);
+                    $campoDia = self::getDay($fecha);
                     $feriado = $feriados->get(date('m-d', $strAFecha));
 
                     // Si la fecha es feriado (y no domingo), marcamos tipo_asistencia = 6 (feriado)

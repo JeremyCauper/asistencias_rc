@@ -15,21 +15,14 @@ $(document).ready(function () {
 
     fObservador('.content-wrapper', () => {
         if (!esCelular()) {
-            tablaAsistencias.columns.adjust().draw();
+            lista_asistencias.columns.adjust().draw();
         }
 
         incidencia_estados.forEach((e, i) => {
             if (e.chart) e.chart.resize();
         });
     });
-
-    $('.botones-accion').append(
-        $('<button>', {
-            class: 'btn btn-primary px-3 me-2',
-            "data-mdb-ripple-init": ''
-        }).html('<i class="fas fa-rotate"></i>').on('click', updateTable)
-    );
-
+    
     // eventos
     var $inputFecha = $('#filtro_fecha');
     var debounceTimer = null;
@@ -41,25 +34,25 @@ $(document).ready(function () {
     }
 
     // 📅 Detectar cambio manual de fecha
-    $inputFecha.on('change', function () {
+    $inputFecha.on('input', function () {
         debounceFiltro();
     });
 
     // ⬅️ Retroceder un día
     $('#btn-fecha-left').on('click', function () {
-        var fecha = new Date($inputFecha.val());
+        var fecha = new Date(filtro_fecha.val());
         fecha.setDate(fecha.getDate() - 1);
         var nuevaFecha = fecha.toISOString().split('T')[0];
-        $inputFecha.val(nuevaFecha);
+        filtro_fecha.val(nuevaFecha);
         debounceFiltro();
     });
 
     // ➡️ Avanzar un día
     $('#btn-fecha-right').on('click', function () {
-        var fecha = new Date($inputFecha.val());
+        var fecha = new Date(filtro_fecha.val());
         fecha.setDate(fecha.getDate() + 1);
         var nuevaFecha = fecha.toISOString().split('T')[0];
-        $inputFecha.val(nuevaFecha);
+        filtro_fecha.val(nuevaFecha);
         debounceFiltro();
     });
 });
@@ -89,7 +82,7 @@ async function modificarDescuento(id) {
         // Buscar descripción del tipo de asistencia
         const tasistencia = tipoAsistencia.find(s => s.id == json.tipo_asistencia) || {
             descripcion: 'Pendiente',
-            color: '#959595'
+            color: '#7e7e7e'
         };
 
         // Llenar campos visibles

@@ -12,12 +12,12 @@ class SyncAsistenciasController extends Controller
 {
 
     // Método que registra asistencias para remoto/permiso a las 08:30
-    public function crearAsistenciasPorDia(Request $request)
+    public static function crearAsistenciasPorDia()
     {
         try {
-            $fecha = $request->query('fecha', date('Y-m-d'));
+            $fecha = date('Y-m-d');
 
-            $campoDia = $this->getDay($fecha);
+            $campoDia = self::getDay($fecha);
             $insertados = 0;
             $modalidad_trabajo = null;
 
@@ -30,13 +30,16 @@ class SyncAsistenciasController extends Controller
             if ($campoDia)
                 $modalidad_trabajo = DB::table('config_trabajo_personal')->select('user_id', "{$campoDia} as modo")->get()->keyBy('user_id');
             $personal = DB::table('personal')->where('estatus', 1)->get()->toArray();
+            $inserciones = [];
 
             foreach ($personal as $per) {
                 $existe = $asistencias->get($per->user_id);
                 if ($existe)
                     continue;
                 $tipoAsistencia = 1;
-                $tipoModalidad = $modalidad_trabajo ? ($modalidad_trabajo->get($per->user_id))->modo : 5;
+                $tipoModalidad = $modalidad_trabajo
+                    ? optional($modalidad_trabajo->get($per->user_id))->modo ?? 5
+                    : 5;
 
                 if (!$campoDia || $feriados) {
                     $tipoAsistencia = $feriados ? 6 : 5;
@@ -46,22 +49,34 @@ class SyncAsistenciasController extends Controller
                     $tipoAsistencia = 3;
                 }
 
-                DB::table('asistencias')->insert([
+                $inserciones[] = [
                     'user_id' => $per->user_id,
                     'fecha' => $fecha,
                     'tipo_modalidad' => $tipoModalidad,
                     'tipo_asistencia' => $tipoAsistencia,
                     'sincronizado' => 1,
-                    'created_at' => now(),
-                ]);
+                    'created_at' => now()->format('Y-m-d H:i:s'),
+                ];
 
                 $insertados++;
             }
 
-            Log::info("crearAsistenciasPorDia: se insertaron $insertados registros para $fecha.");
-            return response()->json("se insertaron $insertados registros para $fecha.");
+            DB::beginTransaction();
+            if (!empty($inserciones)) {
+                DB::table('asistencias')->insert($inserciones);
+            }
+            DB::commit();
+
+            return [
+                'insertados' => $insertados,
+                'fecha' => $fecha,
+            ];
         } catch (\Throwable $e) {
-            Log::error("crearAsistenciasPorDia ERROR: {$e->getLine()} " . $e->getMessage());
+            \Log::error($e);
+            return [
+                'insertados' => 0,
+                'fecha' => $fecha,
+            ];
         }
     }
 
@@ -89,7 +104,8 @@ class SyncAsistenciasController extends Controller
                     $entrada = $asistencia?->entrada ?? null;
                     $tipo_asistencia = $asistencia?->tipo_asistencia ?? null;
 
-                    if ($entrada === null) $rol_personal = DB::table('personal')->where('user_id', $userId)->value('rol_system');
+                    if ($entrada === null)
+                        $rol_personal = DB::table('personal')->where('user_id', $userId)->value('rol_system');
                     $puntual = $horaMarcada <= $this->limitePuntual(rol: $rol_personal);
 
                     $justificacionEstatus = DB::table('justificaciones')->where('asistencia_id', $id_asistencia)->value('estatus');

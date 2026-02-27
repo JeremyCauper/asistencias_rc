@@ -7,7 +7,7 @@ $(document).ready(function () {
 
     fObservador('.content-wrapper', () => {
         if (!esCelular()) {
-            tablaMisAsistencias.columns.adjust().draw();
+            lista_mis_asistencias.columns.adjust().draw();
         }
 
         incidencia_estados.forEach((e, i) => {
@@ -56,7 +56,7 @@ $(document).ready(function () {
 
     // ⬅️ Retroceder un mes
     $('#btn-fecha-left').on('click', function () {
-        const { year, month } = parseYearMonth($inputFecha.val());
+        const { year, month } = parseYearMonth(filtro_fecha.val());
         let newYear = year;
         let newMonth = month - 1;
         if (newMonth < 1) {
@@ -64,13 +64,13 @@ $(document).ready(function () {
             newYear -= 1;
         }
         const nuevaFecha = formatYearMonth(newYear, newMonth);
-        $inputFecha.val(nuevaFecha);
+        filtro_fecha.val(nuevaFecha);
         debounceFiltro();
     });
 
     // ➡️ Avanzar un mes
     $('#btn-fecha-right').on('click', function () {
-        const { year, month } = parseYearMonth($inputFecha.val());
+        const { year, month } = parseYearMonth(filtro_fecha.val());
         let newYear = year;
         let newMonth = month + 1;
         if (newMonth > 12) {
@@ -78,7 +78,7 @@ $(document).ready(function () {
             newYear += 1;
         }
         const nuevaFecha = formatYearMonth(newYear, newMonth);
-        $inputFecha.val(nuevaFecha);
+        filtro_fecha.val(nuevaFecha);
         debounceFiltro();
     });
 
@@ -120,7 +120,7 @@ $(document).ready(function () {
             }
 
             let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
-                || { descripcion: 'Pendiente', color: '#959595' };
+                || { descripcion: 'Pendiente', color: '#7e7e7e' };
 
             llenarInfoModal('modalJustificarDerivado', {
                 fecha: `${data.fecha} ${(data.entrada || '')}`,
@@ -237,7 +237,7 @@ $(document).ready(function () {
             fMananger.formModalLoding('modalJustificar', 'show');
 
             let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
-                || { descripcion: 'Pendiente', color: '#959595' };
+                || { descripcion: 'Pendiente', color: '#7e7e7e' };
 
             llenarInfoModal('modalJustificar', {
                 fecha: `${data.fecha} ${(data.entrada || '')}`,
@@ -359,7 +359,7 @@ $(document).ready(function () {
             const archivos = data.archivos;
 
             let tasistencia = tipoAsistencia.find(s => s.id == data.tipo_asistencia)
-                || { descripcion: 'Pendiente', color: '#959595' };
+                || { descripcion: 'Pendiente', color: '#7e7e7e' };
 
             let estado = [
                 { descripcion: 'Pendiente', color: 'secondary' },

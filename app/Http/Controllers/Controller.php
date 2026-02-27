@@ -53,7 +53,7 @@ class Controller extends BaseController
         return strtotime(date("{$str_fecha} {$this->horaLimiteRemoto}"));
     }
 
-    public function getDay($date)
+    public static function getDay($date)
     {
         $day = strtolower(date('l', strtotime($date)));
         $map = [
@@ -72,14 +72,14 @@ class Controller extends BaseController
     public function obtenerModulos2($tipo_acceso, $sistema)
     {
         $filteredIds = [
-            '0' => ['1' => [], '2' => [], '3' => ["1", "2", "3", "4", "5"], '4' => ['6'], '5' => []],
+            '0' => ['1' => [], '2' => [], '3' => ["1", "2", "3", "4", "5"], '4' => ['6'], '5' => [], '7' => []],
             '1' => ['5' => []],
-            '2' => ['1' => [], '2' => [], '4' => ['6'], '5' => []],
+            '2' => ['1' => [], '2' => [], '4' => ['6'], '5' => [], '7' => []],
             '3' => ['1' => [], '5' => []],
-            '4' => ['1' => [], '2' => [], '4' => ['6'], '5' => []],
+            '4' => ['1' => [], '2' => [], '4' => ['6'], '5' => [], '7' => []],
             '5' => ['1' => [], '5' => []],
             '6' => ['1' => [], '5' => []],
-            '7' => ['1' => [], '2' => [], '4' => ['6'], '5' => []],
+            '7' => ['1' => [], '2' => [], '4' => ['6'], '5' => [], '7' => []],
         ][$sistema === 1 ? 0 : $tipo_acceso];
 
         $id_menus = array_keys($filteredIds);
@@ -104,14 +104,14 @@ class Controller extends BaseController
     public function obtenerModulos($tipo_acceso, $sistema)
     {
         $filteredIds = [
-            '0' => ['1' => [], '2' => [], '3' => ["1", "2", "3", "4", "5"], '4' => ['6'], '5' => []],
+            '0' => ['1' => [], '2' => [], '3' => ["1", "2", "3", "4", "5"], '4' => ['6'], '5' => [], '7' => []],
             '1' => ['5' => []],
-            '2' => ['1' => [], '2' => [], '4' => ['6'], '5' => []],
+            '2' => ['1' => [], '2' => [], '4' => ['6'], '5' => [], '7' => []],
             '3' => ['1' => [], '5' => []],
-            '4' => ['1' => [], '2' => [], '4' => ['6'], '5' => []],
+            '4' => ['1' => [], '2' => [], '4' => ['6'], '5' => [], '7' => []],
             '5' => ['1' => [], '5' => []],
             '6' => ['1' => [], '5' => []],
-            '7' => ['1' => [], '2' => [], '4' => ['6'], '5' => []],
+            '7' => ['1' => [], '2' => [], '4' => ['6'], '5' => [], '7' => []],
         ][$sistema === 1 ? 0 : $tipo_acceso];
         // Decodificar el JSON base64 recibido con los IDs a filtrar
 
@@ -318,7 +318,7 @@ class Controller extends BaseController
                     data-mdb-dropdown-initialized="true">
                     <i class="fas fa-' . ($sinAcciones ? 'ban' : 'bars') . '" style="font-size: 1.125em;' . ($sinAcciones ? 'visibility: hidden;' : '') . '"></i>
                 </button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu rounded-7">
                     ' . $tittle . $button . '
                 </div>
             </div>';

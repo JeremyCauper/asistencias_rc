@@ -5,8 +5,6 @@ $(document).ready(function () {
         { control: ['#estado'], requested: true },
     ]);
 
-    formatSelect('modal_area_personal');
-
     $('.modal').on('hidden.bs.modal', function () {
         $('#modal_area_personalLabel').html('REGISTRAR AREA PERSONAL');
         $('#id').val('');

@@ -68,7 +68,7 @@ class MisAsistenciaController extends Controller
                 $descuento = $descuentos->get($a->fecha) ?? null;
                 $justificacion = $justificaciones->get($a->fecha) ?? null;
                 $notificacion = false;
-                $campoDia = $this->getDay($a->fecha);
+                $campoDia = self::getDay($a->fecha);
                 $tipo_asistencia = $a?->tipo_asistencia ?? 0;
                 $tipo_modalidad = $a?->tipo_modalidad;
                 $hoy = date($this->strFecha) == $a->fecha;
@@ -162,7 +162,7 @@ class MisAsistenciaController extends Controller
                     }
                 }
 
-                $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object) ['color' => '#959595', 'descripcion' => 'Pendiente'];
+                $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object) ['color' => '#7e7e7e', 'descripcion' => 'Pendiente'];
 
                 $listado[] = [
                     'jornada' => $campoDia,

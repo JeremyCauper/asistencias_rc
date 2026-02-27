@@ -2,7 +2,7 @@
 @section('title', 'Control del Personal')
 
 @section('cabecera')
-    <link rel="stylesheet" href="{{ secure_asset('front/css/app/personal/personal.css') }}?v={{ env('APP_VERSION') }}">
+    <link rel="stylesheet" href="{{ secure_asset('front/css/app/personal/personal.css') }}?v={{ config('app.version') }}">
     <script>
         const empresa = @json($empresa);
         const tipoAreas = @json($areas);
@@ -16,17 +16,17 @@
     <!-- 🔹 Resumen contable -->
     <section class="row">
         <div class="col-md-3 col-6 mb-2">
-            <div class="card">
+            <div class="card" style="background-color: #549cea50; border: 1px solid #3b71ca20;">
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="p-md-3 p-2 rounded-4" style="background-color: #e2eaf7">
-                                <i class="fa-solid fa-users text-primary fa-fw"></i>
+                            <div class="card-icon rounded-7 text-bg-primary">
+                                <i class="fa-solid fa-users fa-fw fs-4"></i>
                             </div>
                         </div>
-                        <div class="flex-grow-1 ms-2">
-                            <p class="fw-bold mb-1">Total</p>
-                            <p class="text-muted mb-0 fs-4" id="totalSync">0</p>
+                        <div class="content-text flex-grow-1 ms-2">
+                            <p class="text-muted mb-1">Total</p>
+                            <p class="fw-bold mb-0 fs-4" id="totalSync">0</p>
                         </div>
                     </div>
                 </div>
@@ -34,17 +34,17 @@
         </div>
 
         <div class="col-md-3 col-6 mb-2">
-            <div class="card">
+            <div class="card" style="background-color: #14a44d40; border: 1px solid #14a44d20;">
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="p-md-3 p-2 rounded-4" style="background-color: #e2eaf7">
-                                <i class="fa-solid fa-cloud-arrow-up text-primary fa-fw"></i>
+                            <div class="card-icon rounded-7 text-bg-success">
+                                <i class="fa-solid fa-cloud-arrow-up fa-fw fs-4"></i>
                             </div>
                         </div>
-                        <div class="flex-grow-1 ms-2">
-                            <p class="fw-bold mb-1">Sincronizando</p>
-                            <p class="text-muted mb-0 fs-4" id="totalCreando">0</p>
+                        <div class="content-text flex-grow-1 ms-2">
+                            <p class="text-muted mb-1">Sincronizando</p>
+                            <p class="fw-bold mb-0 fs-4" id="totalCreando">0</p>
                         </div>
                     </div>
                 </div>
@@ -52,17 +52,17 @@
         </div>
 
         <div class="col-md-3 col-6 mb-2">
-            <div class="card">
+            <div class="card" style="background-color: #e4a11b40; border: 1px solid #e4a11b20;">
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="p-md-3 p-2 rounded-4" style="background-color: #e2eaf7">
-                                <i class="fa-solid fa-pen-to-square text-primary fa-fw"></i>
+                            <div class="card-icon rounded-7 text-bg-warning">
+                                <i class="fa-solid fa-pen-to-square fa-fw fs-4"></i>
                             </div>
                         </div>
-                        <div class="flex-grow-1 ms-2">
-                            <p class="fw-bold mb-1">Modificando</p>
-                            <p class="text-muted mb-0 fs-4" id="totalModificando">0</p>
+                        <div class="content-text flex-grow-1 ms-2">
+                            <p class="text-muted mb-1">Modificando</p>
+                            <p class="fw-bold mb-0 fs-4" id="totalModificando">0</p>
                         </div>
                     </div>
                 </div>
@@ -70,17 +70,17 @@
         </div>
 
         <div class="col-md-3 col-6 mb-2">
-            <div class="card">
+            <div class="card" style="background-color: #dc4c6440; border: 1px solid #dc4c6420;">
                 <div class="card-body px-3">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">
-                            <div class="p-md-3 p-2 rounded-4" style="background-color: #e2eaf7">
-                                <i class="fa-solid fa-exclamation-triangle text-primary fa-fw"></i>
+                            <div class="card-icon rounded-7 text-bg-danger">
+                                <i class="fa-solid fa-exclamation-triangle fa-fw fs-4"></i>
                             </div>
                         </div>
-                        <div class="flex-grow-1 ms-2">
-                            <p class="fw-bold mb-1">Eliminando</p>
-                            <p class="text-muted mb-0 fs-4" id="totalEliminando">0</p>
+                        <div class="content-text flex-grow-1 ms-2">
+                            <p class="text-muted mb-1">Eliminando</p>
+                            <p class="fw-bold mb-0 fs-4" id="totalEliminando">0</p>
                         </div>
                     </div>
                 </div>
@@ -89,21 +89,14 @@
     </section>
 
     <!-- 🔹 Tabla -->
-    <div class="card">
-        <div class="card-body px-0">
-            <div class="d-flex justify-content-between align-items-center mb-3 mx-3">
-                <div>
-                    <h6 class="fw-bold mb-0">Listado de Personal</h6>
-                </div>
+    <div class="card" id="vista-escritorio" style="display: none;">
+        <div class="card-body">
+            <h6 class="fw-bold mb-0">Listado de Personal</h6>
+            <button hidden data-mdb-modal-init data-mdb-target="#modalPersonal"></button>
 
-                <button hidden data-mdb-modal-init data-mdb-target="#modalPersonal"></button>
-            </div>
-
-            <div id="cardsPersonal" style="display: none;"></div>
-
-            <table id="tablaPersonal" class="table align-center mb-0 table-hover text-nowrap w-100" style="display: none">
+            <table id="tb_personal" class="table align-center mb-0 table-hover text-nowrap w-100" >
                 <thead>
-                    <tr class="text-bg-primary text-center">
+                    <tr class="text-center">
                         <th>UserID</th>
                         <th>Empresa</th>
                         <th>Area</th>
@@ -118,214 +111,24 @@
                     </tr>
                 </thead>
             </table>
-            <script>
-                let tablaPersonal;
-                let getUrlListar = () => generateUrl(__url + '/personal/listar', {
-                    empresa: $('#empresa').val()
-                });
-                let dataSet = (json) => {
-                    let sync = json.filter(p => p.estado_sync === 1).length;
-                    let cre = json.filter(p => p.estado_sync === 0).length;
-                    let mod = json.filter(p => p.estado_sync === 2).length;
-                    let eli = json.filter(p => p.estado_sync === 3).length;
-
-                    $('#totalSync').text(sync);
-                    $('#totalCreando').text(cre);
-                    $('#totalModificando').text(mod);
-                    $('#totalEliminando').text(eli);
-                    return json;
-                }
-
-                if (esCelular()) {
-                    $('#cardsPersonal').removeAttr('style');
-                    tablaMisAsistencias = new CardTable('cardsPersonal', {
-                        ajax: {
-                            url: getUrlListar(),
-                            dataSrc: dataSet,
-                            error: function(xhr, error, thrown) {
-                                boxAlert.table();
-                                console.log('Respuesta del servidor:', xhr);
-                            }
-                        },
-                        columns: [{
-                                data: 'user_id',
-                                title: 'USer Id'
-                            },
-                            {
-                                data: 'empresa',
-                                title: 'Empresa'
-                            },
-                            {
-                                data: 'area',
-                                title: 'Area'
-                            },
-                            {
-                                data: 'dni',
-                                title: 'Dni'
-                            },
-                            {
-                                data: 'nombre',
-                                title: 'Nombre'
-                            },
-                            {
-                                data: 'apellido',
-                                title: 'Apellido'
-                            },
-                            {
-                                data: 'clave',
-                                title: 'Clave'
-                            },
-                            {
-                                data: 'tipo',
-                                title: 'Tipo'
-                            },
-                            {
-                                data: 'estado_sync',
-                                title: 'Estado Sync'
-                            },
-                            {
-                                data: 'estado',
-                                title: 'Estado'
-                            }
-                        ],
-                        cardTemplate: (data, index) => {
-                            return `
-                                <div class="d-flex align-items-center justify-content-between pb-1">
-                                    <div class="fw-medium mb-0" style="overflow: hidden;font-size: 3vw;">
-                                        <span class="badge badge-dark">${data.user_id}</span>
-                                        <span>${data.apellido}, ${data.nombre}</span>
-                                    </div>
-                                    <div class="btn-acciones-movil">${data.acciones}</div>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center pb-2">
-                                    <span style="font-size: 2.85vw;"><b class="text-muted">Documento:</b> ${data.dni}</span>
-                                    <span>
-                                        ${getBadgeAreas(data.area, '.8', false)} / ${getBadgeTipoPersonal(data.tipo, '.8', true)}
-                                    </span>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center pb-2">
-                                    <span style="font-size: 2.85vw;"><b class="text-muted">Contraseña:</b> ${data.clave}</span>
-                                </div>
-                                <div class="d-flex justify-content-start align-items-center" style="gap: 4px;">
-                                    ${getBadgeEstadoSync(data.estado_sync, '.75', false)} ${getBadgeEstado(data.estado, '.75')}
-                                </div>
-                                <hr class="mx-1 my-2">
-                                <div class="d-flex align-items-center justify-content-between pt-1" style="font-size: 2.85vw;color: #909090;">
-                                    <label>
-                                        <span style="vertical-align: middle;">${data.empresa}</span>
-                                    </label>
-                                </div>`;
-                        },
-                        scrollY: '600px',
-                        perPage: 50,
-                        searchPlaceholder: 'Buscar',
-                        order: ['apellido', 'asc'],
-                        drawCallback: function() {
-                            if (typeof mdb !== 'undefined') {
-                                document.querySelectorAll('[data-mdb-dropdown-init]').forEach(el => {
-                                    new mdb.Dropdown(el);
-                                });
-                            }
-                        }
-                    });
-                } else {
-                    $('#tablaPersonal').removeAttr('style');
-                    tablaPersonal = new DataTable('#tablaPersonal', {
-                        lengthChange: false,
-                        paging: false,
-                        scrollX: true,
-                        scrollY: 400,
-                        dom: `<"row"
-                            <"col-lg-12 mb-2"B>>
-                            <"row"
-                                <"col-sm-6 text-sm-start text-center my-1 botones-accion">
-                                <"col-sm-6 text-sm-end text-center my-1"f>>
-                            <"contenedor_tabla my-2"tr>
-                            <"row"
-                                <"col-md-5 text-md-start text-center my-1"i>
-                                <"col-md-7 text-md-end text-center my-1"p>>`,
-                        ajax: {
-                            url: __url + '/personal/listar',
-                            dataSrc: dataSet,
-                            error: function(xhr, error, thrown) {
-                                boxAlert.table();
-                                console.log('Respuesta del servidor:', xhr);
-                            }
-                        },
-                        columns: [{
-                                data: 'user_id'
-                            },
-                            {
-                                data: 'empresa'
-                            },
-                            {
-                                data: 'area',
-                                render: function(data, type, row) {
-                                    return getBadgeAreas(data, '.75', false);
-                                }
-                            },
-                            {
-                                data: 'dni',
-                                render: function(data, type, row) {
-                                    let dni = (data || '') + (data ? ' - ' : '');
-                                    return dni + `${row.nombre || ''} ${row.apellido || ''}`;
-                                }
-                            },
-                            {
-                                data: 'clave'
-                            },
-                            {
-                                data: 'tipo',
-                                render: function(data, type, row) {
-                                    return getBadgeTipoPersonal(data);
-                                }
-                            },
-                            {
-                                data: 'estado_sync',
-                                render: function(data, type, row) {
-                                    return getBadgeEstadoSync(data);
-                                }
-                            },
-                            {
-                                data: 'estado',
-                                render: function(data, type, row) {
-                                    return getBadgeEstado(data);
-                                }
-                            },
-                            {
-                                data: 'registrado'
-                            },
-                            {
-                                data: 'actualizado'
-                            },
-                            {
-                                data: 'acciones'
-                            }
-                        ],
-                        createdRow: function(row, data, dataIndex) {
-                            $(row).addClass('text-center');
-                            $(row).find('td:eq(1), td:eq(3)').addClass('text-start');
-                            $(row).find('td:eq(10)').addClass(`td-acciones`);
-                        },
-                        processing: true
-                    });
-                    mostrar_acciones(tablaPersonal);
-                }
-
-                function updateTable() {
-                    if (esCelular()) {
-                        return tablaPersonal.reload();
-                    }
-                    tablaPersonal.ajax.reload();
-                }
-            </script>
         </div>
     </div>
+
+    <div id="vista-movil" class="mt-2" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold mb-0">Listado de Personal</h6>
+            <div class="acciones"></div>
+        </div>
+        <div id="lista_personal"></div>
+    </div>
+
+    <script
+        src="{{ secure_asset('front/js/personal/listado-personal.js') }}?v={{ config('app.version') }}"></script>
 
 
     <!-- 🔹 Modal -->
     <div class="modal fade" id="modalPersonal" tabindex="-1" aria-labelledby="modalPersonalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog">
+        <div class="modal-dialog modal-fullscreen-md-down">
             <form id="formPersonal" class="modal-content">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="modalPersonalLabel">Registrar Personal</h5>
@@ -451,7 +254,7 @@
                                     estilos,
                                     $('<span>', {
                                         class: 'input-group-text border-0 px-0',
-                                        style: 'min-width: 4rem; width: 8rem; font-size: small; position: sticky; left: 0; z-index: 5; background-color: var(--mdb-modal-bg);'
+                                        style: 'min-width: 4rem; width: 8rem; font-size: small; position: sticky; left: 0; z-index: 5; background-color: var(--bg-modal-body);'
                                     }).text(dias[0]),
                                     span2
                                 ));
@@ -467,7 +270,7 @@
         </div>
     </div>
 
-    <!-- 🔹 Modal -->
+    <!-- 🔹 Modal Vacaciones -->
     <div class="modal fade" id="modalVacaciones" tabindex="-1" aria-labelledby="modalVacacionesLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog">
@@ -478,19 +281,45 @@
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="calendar"></div>
+                    <div id="calendarVacaciones"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-link" data-mdb-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="btnVerDatos">Guardar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarVacaciones">Guardar</button>
                 </div>
             </div>
         </div>
     </div>
-    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}?v={{ env('APP_VERSION') }}"></script>
+
+    <!-- 🔹 Modal Descansos -->
+    <div class="modal fade" id="modalDescansos" tabindex="-1" aria-labelledby="modalDescansosLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalDescansosLabel">Programar Descansos</h5>
+                    <button type="button" class="btn-close btn-close-white" data-mdb-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- <div class="mb-3">
+                        <label for="archivoDescanso" class="form-label">Subir Archivo (Constancia/Certificado)</label>
+                        <input class="form-control" type="file" id="archivoDescanso" accept=".pdf, .jpg, .jpeg, .png">
+                    </div> -->
+                    <div id="calendarDescansos"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link" data-mdb-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarDescansos">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ secure_asset('front/js/personal/config-full-calendar.js') }}?v={{ config('app.version') }}"></script>
 
 
     <!-- 🔹 Scripts -->
     <script src="{{ secure_asset($ft_js->jquery_inputmask_bundle) }}"></script>
-    <script src="{{ secure_asset('front/js/personal/personal.js') }}?v={{ env('APP_VERSION') }}"></script>
+    <script src="{{ secure_asset('front/js/personal/personal.js') }}?v={{ config('app.version') }}"></script>
 @endsection

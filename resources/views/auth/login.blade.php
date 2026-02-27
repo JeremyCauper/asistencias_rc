@@ -28,7 +28,7 @@
     <!-- MDB -->
     <link href="{{ secure_asset($ft_css->mdb_min7_2_0) }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ secure_asset($ft_css->sweet_default) }}">
-    <link rel="stylesheet" href="{{ secure_asset('front/css/app/auth.css') }}?v={{ env('APP_VERSION') }}">
+    <link rel="stylesheet" href="{{ secure_asset('front/css/app/auth.css') }}?v={{ config('app.version') }}">
 
     <script src="{{ secure_asset($ft_js->jquery) }}"></script>
 
@@ -63,7 +63,7 @@
 
     <div class="content-fluid h-100 d-flex justify-content-center align-items-center">
         <div style="width: 27rem;">
-            <div class="card shadow-4-strong m-3">
+            <div class="card m-3">
                 <div class="card-body">
                     <form id="form-login" class="m-2">
                         <div class="text-center title-login"></div>
@@ -111,7 +111,7 @@
         const __url = "{{ secure_url('') }}";
         const __token = "{{ csrf_token() }}";
     </script>
-    <script src="{{ secure_asset('front/js/auth/auth.js') }}?v={{ env('APP_VERSION') }}"></script>
+    <script src="{{ secure_asset('front/js/auth/auth.js') }}?v={{ config('app.version') }}"></script>
 
     @include('layout.partials.service_worker')
 </body>

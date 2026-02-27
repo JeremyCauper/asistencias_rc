@@ -57,6 +57,8 @@
     <link rel="manifest" href="{{ secure_asset($ft_json->manifest) }}">
     <meta name="theme-color" content="#000000">
 
+    <link href="{{ secure_asset($ft_css->theme_colors) }}" rel="stylesheet">
+
     <title>@yield('title')</title>
 
     <!-- Para iOS -->
@@ -74,7 +76,7 @@
     <!-- MDB -->
     <link href="{{ secure_asset($ft_css->mdb_min7_2_0) }}" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ secure_asset($ft_css->select2) }}">
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->customSelect2) }}">
 
     <link rel="stylesheet" href="{{ secure_asset($ft_css->sweet_animate) }}">
     <link rel="stylesheet" href="{{ secure_asset($ft_css->sweet_default) }}">
@@ -94,8 +96,8 @@
         <script id="cambioPass" src="{{ secure_asset($ft_js->actualizarPassword) }}"></script>
     @endif
     <script src="{{ secure_asset($ft_js->sweet_sweetalert2) }}"></script>
-    <script src="{{ secure_asset($ft_js->select2) }}"></script>
-    <script src="{{ secure_asset($ft_js->form_select2) }}"></script>
+    <script src="{{ secure_asset($ft_js->customSelect2) }}"></script>
+    <script src="{{ secure_asset($ft_js->form_customSelect2) }}"></script>
     <script src="{{ secure_asset($ft_js->AlertMananger) }}"></script>
     <script src="{{ secure_asset($ft_js->CardTable) }}"></script>
     <script src="{{ secure_asset($ft_js->jquery_dataTables) }}"></script>
@@ -222,15 +224,15 @@
                             <button data-mdb-dropdown-init class="btn-notification hover-layout" role="button"
                                 data-mdb-auto-close="outside" aria-expanded="false">
                                 <i class="fas fa-bell"></i>
-                                <span class="badge rounded-pill badge-notification bg-danger"></span>
+                                <span class="badge rounded-pill bg-danger" badge-notification></span>
                             </button>
-                            <div class="dropdown-menu dropdown-menu-right py-0 ps-2 pb-1">
+                            <div class="dropdown-menu dropdown-menu-right p-0 pb-1">
                                 <div class="dropdown-header d-flex align-items-center justify-content-between px-2">
                                     <h6 class="mb-0" style="user-select: none">Notificaciones</h6>
                                     <button class="btn btn-sm px-2" noti-btn="reload" data-mdb-ripple-init><i
                                             class="fas fa-rotate"></i></button>
                                 </div>
-                                <div class="dropdown-body rounded pe-2">
+                                <div class="dropdown-body rounded px-2">
                                     <div class="dropdown-text text-center text-muted py-3">
                                         Sin notificaciones
                                     </div>

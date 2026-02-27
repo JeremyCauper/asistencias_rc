@@ -38,7 +38,7 @@ class NotificacionController extends Controller
             ->get();
 
         // return response()->json($notificaciones);
-        
+
         // Armado de respuesta
         $result = [];
 
@@ -46,18 +46,20 @@ class NotificacionController extends Controller
             if (!isset($personal[$noti->user_id])) {
                 continue; // por seguridad si no existiera user en tabla personal
             }
+            
+            if ($noti->tipo_notificacion == 0) {
+                if (!$isTecnico && $userId != $noti->user_id && $noti->is_admin == 0) {
+                    continue;
+                }
 
-            if (!$isTecnico && $userId != $noti->user_id && $noti->is_admin == 0) {
-                continue;
-            }
+                $limiteShow = match ($noti->limite_show) {
+                    'derivado' => strtotime($noti->fecha . ' ' . $this->horaLimiteDerivado),
+                    default => null
+                };
 
-            $limiteShow = match ($noti->limite_show) {
-                'derivado' => strtotime($noti->fecha . ' ' . $this->horaLimiteDerivado),
-                default => null
-            };
-
-            if ($limiteShow != null && $this->horaActual > $limiteShow) {
-                continue;
+                if ($limiteShow != null && $this->horaActual > $limiteShow) {
+                    continue;
+                }
             }
 
             $per = $personal[$noti->user_id];

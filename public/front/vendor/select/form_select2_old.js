@@ -64,7 +64,7 @@ var Select2Selects = function () {
 
         // Allow clear selection
         $('.select-clear').select2({
-            placeholder: '-- Seleccione --',
+            placeholder: 'Seleccione...',
             allowClear: true
         });
 

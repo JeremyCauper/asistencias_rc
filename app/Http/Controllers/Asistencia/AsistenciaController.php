@@ -71,7 +71,7 @@ class AsistenciaController extends Controller
             }
 
             $strtoTime = strtotime($fecha);
-            $campoDia = $this->getDay($fecha);
+            $campoDia = self::getDay($fecha);
 
             // Cargar datos en memoria (una sola vez)
             $feriado = DB::table('feriados_privado_peru')
@@ -203,7 +203,7 @@ class AsistenciaController extends Controller
                         }
                     }
 
-                    $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object) ['color' => '#959595', 'descripcion' => 'Pendiente'];
+                    $badgeTitle = $tipoAsistencias->get($tipo_asistencia) ?? (object) ['color' => '#7e7e7e', 'descripcion' => 'Pendiente'];
 
                     $listado[] = [
                         'tipo_personal' => $p->rol_system,

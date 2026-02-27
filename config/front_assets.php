@@ -1,17 +1,21 @@
 <?php
-$version = env('APP_VERSION');
+$version = config('app.version');
 return [
     'version' => $version,
     'css' => (object) [
         'app' => 'front/css/app.css?v=' . $version,
+        'theme_colors' => 'front/css/theme-colors.css?v=' . $version,
         'mdb_all_min6_0_0' => 'front/vendor/mdboostrap/css/all.min6.0.0.css?v=' . $version,
         'mdb_min7_2_0' => 'front/vendor/mdboostrap/css/mdb.min7.2.0.css?v=' . $version,
-        'select2' => 'front/vendor/select/select2.min.css?v=' . $version,
+        'bootstrap_multiselect' => 'front/vendor/multiselect/bootstrap_multiselect.css?v=' . $version,
+        'customSelect2' => 'front/vendor/customSelect2/customSelect2.css?v=' . $version,
         'sweet_animate' => 'front/vendor/sweetalert/animate.min.css?v=' . $version,
         'sweet_default' => 'front/vendor/sweetalert/default.css?v=' . $version,
         'fonts' => 'front/vendor/fontGoogle/fonts.css?v=' . $version,
         'quill_show' => 'front/vendor/quill/quill.snow.css?v=' . $version,
         'daterangepicker' => 'front/vendor/daterangepicker/daterangepicker.css?v=' . $version,
+        'mdtp' => 'front/vendor/mdtp/mdtp.min.css?v=' . $version,
+
         'layout' => 'front/layout/layout.css?v=' . $version,
         'swicth_layout' => 'front/layout/swicth_layout.css?v=' . $version,
     ],
@@ -36,8 +40,8 @@ return [
         'mdb_umd_min7_2_0' => 'front/vendor/mdboostrap/js/mdb.umd.min7.2.0.js?v=' . $version,
         'jquery_dataTables' => 'front/vendor/dataTable/jquery.dataTables.min.js?v=' . $version,
         'sweet_sweetalert2' => 'front/vendor/sweetalert/sweetalert2@11.js?v=' . $version,
-        'select2' => 'front/vendor/select/select2.min.js?v=' . $version,
-        'form_select2' => 'front/vendor/select/form_select2.js?v=' . $version,
+        'customSelect2' => 'front/vendor/customSelect2/jquery.customSelect2.js?v=' . $version,
+        'form_customSelect2' => 'front/vendor/customSelect2/form_customSelect2.js?v=' . $version,
         'daterangepicker_moment' => 'front/vendor/daterangepicker/moment.min.js?v=' . $version,
         'daterangepicker' => 'front/vendor/daterangepicker/daterangepicker.min.js?v=' . $version,
         'bootstrap_bundle' => 'front/vendor/multiselect/bootstrap.bundle.min.js?v=' . $version,
@@ -50,6 +54,8 @@ return [
         'FileSaver' => 'front/vendor/exceljs/FileSaver.min.js?v=' . $version,
         'full_calendar' => 'front/vendor/full-calendar/full-calendar.min.js?v=' . $version,
         'jquery_inputmask_bundle' => 'front/vendor/inputmask/jquery.inputmask.bundle.min.js?v=' . $version,
+        'mdtp' => 'front/vendor/mdtp/mdtp.min.js?v=' . $version,
+        
         'pdf_js' => 'front/vendor/pdfjs/pdf-js/pdf.min.js?v=' . $version,
         'pdf_worker_js' => 'front/vendor/pdfjs/pdf-js/pdf.worker.min.js?v=' . $version,
 

@@ -16,7 +16,8 @@
                     <strong>Listado de Sub Menu</strong>
                 </h6>
                 <div>
-                    <button class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#modal_submenu">
+                    <button class="btn btn-primary" data-mdb-ripple-init data-mdb-modal-init
+                        data-mdb-target="#modal_submenu">
                         <i class="fas fa-plus"></i>
                         Nuevo Sub Menu
                     </button>
@@ -28,7 +29,7 @@
                     <div class="col-12">
                         <table id="tb_submenu" class="table table-hover text-nowrap" style="width:100%">
                             <thead>
-                                <tr class="text-bg-primary text-center">
+                                <tr class="text-center">
                                     <th>Menu</th>
                                     <th>Categoria</th>
                                     <th>Descripcion</th>
@@ -49,41 +50,41 @@
                                 ajax: {
                                     url: `${__url}/mantenimiento-dev/menu/sub-menu/listar`,
                                     dataSrc: "data",
-                                    error: function(xhr, error, thrown) {
+                                    error: function (xhr, error, thrown) {
                                         boxAlert.table();
                                         console.log('Respuesta del servidor:', xhr);
                                     }
                                 },
                                 columns: [{
-                                        data: 'menu',
-                                        render: function(data, type, row) {
-                                            let menu = menus.find(menu => menu.id == data);
-                                            return `<i class="${menu.icon} me-2"></i>${menu.descripcion}`;
-                                        }
-                                    },
-                                    {
-                                        data: 'categoria'
-                                    },
-                                    {
-                                        data: 'descripcion'
-                                    },
-                                    {
-                                        data: 'ruta'
-                                    },
-                                    {
-                                        data: 'created_at'
-                                    },
-                                    {
-                                        data: 'updated_at'
-                                    },
-                                    {
-                                        data: 'estado'
-                                    },
-                                    {
-                                        data: 'acciones'
+                                    data: 'menu',
+                                    render: function (data, type, row) {
+                                        let menu = menus.find(menu => menu.id == data);
+                                        return `<i class="${menu.icon} me-2"></i>${menu.descripcion}`;
                                     }
+                                },
+                                {
+                                    data: 'categoria'
+                                },
+                                {
+                                    data: 'descripcion'
+                                },
+                                {
+                                    data: 'ruta'
+                                },
+                                {
+                                    data: 'created_at'
+                                },
+                                {
+                                    data: 'updated_at'
+                                },
+                                {
+                                    data: 'estado'
+                                },
+                                {
+                                    data: 'acciones'
+                                }
                                 ],
-                                createdRow: function(row, data, dataIndex) {
+                                createdRow: function (row, data, dataIndex) {
                                     $(row).addClass('text-center');
                                     $(row).find('td:eq(0), td:eq(1), td:eq(2)').addClass('text-start');
                                     $(row).find('td:eq(7)').addClass('td-acciones');
@@ -113,8 +114,7 @@
                             <select class="select-icons" id="menu">
                                 <option value=""></option>
                                 @foreach ($menus as $v)
-                                    <option value="{{ $v->id }}"
-                                        {{ $v->estatus != 1 || $v->eliminado == 1 ? 'data-hidden="true" data-nosearch="true"' : '' }}>
+                                    <option value="{{ $v->id }}" {{ $v->estatus != 1 || $v->eliminado == 1 ? 'data-hidden="true" data-nosearch="true"' : '' }}>
                                         {{ (string) '<i class="' . $v->icon . ' me-2"></i>' }} {{ $v->descripcion }}
                                         {{ $v->eliminado == 1 ? '<label class="badge badge-danger ms-2">Elim.</label>' : ($v->estatus != 1 ? '<label class="badge badge-danger ms-2">Inac.</label>' : '') }}
                                     </option>
@@ -139,8 +139,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link" data-mdb-ripple-init
-                        data-mdb-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-link" data-mdb-ripple-init data-mdb-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Guardar</button>
                 </div>
             </form>

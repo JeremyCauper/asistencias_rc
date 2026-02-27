@@ -5,8 +5,6 @@ $(document).ready(function () {
         { control: ['#estado'], requested: true },
     ]);
 
-    formatSelect('modal_tipo_modalidad');
-
     $('.modal').on('hidden.bs.modal', function () {
         $('#modal_tipo_modalidadLabel').html('REGISTRAR TIPO MODALIDAD');
         $('#id').val('');

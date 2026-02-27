@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Syncs\SyncPersonalController;
 use App\Http\Controllers\Asistencia\AsistenciaController;
 use App\Http\Controllers\Asistencia\ExcelAsistenciaController;
 use App\Http\Controllers\Asistencia\MisAsistenciaController;
+use App\Http\Controllers\Contratos\ContratosController;
 use App\Http\Controllers\InventarioVehicular\InventarioVehicularController;
 use App\Http\Controllers\Justificacion\JustificacionController;
 use App\Http\Controllers\Mantenimientos\AreaPersonal\AreaPersonalController;
@@ -61,6 +62,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/personal/{id}', [SyncPersonalController::class, 'marcarEliminar']);
     Route::get('/personal/cargar-vacaciones/{id}', [SyncPersonalController::class, 'cargarVacaciones']);
     Route::post('/personal/crear-vacaciones', [SyncPersonalController::class, 'crearVacaciones']);
+    Route::get('/personal/cargar-descansos/{id}', [SyncPersonalController::class, 'cargarDescansos']);
+    Route::post('/personal/crear-descansos', [SyncPersonalController::class, 'crearDescansos']);
 
     Route::controller(AsistenciaController::class)
         ->prefix('asistencias-diarias')
@@ -185,6 +188,17 @@ Route::middleware('auth')->group(function () {
             Route::post('/asignar', 'asignar')->name('asignar');
         });
 
+    Route::controller(ContratosController::class)
+        ->prefix('contratos')
+        ->as('contratos.')
+        ->group(function () {
+            Route::get('/', 'view')->name('view');
+            Route::get('/listar', 'listar')->name('listar');
+            Route::post('/registrar', 'create')->name('create');
+            Route::get('/listar-usuario/{id}', 'listarPorUsuario')->name('listarPorUsuario');
+            Route::put('/actualizar', 'update')->name('update');
+        });
+
     Route::get('/notificaciones/listar', [NotificacionController::class, 'listar']);
 
     Route::post('/push/subscribe', [PushController::class, 'subscribe']);
@@ -194,3 +208,29 @@ Route::get('/previsualizar-pdf/movil', [MediaArchivoController::class, 'previewP
 
 Route::get('/push/test/{id}', [PushController::class, 'test']);
 Route::get('/delete-s3', [MediaArchivoController::class, 'deleteFile']);
+
+Route::get('/picker', function () {
+    return view('picker');
+});
+
+Route::get('/principal', function () {
+    return view('principal');
+});
+
+Route::get('/logs', function () {
+    $user = request()->getUser();
+    $password = request()->getPassword();
+
+    // Cambia 'admin' y 'password123' por las credenciales que prefieras
+    if ($user !== 'sistema' || $password !== '193746') {
+        return response('No autorizado.', 401, ['WWW-Authenticate' => 'Basic']);
+    }
+
+    $file = storage_path('logs/laravel.log');
+    if (file_exists($file)) {
+        return response()->file($file, [
+            'Content-Type' => 'text/plain'
+        ]);
+    }
+    return response('Archivo log no encontrado.', 404);
+});

@@ -1,0 +1,641 @@
+/**
+ * CustomSelect2 Styles
+ * Réplica completa de Select2 con mejoras
+ */
+
+/* ========================================
+   Variables CSS
+   ======================================== */
+:root,
+[data-mdb-theme="light"] {
+    --cs2-primary: #3b71ca;
+    --cs2-primary-hover: #3b71ca;
+    --cs2-border: #dcdcdc;
+    --cs2-border-focus: #3b71ca;
+    --cs2-bg: var(--color-slate-0);
+    --cs2-bg-hover: var(--color-blue-100);
+    --cs2-bg-selected: var(--color-slate-500);
+    --cs2-color-selected: var(--color-slate-100);
+    --cs2-text: #111827;
+    --cs2-text-muted: #6b7280;
+    --cs2-placeholder: #9ca3af;
+    --cs2-disabled: #e5e7eb;
+    --cs2-shadow: rgba(0, 0, 0, 0.1);
+    --cs2-shadow-lg: rgba(0, 0, 0, 0.15);
+    --cs2-backdrop: rgba(0, 0, 0, 0.6);
+    --cs2-mark-bg: #fef3c7;
+    --cs2-mark-text: #92400e;
+    --cs2-z-dropdown: 9999;
+    --cs2-z-backdrop: 9998;
+    --cs2-z-modal-dropdown: 10500;
+}
+
+/* Dark mode */
+[data-mdb-theme="dark"] {
+    --cs2-primary: #60a5fa;
+    --cs2-primary-hover: #3b71ca;
+    --cs2-border: rgba(255, 255, 255, 0.2);
+    --cs2-bg: var(--color-slate-900);
+    --cs2-bg-hover: var(--color-slate-700);
+    --cs2-bg-selected: var(--color-slate-400);
+    --cs2-color-selected: var(--color-slate-900);
+    --cs2-text: #f9fafb;
+    --cs2-text-muted: #9ca3af;
+    --cs2-placeholder: #6b7280;
+    --cs2-disabled: #374151;
+    --cs2-shadow: rgba(0, 0, 0, 0.3);
+    --cs2-shadow-lg: rgba(0, 0, 0, 0.5);
+    --cs2-mark-bg: #451a03;
+    --cs2-mark-text: #fef3c7;
+}
+
+/* ========================================
+   Container
+   ======================================== */
+.custom-select2-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.custom-select2-container * {
+    box-sizing: border-box;
+}
+
+/* ========================================
+   Selection
+   ======================================== */
+.custom-select2-selection {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 36px;
+    padding: .5rem 1.75rem .45rem .75rem;
+    background-color: var(--cs2-bg);
+    border: 1px solid var(--cs2-border);
+    border-radius: .75rem;
+    font-size: .75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.custom-select2-selection:hover {
+    border-color: var(--cs2-border-focus);
+}
+
+.custom-select2-selection:focus {
+    border-color: var(--cs2-border-focus);
+    box-shadow: inset 0px 0px 0px 1px #3b71ca;
+}
+
+.custom-select2-selection--disabled {
+    background-color: var(--cs2-disabled);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.custom-select2-selection__rendered {
+    display: block;
+    flex: 1;
+    color: var(--cs2-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: -webkit-auto;
+}
+
+.custom-select2-selection__placeholder {
+    color: var(--cs2-placeholder);
+    font-style: italic;
+}
+
+.custom-select2-selection__arrow {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: transform 0.2s ease;
+}
+
+.custom-select2-selection__arrow b {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-style: solid;
+    border-width: 0px 2px 2px 0px;
+    border-color: transparent var(--cs2-text-muted) var(--cs2-text-muted) transparent;
+    rotate: 45deg;
+    border-radius: .1rem;
+}
+
+.custom-select2-selection__clear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0px 5px;
+    border-radius: 50%;
+    color: var(--cs2-text-muted);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.custom-select2-selection__clear:hover {
+    background-color: var(--cs2-bg-hover);
+    color: var(--cs2-text);
+}
+
+/* ========================================
+   Dropdown Base
+   ======================================== */
+.custom-select2-dropdown {
+    background-color: var(--cs2-bg);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: .75rem;
+    box-shadow: 0 4px 6px -1px var(--cs2-shadow), 0 2px 4px -1px var(--cs2-shadow);
+    z-index: var(--cs2-z-dropdown);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+    pointer-events: none;
+}
+
+.custom-select2-dropdown--open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.2s ease, visibility 0s linear 0s;
+    pointer-events: auto;
+}
+
+/* Dropdown dentro de modal */
+.modal .custom-select2-dropdown {
+    z-index: var(--cs2-z-modal-dropdown);
+}
+
+/* ========================================
+   Dropdown Normal (sin búsqueda)
+   ======================================== */
+.custom-select2-container:not(.custom-select2-container--search) .custom-select2-dropdown {
+    min-width: 100%;
+    max-width: 400px;
+    transform: scale(0.95);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.custom-select2-container:not(.custom-select2-container--search) .custom-select2-dropdown--open {
+    transform: scale(1);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0s;
+}
+
+.custom-select2-dropdown--above {
+    border-radius: 6px;
+}
+
+/* ========================================
+   Dropdown con búsqueda (modal)
+   ======================================== */
+.custom-select2-dropdown--search {
+    position: fixed !important;
+    width: 85%;
+    max-width: 500px;
+    max-height: 80vh;
+    background-color: #202020;
+    display: flex;
+    flex-direction: column;
+    /* IMPORTANTE: Siempre centrado desde el inicio */
+    top: 12% !important;
+    left: 50% !important;
+    /* Combinar translate (para centrar) + scale (para animar) */
+    transform: translate(-50%, 0%) scale(0.92);
+    transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        visibility 0s linear 0.25s;
+}
+
+.custom-select2-dropdown--search.custom-select2-dropdown--open {
+    /* Mantener centrado + escala normal */
+    transform: translate(-50%, 0%) scale(1);
+    transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        visibility 0s linear 0s;
+}
+
+/* ========================================
+   Search Input
+   ======================================== */
+.custom-select2-search {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: .75rem .5rem 0 0;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.custom-select2-search::after {
+    content: "";
+    position: absolute;
+    left: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM4ODgiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48Y2lyY2xlIGN4PSIxMSIgY3k9IjExIiByPSI4Ii8+PGxpbmUgeDE9IjIxIiB5MT0iMjEiIHgyPSIxNi42NSIgeTI9IjE2LjY1Ii8+PC9zdmc+');
+    background-size: contain;
+    pointer-events: none;
+    /* Permite hacer clic a través del icono */
+}
+
+.custom-select2-search__field {
+    width: 100%;
+    padding: 10px 12px 10px 2.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: .75rem;
+    font-size: 14px;
+    color: #e7e7e7;
+    background-color: #202020;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.custom-select2-search__field:focus {
+    border-color: #3b71ca;
+    box-shadow: inset 0px 0px 0px 1px #3b71ca;
+}
+
+.custom-select2-search__field::placeholder {
+    color: var(--cs2-placeholder);
+}
+
+/* ========================================
+   Results Container
+   ======================================== */
+.custom-select2-results {
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 300px;
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
+}
+
+.custom-select2-dropdown--search .custom-select2-results {
+    max-height: none;
+}
+
+/* Scrollbar personalizada */
+.custom-select2-results::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-select2-results::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-select2-results::-webkit-scrollbar-thumb {
+    background: var(--cs2-border);
+    border-radius: 4px;
+}
+
+.custom-select2-results::-webkit-scrollbar-thumb:hover {
+    background: var(--cs2-text-muted);
+}
+
+.custom-select2-results__options {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* ========================================
+   Results Options
+   ======================================== */
+.custom-select2-results__option {
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    color: #e7e7e7;
+    user-select: none;
+    font-size: clamp(0.65rem, 0.5rem + 1vw, 0.8rem);
+}
+
+.custom-select2-dropdown:not(.custom-select2-dropdown--search) .custom-select2-results__option {
+    color: var(--cs2-text);
+}
+
+.custom-select2-dropdown:not(.custom-select2-dropdown--search) .custom-select2-results__option:first-child {
+    border-radius: .75rem .75rem 0 0;
+}
+
+.custom-select2-results__option:last-child {
+    border-radius: 0 0 .75rem .75rem;
+}
+
+.custom-select2-results__option:hover,
+.custom-select2-results__option--highlighted {
+    background-color: var(--cs2-bg-hover);
+}
+
+.custom-select2-results__option--selected {
+    background-color: var(--cs2-bg-selected);
+    color: var(--cs2-color-selected);
+    font-weight: 500;
+}
+
+.custom-select2-results__option--selected:hover,
+.custom-select2-results__option--selected.custom-select2-results__option--highlighted {
+    background-color: var(--cs2-bg-selected);
+}
+
+.custom-select2-dropdown--search .custom-select2-results__option--selected {
+    background-color: #e6e6e6 !important;
+    color: #1e1e1e !important;
+}
+
+.custom-select2-dropdown--search .custom-select2-results__option:hover,
+.custom-select2-dropdown--search .custom-select2-results__option--highlighted {
+    background-color: #3d3d3d;
+}
+
+.custom-select2-results__option--disabled {
+    color: var(--cs2-text-muted);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.custom-select2-results__option--disabled:hover {
+    background-color: transparent;
+}
+
+/* Nuevo tag (creatable) */
+.custom-select2-results__option--new-tag {
+    background-color: rgba(16, 185, 129, 0.08);
+    border-left: 3px solid #10b981;
+    font-style: italic;
+    color: #059669;
+}
+
+.custom-select2-results__option--new-tag:hover,
+.custom-select2-results__option--new-tag.custom-select2-results__option--highlighted {
+    background-color: rgba(16, 185, 129, 0.15);
+}
+
+/* Dark mode para nuevos tags */
+@media (prefers-color-scheme: dark) {
+    .custom-select2-results__option--new-tag {
+        background-color: rgba(16, 185, 129, 0.15);
+        border-left-color: #34d399;
+        color: #6ee7b7;
+    }
+}
+
+/* ========================================
+   Messages
+   ======================================== */
+.custom-select2-results__message {
+    padding: 12px;
+    text-align: center;
+    color: var(--cs2-text-muted);
+    font-style: italic;
+    cursor: default;
+}
+
+.custom-select2-results__message:hover {
+    background-color: transparent;
+}
+
+.custom-select2-results__message--error {
+    color: #ef4444;
+}
+
+/* ========================================
+   Highlight de búsqueda
+   ======================================== */
+.custom-select2-results__option mark {
+    background-color: var(--cs2-mark-bg);
+    color: var(--cs2-mark-text);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+/* ========================================
+   Backdrop
+   ======================================== */
+.custom-select2-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--cs2-backdrop);
+    backdrop-filter: blur(5px);
+    z-index: var(--cs2-z-backdrop);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.custom-select2-backdrop--open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal .custom-select2-backdrop {
+    z-index: calc(var(--cs2-z-modal-dropdown) - 1);
+}
+
+/* ========================================
+   Animaciones
+   ======================================== */
+@keyframes cs2-fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes cs2-fadeOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+
+/* .custom-select2-dropdown--open {
+    animation: cs2-fadeIn 0.2s ease;
+} */
+
+/* ========================================
+   Responsive
+   ======================================== */
+/* @media (max-width: 640px) {
+    .custom-select2-dropdown--search:not(.custom-select2-dropdown--fullscreen) {
+        width: 85%;
+        max-width: 85%;
+    }
+
+    .custom-select2-dropdown--fullscreen .custom-select2-search__field {
+        font-size: 16px;
+    }
+} */
+
+/* ========================================
+   Loading State
+   ======================================== */
+.custom-select2-results__option--loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.custom-select2-results__option--loading::before {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--cs2-border);
+    border-top-color: var(--cs2-primary);
+    border-radius: 50%;
+    animation: cs2-spin 0.6s linear infinite;
+}
+
+@keyframes cs2-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ========================================
+   Themes
+   ======================================== */
+
+/* Theme: Bootstrap */
+.custom-select2-container--bootstrap .custom-select2-selection {
+    border-radius: 0.25rem;
+    border-color: #ced4da;
+}
+
+.custom-select2-container--bootstrap .custom-select2-selection:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Theme: Material */
+.custom-select2-container--material .custom-select2-selection {
+    border-radius: 4px 4px 0 0;
+    border-width: 0 0 2px 0;
+    border-color: var(--cs2-border);
+    background-color: transparent;
+    padding-left: 0;
+    padding-right: 24px;
+}
+
+.custom-select2-container--material .custom-select2-selection:focus {
+    border-color: var(--cs2-primary);
+    box-shadow: none;
+}
+
+.custom-select2-container--material .custom-select2-dropdown {
+    border-radius: 0 0 4px 4px;
+    border-width: 0 2px 2px 2px;
+}
+
+/* ========================================
+   Multiple Select (bonus)
+   ======================================== */
+.custom-select2-selection--multiple {
+    min-height: 38px;
+    padding: 4px;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.custom-select2-selection__choice {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background-color: var(--cs2-primary);
+    color: white;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.custom-select2-selection__choice__remove {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.custom-select2-selection__choice__remove:hover {
+    color: #fee;
+}
+
+/* ========================================
+   Print Styles
+   ======================================== */
+@media print {
+
+    .custom-select2-dropdown,
+    .custom-select2-backdrop {
+        display: none !important;
+    }
+
+    .custom-select2-selection {
+        border: 1px solid #000;
+    }
+}
+
+/* ========================================
+   Utilidades
+   ======================================== */
+.custom-select2-hidden-accessible {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Fix para z-index en modales específicos */
+.modal-open .custom-select2-dropdown {
+    z-index: 10500;
+}
+
+.modal-open .custom-select2-backdrop {
+    z-index: 10499;
+}
+
+/* Soporte para tabindex y navegación */
+/*.custom-select2-selection[tabindex]:focus {
+    outline: 2px solid var(--cs2-primary);
+    outline-offset: 2px;
+}*/
+
+/* Mejor contraste en alto contraste */
+@media (prefers-contrast: high) {
+    .custom-select2-selection {
+        border-width: 2px;
+    }
+
+    .custom-select2-results__option--selected {
+        border-left: 3px solid var(--cs2-primary);
+    }
+}

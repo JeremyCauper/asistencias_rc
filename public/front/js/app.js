@@ -210,24 +210,34 @@ function formatUnique(data) {
 }
 
 function date(format, strtime = null) {
-    const now = strtime ? new Date(strtime) : new Date();
+    const baseDate = strtime ? new Date(strtime) : new Date();
+
+    // Intentar extraer año y mes del format si existen
+    const yearMatch = format.match(/(\d{4})/);
+    const monthMatch = format.match(/-(\d{2})-/);
+
+    const year = yearMatch ? Number(yearMatch[1]) : baseDate.getFullYear();
+    const month = monthMatch ? Number(monthMatch[1]) : baseDate.getMonth() + 1;
+
+    const lastDay = new Date(year, month, 0).getDate();
 
     const map = {
-        'Y': now.getFullYear(),                // Año completo (2024)
-        'm': String(now.getMonth() + 1).padStart(2, '0'),  // Mes (01-12)
-        'd': String(now.getDate()).padStart(2, '0'),       // Día del mes (01-31)
-        'H': String(now.getHours()).padStart(2, '0'),      // Horas (00-23)
-        'i': String(now.getMinutes()).padStart(2, '0'),    // Minutos (00-59)
-        's': String(now.getSeconds()).padStart(2, '0'),    // Segundos (00-59)
-        'j': now.getDate(),                                // Día del mes sin ceros iniciales (1-31)
-        'n': now.getMonth() + 1,                           // Mes sin ceros iniciales (1-12)
-        'w': now.getDay(),                                 // Día de la semana (0 = domingo, 6 = sábado)
-        'G': now.getHours(),                               // Horas sin ceros iniciales (0-23)
-        'a': now.getHours() >= 12 ? 'pm' : 'am',           // am o pm
-        'A': now.getHours() >= 12 ? 'PM' : 'AM'            // AM o PM en mayúsculas
+        'Y': year,
+        'm': String(month).padStart(2, '0'),
+        'd': String(baseDate.getDate()).padStart(2, '0'),
+        'H': String(baseDate.getHours()).padStart(2, '0'),
+        'i': String(baseDate.getMinutes()).padStart(2, '0'),
+        's': String(baseDate.getSeconds()).padStart(2, '0'),
+        't': String(lastDay).padStart(2, '0'),
+        'j': baseDate.getDate(),
+        'n': month,
+        'w': baseDate.getDay(),
+        'G': baseDate.getHours(),
+        'a': baseDate.getHours() >= 12 ? 'pm' : 'am',
+        'A': baseDate.getHours() >= 12 ? 'PM' : 'AM'
     };
 
-    return format.replace(/[YmdHisjwnGaA]/g, (match) => map[match]);
+    return format.replace(/[YmdHistjwnGaA]/g, match => map[match]);
 }
 
 let xhrConsultaDni = null;
@@ -452,7 +462,7 @@ function calcularDuracion(fechaIni, fechaFin) {
 function getBadgeAreas(estado, size = '.75', fill = true) {
     let area = tipoAreas.find(tp => tp.id == estado) || {
         descripcion: 'Sin Area',
-        color: '#959595'
+        color: '#7e7e7e'
     };
 
     return `<label ${fill
@@ -465,7 +475,7 @@ function getBadgeAreas(estado, size = '.75', fill = true) {
 function getBadgeTipoPersonal(estado, size = '.75', muted = false) {
     let tipo = tipoPersonal.find(tp => tp.id == estado) || {
         descripcion: 'Sin Tipo',
-        color: '#959595'
+        color: '#7e7e7e'
     };
 
     return `<label ${muted
@@ -477,7 +487,7 @@ function getBadgeTipoPersonal(estado, size = '.75', muted = false) {
 function getBadgeTipoModalidad(estado, size = '.75') {
     let modalidad = tipoModalidad.find(tp => tp.id == estado) || {
         descripcion: 'Sin Modalidad',
-        color: '#959595'
+        color: '#7e7e7e'
     };
     let color = modalidad?.color;
     return `<label class="badge" style="font-size: ${size}rem; background-color: ${color}20;color: ${color};border: 1px solid ${color};">
@@ -490,7 +500,7 @@ function getBadgeTipoAsistencia(estado, size = '.75') {
         ? { id: 100, descripcion: 'Justificar', color: '#c37039' }
         : tipoAsistencia.find(tp => tp.id == estado) || {
             descripcion: 'Pendiente',
-            color: '#959595'
+            color: '#7e7e7e'
         };
     return `<label class="badge" style="font-size: ${size}rem;background-color: ${tipo.color}25;color: ${tipo.color};">
         ${estado == 100 ? '<i class="fas fa-triangle-exclamation me-2" style="font-size: .75rem;"></i>' : ''}${tipo.descripcion}
@@ -704,7 +714,7 @@ function parseColor(color) {
     if (!color) return;
     let colores = {
         primary: '#3b71ca',
-        secondary: '#959595',
+        secondary: '#7e7e7e',
         success: '#14a44d',
         danger: '#dc4c64',
         warning: '#e4a11b',
@@ -818,8 +828,8 @@ function generateUrl(baseUrl, params) {
 
 function esCelular() {
     return (
-        /android|iphone|ipod|ipad|mobile/i.test(navigator.userAgent.toLowerCase()) ||
-        navigator.maxTouchPoints > 1
+        window.matchMedia("(max-width: 768px)").matches ||
+        navigator.maxTouchPoints > 0
     );
 }
 
@@ -853,6 +863,62 @@ function base64ToUtf8(base64) {
         alert('Error al decodificar el contenido.');
         return '<em class="text-danger">Error al decodificar el contenido.</em>';
     }
+}
+
+/**
+ * Calcula la diferencia entre dos fechas en meses calendario completos y días restantes.
+ * 
+ * @param {string} fecha1 - Primera fecha en formato YYYY-MM-DD
+ * @param {string} fecha2 - Segunda fecha en formato YYYY-MM-DD
+ * @returns {string} String describiendo la diferencia en meses y/o días
+ */
+function calcularDiferenciaMesesDias(fecha1, fecha2) {
+    const d1 = new Date(fecha1 + 'T00:00:00');
+    const d2 = new Date(fecha2 + 'T00:00:00');
+
+    if (isNaN(d1) || isNaN(d2)) {
+        throw new Error('Formato inválido YYYY-MM-DD');
+    }
+
+    let inicio = d1 <= d2 ? d1 : d2;
+    let fin = d1 <= d2 ? d2 : d1;
+
+    const MS_DIA = 1000 * 60 * 60 * 24;
+
+    let meses = 0;
+    let cursor = new Date(inicio);
+
+    // mover cursor al primer día del mes siguiente
+    let primerMesCompleto = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+
+    // contar meses completos intermedios
+    while (true) {
+        let finMes = new Date(primerMesCompleto.getFullYear(), primerMesCompleto.getMonth() + 1, 0);
+
+        if (finMes <= fin) {
+            meses++;
+            primerMesCompleto = new Date(primerMesCompleto.getFullYear(), primerMesCompleto.getMonth() + 1, 1);
+        } else {
+            break;
+        }
+    }
+
+    // días iniciales (desde inicio hasta fin del mes inicial)
+    let finMesInicio = new Date(inicio.getFullYear(), inicio.getMonth() + 1, 0);
+    let diasInicio = Math.max(0, Math.floor((finMesInicio - inicio) / MS_DIA) + 1);
+
+    // días finales (desde inicio del mes final hasta fecha fin)
+    let inicioMesFin = new Date(fin.getFullYear(), fin.getMonth(), 1);
+    let diasFinal = Math.floor((fin - inicioMesFin) / MS_DIA) + 1;
+
+    // si no hubo meses completos intermedios, todo es días
+    let dias = meses > 0 ? diasInicio + diasFinal : Math.floor((fin - inicio) / MS_DIA) + 1;
+
+    const partes = [];
+    if (meses > 0) partes.push(`${meses} mes${meses === 1 ? '' : 'es'}`);
+    if (dias > 0) partes.push(`${dias} día${dias === 1 ? '' : 's'}`);
+
+    return partes.join(', ');
 }
 
 function colores(c) {

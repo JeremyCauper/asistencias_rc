@@ -62,6 +62,7 @@ class SyncPersonalController extends Controller
                         'button' => [
                             ['clase' => 'btnEditar', 'attr' => 'data-id="' . $p->user_id . '"', 'texto' => '<i class="fa fa-edit me-2 text-info"></i> Editar'],
                             ['clase' => 'btnVacaciones', 'attr' => 'data-id="' . $p->user_id . '"', 'texto' => '<i class="fa fa-house-chimney-user me-2 text-primary"></i> Programar Vacaciones'],
+                            ['clase' => 'btnDescansos', 'attr' => 'data-id="' . $p->user_id . '"', 'texto' => '<i class="fas fa-house-chimney-medical me-2 text-info"></i> Programar Desc. Medico'],
                             ['clase' => 'btnEliminar', 'attr' => 'data-id="' . $p->user_id . '"', 'texto' => '<i class="fa fa-trash me-2 text-danger"></i> Eliminar'],
                             ['clase' => 'btnEstado', 'attr' => 'data-id="' . $p->user_id . '" data-estatus="' . $p->estatus . '"', 'texto' => '<i class="fas fa-rotate-right me-2 text-' . $colorEstado . '"></i> ' . ($p->estatus ? 'Desactivar' : 'Activar')],
                         ],
@@ -94,9 +95,6 @@ class SyncPersonalController extends Controller
             return response()->json(['message' => 'Personal no encontrado'], 404);
         }
 
-        // if (!$trabajo_personal) {
-        //     return response()->json(['message' => 'Personal no encontrado'], 404);
-        // }
         $personal->trabajo_personal = $trabajo_personal ?: [];
 
         return response()->json($personal);
@@ -223,7 +221,7 @@ class SyncPersonalController extends Controller
             );
 
             $fecha = date('Y-m-d');
-            $campoDia = $this->getDay($fecha);
+            $campoDia = self::getDay($fecha);
 
             if (!empty($campoDia)) {
                 $dia_modalidad = "tp$campoDia";
@@ -364,6 +362,125 @@ class SyncPersonalController extends Controller
         } catch (Exception $e) {
             Log::error('[AsistenciaController@crearVacaciones] ' . $e->getMessage());
             return ApiResponse::error('Error al guardar las vacaciones.');
+        }
+    }
+
+    public function cargarDescansos($id)
+    {
+        try {
+            // Se usa tipo_asistencia = 9 para descansos
+            $asistencias = DB::table('asistencias')
+                ->select('fecha')
+                ->where(['user_id' => $id, 'tipo_asistencia' => 9])
+                ->pluck('fecha');
+
+            return ApiResponse::success('Consulta exitosa.', $asistencias);
+        } catch (ModelNotFoundException $e) {
+            return ApiResponse::notFound('No se encontró el registro solicitado.');
+        } catch (Exception $e) {
+            Log::error('[SyncPersonalController@cargarDescansos] ' . $e->getMessage());
+            return ApiResponse::error('Error al obtener el registro.');
+        }
+    }
+
+    public function crearDescansos(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'required|integer',
+                'nuevas' => 'nullable|array',
+                'nuevas.*' => 'nullable|date_format:Y-m-d',
+                'eliminadas' => 'nullable|array',
+                'eliminadas.*' => 'nullable|date_format:Y-m-d',
+                // 'archivo' => 'required|file|mimes:pdf|max:10240',
+            ]);
+
+            if ($validator->fails()) {
+                return ApiResponse::validation($validator->errors()->toArray(), 'Los datos proporcionados no son válidos.');
+            }
+
+            DB::beginTransaction();
+
+            if (!empty($request->eliminadas)) {
+                DB::table('asistencias')->where('user_id', $request->user_id)
+                    ->whereIn('fecha', $request->eliminadas)
+                    ->where('tipo_asistencia', 9)
+                    ->delete();
+            }
+
+            if (!empty($request->nuevas)) {
+                foreach ($request->nuevas as $nueva) {
+                    DB::table('asistencias')->updateOrInsert(
+                        ['user_id' => $request->user_id, 'fecha' => $nueva],
+                        [
+                            'tipo_asistencia' => 9,
+                            'tipo_modalidad' => 5,
+                        ]
+                    );
+                }
+            }
+
+            // $archivoPath = null;
+            // if ($request->hasFile('archivo')) {
+            //     $file = $request->file('archivo');
+            //     $archivoPath = $file->store('descansos', 'public');
+            // }
+
+            /*if (!empty($request->eliminadas)) {
+                $eliminadas = $request->eliminadas;
+                DB::table('asistencias')->where('user_id', $request->user_id)
+                    ->whereIn('fecha', $eliminadas)
+                    ->where('tipo_asistencia', 9)
+                    ->delete();
+
+                DB::table('descansos_medicos')->where('user_id', $request->user_id)
+                    ->whereIn('fecha', $eliminadas)
+                    ->delete();
+            }
+
+            if (!empty($request->nuevas)) {
+                $nuevas = $request->nuevas;
+
+                foreach ($nuevas as $fecha) {
+                    DB::table('asistencias')->updateOrInsert(
+                        ['user_id' => $request->user_id, 'fecha' => $fecha],
+                        [
+                            'tipo_asistencia' => 9,
+                            'tipo_modalidad' => 5,
+                        ]
+                    );
+
+                    $existeDescanso = DB::table('descansos_medicos')
+                        ->where('user_id', $request->user_id)
+                        ->where('fecha', $fecha)
+                        ->first();
+
+                    if ($existeDescanso) {
+                        if ($archivoPath) {
+                            DB::table('descansos_medicos')
+                                ->where('id', $existeDescanso->id)
+                                ->update([
+                                    'archivo' => $archivoPath,
+                                ]);
+                        }
+                    } else {
+                        DB::table('descansos_medicos')->insert([
+                            'user_id' => $request->user_id,
+                            'fecha' => $fecha,
+                            'archivo' => $archivoPath,
+                            'created_at' => now()->format('Y-m-d H:i:s'),
+                        ]);
+                    }
+                }
+            }*/
+
+            DB::commit();
+            return ApiResponse::success('Descanso médico guardado correctamente.');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('[SyncPersonalController@crearDescansos] ' . $e->getMessage());
+            return ApiResponse::error('Error al guardar el descanso médico: ' . $e->getMessage());
         }
     }
 }
