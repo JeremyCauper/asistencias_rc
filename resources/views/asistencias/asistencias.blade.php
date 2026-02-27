@@ -11,6 +11,7 @@
     <script type="text/javascript" src="{{ secure_asset($ft_js->daterangepicker_moment) }}"></script>
     <script type="text/javascript" src="{{ secure_asset($ft_js->daterangepicker) }}"></script>
 
+    <link rel="stylesheet" href="{{ secure_asset($ft_css->bootstrap_multiselect) }}">
     <script src="{{ secure_asset($ft_js->bootstrap_bundle) }}"></script>
     <script src="{{ secure_asset($ft_js->bootstrap_multiselect) }}"></script>
     <script src="{{ secure_asset($ft_js->form_multiselect) }}"></script>
@@ -33,337 +34,107 @@
 
     <!-- Tabla -->
     <div class="card">
-        <div class="card-body px-0">
-            <div class="mx-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h6 class="fw-bold">📅 Panel de Asistencias Diarias</h6>
-                    <span id="feriado-text"></span>
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold">Panel de Asistencias Diarias</h6>
+                <span id="feriado-text"></span>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-7 my-1">
+                    <label class="form-label-filter" for="empresas">Empresa</label>
+                    <select id="empresas" name="empresas" class="select-clear">
+                        <option value="">-- Seleccione --</option>
+                        @foreach ($empresas as $v)
+                            <option value="{{ $v->ruc }}">
+                                {{ $v->ruc }} - {{ $v->razon_social }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
-                <div class="row mb-2">
-                    <div class="col-md-7 my-1">
-                        <label class="form-label-filter" for="empresas">Empresa</label>
-                        <select id="empresas" name="empresas" class="select-clear">
-                            <option value="">-- Seleccione --</option>
-                            @foreach ($empresas as $v)
-                                <option value="{{ $v->ruc }}">
-                                    {{ $v->ruc }} - {{ $v->razon_social }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-5 col-6 my-1">
-                        @if (in_array(Auth::user()->rol_system, [5, 6]))
-                            <label class="form-label-filter" for="areas">Area</label>
-                            <div class="form-control">{{ $areas[0]->descripcion }}</div>
-                            <input type="hidden" id="areas" name="areas" value="{{ $areas[0]->id }}">
-                        @else
-                            <label class="form-label-filter" for="areas">Areas</label>
-                            <select id="areas" name="areas" multiple="multiple" class="multiselect-select-all">
-                                @foreach ($areas as $v)
-                                    <option {{ in_array(Auth::user()->rol_system, [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }} value="{{ $v->id }}">
-                                        {{ $v->descripcion }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        @endif
-                    </div>
-                    <div class="col-md-4 col-6 my-1">
-                        <label class="form-label-filter" for="tipoModalidad">Modalidad</label>
-                        <select id="tipoModalidad" name="tipoModalidad" multiple="multiple" class="multiselect-select-all">
-                            @foreach ($tipoModalidad as $v)
-                                <option selected value="{{ $v->id }}">
+                <div class="col-md-5 col-6 my-1">
+                    @if (in_array(Auth::user()->rol_system, [5, 6]))
+                        <label class="form-label-filter" for="areas">Area</label>
+                        <div class="form-control">{{ $areas[0]->descripcion }}</div>
+                        <input type="hidden" id="areas" name="areas" value="{{ $areas[0]->id }}">
+                    @else
+                        <label class="form-label-filter" for="areas">Areas</label>
+                        <select id="areas" name="areas" multiple="multiple" class="multiselect-select-all">
+                            @foreach ($areas as $v)
+                                <option {{ in_array(Auth::user()->rol_system, [2, 4]) ? 'selected' : (Auth::user()->area_id == $v->id ? 'selected' : '') }} value="{{ $v->id }}">
                                     {{ $v->descripcion }}
                                 </option>
                             @endforeach
                         </select>
+                    @endif
+                </div>
+                <div class="col-md-4 col-6 my-1">
+                    <label class="form-label-filter" for="tipoModalidad">Modalidad</label>
+                    <select id="tipoModalidad" name="tipoModalidad" multiple="multiple" class="multiselect-select-all">
+                        @foreach ($tipoModalidad as $v)
+                            <option selected value="{{ $v->id }}">
+                                {{ $v->descripcion }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4 col-6 my-1">
+                    <label class="form-label-filter" for="tipoPersonal">Tipo Personal</label>
+                    <select id="tipoPersonal" name="tipoPersonal" multiple="multiple" class="multiselect-select-all">
+                        @foreach ($tipoPersonal as $v)
+                            <option selected value="{{ $v->id }}">
+                                {{ $v->descripcion }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4 col-6 my-1">
+                    <label class="form-label-filter" for="fecha">Fecha</label>
+                    <div class="input-group">
+                        <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
+                            <i class="fas fa-angle-left"></i>
+                        </button>
+                        <input type="text" id="filtro_fecha" class="form-control" readonly role="button">
+                        <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
+                            <i class="fas fa-angle-right"></i>
+                        </button>
                     </div>
-                    <div class="col-md-4 col-6 my-1">
-                        <label class="form-label-filter" for="tipoPersonal">Tipo Personal</label>
-                        <select id="tipoPersonal" name="tipoPersonal" multiple="multiple" class="multiselect-select-all">
-                            @foreach ($tipoPersonal as $v)
-                                <option selected value="{{ $v->id }}">
-                                    {{ $v->descripcion }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-4 col-6 my-1">
-                        <label class="form-label-filter" for="fecha">Fecha</label>
-                        <div class="input-group">
-                            <button class="btn btn-primary px-2" type="button" id="btn-fecha-left" data-mdb-ripple-init>
-                                <i class="fas fa-angle-left"></i>
-                            </button>
-                            <input type="text" id="filtro_fecha" class="form-control" readonly role="button">
-                            <button class="btn btn-primary px-2" type="button" id="btn-fecha-right" data-mdb-ripple-init>
-                                <i class="fas fa-angle-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-12 my-1 text-end">
-                        <button class="btn btn-primary" onclick="filtroBusqueda()" data-mdb-ripple-init>Filtrar</button>
-                    </div>
+                    <script>
+                        const filtro_fecha = new MaterialDateTimePicker({
+                            inputId: 'filtro_fecha',
+                            mode: 'date',
+                            format: 'MMMM DD de YYYY'
+                        });
+                        filtro_fecha.val("{{ date('Y-m-d') }}");
+                    </script>
+                </div>
+                <div class="col-12 my-1 text-end">
+                    <button class="btn btn-primary" onclick="filtroBusqueda()" data-mdb-ripple-init>Filtrar</button>
                 </div>
             </div>
 
-            <div id="cardsAsistencias" style="display: none;"></div>
-
-            <table id="tablaAsistencias" class="table align-center mb-0 table-hover text-nowrap w-100"
-                style="display: none;">
-                <thead>
-                    <tr class="text-center">
-                        <th>Personal</th>
-                        <th>Area</th>
-                        <th>Tipo Personal</th>
-                        <th>Modalidad</th>
-                        <th>Estado</th>
-                        <th>Entrada</th>
-                        <th>Salida</th>
-                        <th>Descuento</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-            </table>
+            <div id="vista-escritorio" style="display: none;">
+                <table id="lista_asistencias" class="table align-center mb-0 table-hover text-nowrap w-100">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Personal</th>
+                            <th>Area</th>
+                            <th>Tipo Personal</th>
+                            <th>Modalidad</th>
+                            <th>Estado</th>
+                            <th>Entrada</th>
+                            <th>Salida</th>
+                            <th>Descuento</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
     </div>
 
-    <script>
-        const filtro_fecha = new MaterialDateTimePicker({
-            inputId: 'filtro_fecha',
-            mode: 'date',
-            format: 'MMMM DD de YYYY'
-        });
-        filtro_fecha.val("{{ date('Y-m-d') }}");
+    <div id="vista-movil" style="display: none;"></div>
 
-        let tablaAsistencias;
-        let getUrlListar = () => generateUrl(`${__url}/asistencias-diarias/listar`, {
-            fecha: filtro_fecha.val(),
-            empresas: $('#empresas').val(),
-            tipoModalidad: $('#tipoModalidad').val(),
-            tipoPersonal: $('#tipoPersonal').val(),
-            tipoArea: $('#areas').val()
-        });
-        let dataSet = (json) => {
-            let feriado = json.data?.feriado || {};
-            $('#feriado-text').html(Object.keys(feriado).length ?
-                `<b>${feriado.tipo}:</b> ${feriado.nombre}` : '');
-
-            let lista = json.data?.listado || [];
-            let estadosAsistencias = [{
-                name: "estado-faltas",
-                value: lista.filter(a => a.tipo_asistencia === 1).length
-            },
-            {
-                name: "estado-asistencias",
-                value: lista.filter(a => a.tipo_asistencia === 2).length
-            },
-            {
-                name: "estado-justificados",
-                value: lista.filter(a => a.tipo_asistencia === 3).length
-            },
-            {
-                name: "estado-tardanzas",
-                value: lista.filter(a => a.tipo_asistencia === 4).length
-            },
-            {
-                name: "estado-derivados",
-                value: lista.filter(a => a.tipo_asistencia === 7).length
-            },
-            ];
-            setEstados(estadosAsistencias, lista.length);
-            return lista;
-        }
-
-        if (esCelular()) {
-            $('#cardsAsistencias').removeAttr('style');
-            tablaAsistencias = new CardTable('cardsAsistencias', {
-                ajax: {
-                    url: getUrlListar(),
-                    dataSrc: dataSet,
-                    error: function (xhr, error, thrown) {
-                        boxAlert.table();
-                        console.log('Respuesta del servidor:', xhr);
-                    }
-                },
-                columns: [{
-                    data: 'personal',
-                    title: 'Nombre'
-                },
-                {
-                    data: 'area',
-                    title: 'Área'
-                },
-                {
-                    data: 'tipo_modalidad',
-                    title: 'Modalidad'
-                },
-                {
-                    data: 'tipo_asistencia',
-                    title: 'Estado'
-                },
-                {
-                    data: 'entrada',
-                    title: 'Entrada'
-                },
-                {
-                    data: 'salida',
-                    title: 'Salida'
-                }
-                ],
-                cardTemplate: (data, index) => {
-                    return `
-                                <div class="d-flex align-items-center justify-content-between pb-1">
-                                    <div class="fw-medium mb-0" style="overflow: hidden;font-size: 3.25vw;">
-                                        <span>${data.personal}</span>
-                                    </div>
-                                    <div class="btn-acciones-movil">${data.acciones}</div>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center">
-                                        ${getBadgeAreas(data.area, '.95', false)}
-                                    <span>
-                                        ${getBadgeTipoModalidad(data.tipo_modalidad, '.85')}
-                                        ${getBadgeTipoAsistencia(data.tipo_asistencia, '.85')}
-                                    </span>
-                                </div>
-                                <hr class="mx-1 my-2">
-                                <div class="d-flex align-items-center justify-content-between pt-1" style="font-size: 2.85vw;color: #909090;">
-                                    ${getFormatJornada(data)}
-                                    ${getBadgeDescuento(data)}
-                                </div>`;
-                },
-                scrollY: '600px',
-                perPage: 100,
-                searchPlaceholder: 'Buscar por nombre...',
-                order: ['personal', 'asc'],
-                drawCallback: function () {
-                    if (typeof mdb !== 'undefined') {
-                        document.querySelectorAll('[data-mdb-dropdown-init]').forEach(el => {
-                            new mdb.Dropdown(el);
-                        });
-                    }
-                }
-            });
-        } else {
-            $('#tablaAsistencias').removeAttr('style');
-            tablaAsistencias = new DataTable('#tablaAsistencias', {
-                lengthChange: false,
-                paging: false,
-                scrollX: true,
-                scrollY: 400,
-                dom: `<"row"
-                                    <"col-lg-12 mb-2"B>>
-                                    <"row"
-                                        <"col-sm-6 text-sm-start text-center my-1 botones-accion">
-                                        <"col-sm-6 text-sm-end text-center my-1"f>>
-                                    <"contenedor_tabla my-2"tr>
-                                    <"row"
-                                        <"col-md-5 text-md-start text-center my-1"i>
-                                        <"col-md-7 text-md-end text-center my-1"p>>`,
-                ajax: {
-                    url: getUrlListar(),
-                    dataSrc: dataSet,
-                    error: function (xhr, error, thrown) {
-                        boxAlert.table();
-                        console.log('Respuesta del servidor:', xhr);
-                    }
-                },
-                columns: [{
-                    data: 'personal'
-                },
-                {
-                    data: 'area',
-                    render: function (data, type, row) {
-                        return getBadgeAreas(data);
-                    }
-                },
-                {
-                    data: 'tipo_personal',
-                    render: function (data, type, row) {
-                        return getBadgeTipoPersonal(data);
-                    }
-                },
-                {
-                    data: 'tipo_modalidad',
-                    render: function (data, type, row) {
-                        return getBadgeTipoModalidad(data);
-                    }
-                },
-                {
-                    data: 'tipo_asistencia',
-                    render: function (data, type, row) {
-                        return getBadgeTipoAsistencia(data);
-                    }
-                },
-                {
-                    data: 'entrada',
-                    render: function (data, type, row) {
-                        return data || '-';
-                    }
-                },
-                {
-                    data: 'salida',
-                    render: function (data, type, row) {
-                        return data || '-';
-                    }
-                },
-                {
-                    data: 'descuento',
-                    render: function (data, type, row) {
-                        return getBadgeDescuento(row);
-                    }
-                },
-                {
-                    data: 'acciones'
-                }
-                ],
-                createdRow: function (row, data, dataIndex) {
-                    if (data.justificado == 0) {
-                        $(row).attr({
-                            'title': 'Tiene una Justificacion pendiente.'
-                        });
-                    }
-                    $(row).addClass('text-center');
-                    $(row).find('td:eq(0)').addClass('text-start');
-                    $(row).find('td:eq(8)').addClass(`td-acciones`);
-                },
-                order: [
-                    [0, 'asc']
-                ],
-                processing: true
-            });
-
-            mostrar_acciones(tablaAsistencias);
-        }
-
-        function updateTable() {
-            if (esCelular()) {
-                return tablaAsistencias.reload();
-            }
-            tablaAsistencias.ajax.reload();
-        }
-
-        function filtroBusqueda() {
-            const nuevoUrl = getUrlListar();
-            tablaAsistencias.ajax.url(nuevoUrl).load();
-            if (!esCelular()) {
-                tablaAsistencias.column([4]).search('').draw();
-            }
-        }
-
-        function searchTable(search) {
-            if (esCelular()) {
-                tablaAsistencias.search('tipo_asistencia', search == 0 ? '' : search.toString()).draw();
-            } else {
-                let tasistencia = tipoAsistencia.find(s => s.id == search)?.descripcion || '';
-                tablaAsistencias.column([4]).search(tasistencia).draw();
-            }
-
-            const contenedor = document.querySelector('.content-wrapper');
-            contenedor.scrollTo({
-                top: contenedor.scrollHeight,
-                behavior: 'smooth'
-            });
-        }
-    </script>
+    <script src="{{ secure_asset('front/js/asistencias/listado-asistencias.js') }}?v={{ config('app.version') }}"></script>
 
     <!-- Modal Descuento -->
     <button class="d-none" data-mdb-modal-init data-mdb-target="#modalDescuento"></button>

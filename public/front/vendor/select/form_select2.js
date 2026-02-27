@@ -1,7 +1,7 @@
 $(document).ready(function () {
     const config = {
         "select": {
-            placeholder: '-- Seleccione --',
+            placeholder: 'Seleccione...',
             minimumResultsForSearch: Infinity,
         },
         "multiple": {
@@ -9,11 +9,11 @@ $(document).ready(function () {
         },
         "search": {},
         "clear": {
-            placeholder: '-- Seleccione --',
+            placeholder: 'Seleccione...',
             allowClear: true,
         },
         "clear_nsearch": {
-            placeholder: '-- Seleccione --',
+            placeholder: 'Seleccione...',
             minimumResultsForSearch: Infinity,
             allowClear: true,
         },
@@ -31,7 +31,7 @@ $(document).ready(function () {
             },
         },
         "icons": {
-            placeholder: '-- Seleccione --',
+            placeholder: 'Seleccione...',
             allowClear: true,
             // templateResult: iconFormat,
             // templateSelection: iconFormat,
@@ -56,9 +56,7 @@ $(document).ready(function () {
             dropdownParent: modal || null,
             matcher: matchCustom,
             templateResult: function (data) {
-                // Comprueba si la opción tiene un atributo data-hidden en true
                 if ($(data.element).data('hidden')) {
-                    // Puedes devolver null o una cadena vacía para no mostrar nada
                     return null;
                 }
                 return data.text;

@@ -1,0 +1,58 @@
+:root {
+    --color-blue-50: rgb(239 246 255);
+    --color-blue-100: rgb(219 234 254);
+    --color-blue-200: rgb(220 226 237);
+    --color-blue-300: rgb(158, 176, 209);
+    --color-blue-400: rgb(101, 134, 197);
+    --color-blue-500: rgb(64, 134, 214);
+    --color-blue-600: rgb(8, 94, 207);
+    --color-blue-700: rgb(4, 53, 199);
+    --color-blue-800: rgb(9, 42, 161);
+    --color-blue-900: rgb(10, 37, 117);
+    --color-slate-0: rgb(255 255 255);
+    --color-slate-50: rgb(248 250 252);
+    --color-slate-100: rgb(241 245 249);
+    --color-slate-200: rgb(186, 201, 219);
+    --color-slate-300: rgb(164, 180, 199);
+    --color-slate-400: rgb(123, 140, 163);
+    --color-slate-500: rgb(98 116 142);
+    --color-slate-600: rgb(62, 74, 90);
+    --color-slate-700: rgb(39, 49, 65);
+    --color-slate-800: rgb(27, 36, 51);
+    --color-slate-900: rgb(17, 24, 36);
+    --color-slate-1000: rgb(11, 15, 22);
+    --color-gray-50: rgb(251, 251, 251);
+    --color-gray-100: rgb(245, 245, 245);
+    --color-gray-200: rgb(238, 238, 238);
+    --color-gray-300: rgb(224, 224, 224);
+    --color-gray-400: rgb(189, 189, 189);
+    --color-gray-500: rgb(158, 158, 158);
+    --color-gray-600: rgb(117, 117, 117);
+    --color-gray-700: rgb(97, 97, 97);
+    --color-gray-800: rgb(79, 79, 79);
+    --color-gray-900: rgb(38, 38, 38);
+
+}
+
+:root,
+[data-mdb-theme=light] {
+    /* Backgrounds */
+    --bg-background: var(--color-blue-50);
+    --bg-surface: var(--color-slate-100);
+    --bg-surface-2: var(--color-slate-0);
+
+    /* Colors */
+    --color-surface: var(--color-slate-600);
+    --color-surface-2: var(--color-slate-900);
+}
+
+[data-mdb-theme=dark] {
+    /* Backgrounds */
+    --bg-background: var(--color-slate-900);
+    --bg-surface: var(--color-slate-900);
+    --bg-surface-2: var(--color-slate-800);
+
+    /* Colors */
+    --color-surface: var(--color-slate-200);
+    --color-surface-2: var(--color-slate-0);
+}

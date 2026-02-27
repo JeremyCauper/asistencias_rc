@@ -828,8 +828,8 @@ function generateUrl(baseUrl, params) {
 
 function esCelular() {
     return (
-        /android|iphone|ipod|ipad|mobile/i.test(navigator.userAgent.toLowerCase()) ||
-        navigator.maxTouchPoints > 1
+        window.matchMedia("(max-width: 768px)").matches ||
+        navigator.maxTouchPoints > 0
     );
 }
 

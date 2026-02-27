@@ -6,8 +6,6 @@ $(document).ready(function () {
         { control: ['#estado'], requested: true },
     ]);
 
-    formatSelect('modal_tipo_asistencia');
-
     $('.modal').on('hidden.bs.modal', function () {
         $('#modal_tipo_asistenciaLabel').html('REGISTRAR TIPO ASISTENCIA');
         $('#id').val('');

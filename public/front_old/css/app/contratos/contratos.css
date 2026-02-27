@@ -1,0 +1,7 @@
+.card-icon {
+    padding: 1.1758rem 1rem;
+}
+
+.content-text {
+    font-size: clamp(.8rem, .9vw, 1.2rem);
+}

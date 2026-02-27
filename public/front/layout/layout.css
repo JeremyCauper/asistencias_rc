@@ -2,35 +2,23 @@
 [data-mdb-theme=light] {
     --root-logo-rci-bg: url(../../front/images/app/LogoRC_TNegro.webp) no-repeat center center;
     --root-height-navbar: 50px;
-    --root-layout-bg: #ffffff;
-    --root-layout-color: #6a7282;
-    --root-container-bg: #eef6ff;
-    --root-border-color: rgb(207 230 255);
-
+    --root-border-color: rgb(79 79 79 / 15%);
     --root-is-active-bg: rgb(29 115 255);
-
-    --navbar-sigla-container-bg: #f1f1f1;
-    --navbar-dropdown-item-hover-bg: #e9e9e9;
+    --color-layout: var(--color-slate-500);
 }
 
 [data-mdb-theme=dark] {
     --root-logo-rci-bg: url(../../front/images/app/LogoRC_TBlanco.webp) no-repeat center center;
-    --root-layout-bg: #16181f;
-    --root-layout-color: #99a1af;
-    --root-container-bg: #0f1117;
-    --root-border-color: rgb(255, 255, 255, .5);
-
+    --root-border-color: rgb(255 255 255 / 12%);
     --root-is-active-bg: rgb(63 103 169);
-
-    --navbar-sigla-container-bg: #0f1117;
-    --navbar-dropdown-item-hover-bg: #20232e;
+    --color-layout: var(--color-slate-200);
 }
 
 
 html,
 body {
     height: 100dvh !important;
-    background-color: var(--root-layout-bg);
+    background-color: var(--bg-surface-2);
 }
 
 body * .hover-layout:hover {
@@ -44,7 +32,7 @@ body * .hover-layout:hover {
 }
 
 .navbar {
-    background-color: var(--root-layout-bg);
+    background-color: var(--bg-surface-2);
     box-shadow: none;
     height: var(--root-height-navbar);
 }
@@ -66,7 +54,7 @@ body * .hover-layout:hover {
     --spacing: .25rem;
     align-items: center;
     justify-content: center;
-    color: var(--root-layout-color);
+    color: var(--color-layout);
     width: calc(var(--spacing) * 9);
     min-width: calc(var(--spacing) * 9);
     height: calc(var(--spacing) * 8);
@@ -126,7 +114,7 @@ body * .hover-layout:hover {
 
 #contenedor-notificaciones .dropdown-menu {
     width: 28rem;
-    background-color: var(--root-layout-bg);
+    background-color: var(--bg-surface-2);
 }
 
 #contenedor-notificaciones .dropdown-menu .dropdown-header button[noti-btn="reload"] {
@@ -227,7 +215,7 @@ body * .hover-layout:hover {
     width: 260px;
     min-width: 260px;
     height: 100vh;
-    background-color: var(--root-layout-bg);
+    background-color: var(--bg-surface-2);
     overflow-y: auto;
     overflow-x: clip;
     transition: width 0.3s ease-in-out, min-width 0.3s ease-in-out;
@@ -261,7 +249,7 @@ body * .hover-layout:hover {
     background-size: contain !important;
     width: 1.75rem;
     height: 1.75rem;
-    background: url(../../front/images/app/icons/icon.webp?v=6.6.1) no-repeat center center;
+    background: url(../../front/images/app/icons/icon.webp?v=6.5.6) no-repeat center center;
 }
 
 .layout-container .sidebar .sidebar__header .sidebar-close i::before {
@@ -281,7 +269,7 @@ body * .hover-layout:hover {
     align-items: center;
     padding: 6px 10px;
     margin: 2px 6px;
-    color: var(--root-layout-color);
+    color: var(--color-layout);
     line-height: var(--text-sm--line-height);
     min-height: var(--menu-item-height);
     text-decoration: none;
@@ -362,7 +350,7 @@ body * .hover-layout:hover {
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: default;
-    color: var(--root-layout-color);
+    color: var(--color-layout);
 }
 
 .layout-container .sidebar .sidebar__body .sidebar__item .sidebar__submenu .sidebar__submenu-link {
@@ -374,7 +362,7 @@ body * .hover-layout:hover {
     align-items: center;
     padding: 3px 17px;
     margin: 2px 0;
-    color: var(--root-layout-color);
+    color: var(--color-layout);
     min-height: var(--menu-item-height);
     text-decoration: none;
     gap: .5rem;
@@ -420,7 +408,7 @@ body * .hover-layout:hover {
     align-items: center;
     width: 100%;
     min-width: 100%;
-    color: var(--root-layout-color);
+    color: var(--color-layout);
     padding: 6px;
     height: calc(var(--spacing) * 14);
     text-decoration: none;
@@ -465,7 +453,7 @@ body * .hover-layout:hover {
 .layout-container .sidebar .sidebar__footer .sidebar__footer-user .sidebar__footer-user-text h6 {
     font-size: .75rem;
     font-weight: bold;
-    color: var(--root-layout-color)
+    color: var(--color-layout)
 }
 
 .layout-container .sidebar .sidebar__footer .dropdown-menu {
@@ -480,7 +468,7 @@ body * .hover-layout:hover {
 .layout-container .content-full .content-wrapper {
     --border-wrapper: 1px solid var(--root-border-color);
     height: calc(100% - var(--root-height-navbar));
-    background: var(--root-container-bg);
+    background: var(--bg-background);
     overflow: auto;
     border-radius: 1.5rem 0 0 0;
     border-top: var(--border-wrapper);
@@ -534,8 +522,8 @@ body * .hover-layout:hover {
     display: block;
     position: absolute;
     z-index: 9999;
-    background-color: var(--root-layout-bg);
-    color: var(--mdb-surface-color);
+    background-color: var(--bg-surface-2);
+    color: var(--color-layout);
     transition: none;
 }
 
@@ -583,7 +571,7 @@ body * .hover-layout:hover {
 }
 
 .sidebar-only-icon.layout-container .sidebar.sidebar .sidebar__body .sidebar__item .sidebar__submenu .sidebar__submenu-link:not(.is-active) {
-    color: var(--root-layout-color);
+    color: var(--color-layout);
 }
 
 .sidebar .sidebar__body .sidebar__item .sidebar__submenu .sidebar__submenu-link.is-active {
@@ -593,6 +581,13 @@ body * .hover-layout:hover {
 
 .sidebar .sidebar__body .sidebar__item .sidebar__submenu .sidebar__submenu-link.is-active::before {
     background-color: rgb(48, 125, 251);
+}
+
+.image-user {
+    /* Propiedades esenciales */
+    background-repeat: no-repeat;
+    /* Evita que la imagen se repita */
+    background-size: cover;
 }
 
 /*----------------------------------------------
@@ -632,7 +627,7 @@ body * .hover-layout:hover {
     }
 
     .layout-container .navbar .navbar-brand .logo_rci {
-        background: url(../../front/images/app/icons/icon.webp?v=6.6.1) no-repeat center center;
+        background: url(../../front/images/app/icons/icon.webp?v=6.5.6) no-repeat center center;
         width: 40px;
         height: 40px;
     }

@@ -50,11 +50,9 @@ $(document).ready(function () {
         },
     ]);
 
-    formatSelect('modalPersonal');
-
     fObservador('.content-wrapper', () => {
         if (!esCelular()) {
-            tablaPersonal.columns.adjust().draw();
+            lista_personal.columns.adjust().draw();
         }
     });
 

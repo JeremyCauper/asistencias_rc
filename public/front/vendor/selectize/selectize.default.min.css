@@ -31,7 +31,7 @@
     position: absolute;
     right: 8px;
     top: 50%;
-    color: #0f1117;
+    color: #11131c;
     opacity: .4;
     margin-top: -12px;
     line-height: 20px;
@@ -162,7 +162,6 @@
 
 .selectize-control.single .selectize-input.input-active,
 .selectize-input {
-    background: var(--mdb-body-bg);
     cursor: text;
     display: inline-block
 }
@@ -174,7 +173,7 @@
     position: relative;
     z-index: 1;
     box-sizing: border-box;
-    border-radius: .15rem;
+    border-radius: inherit;
 }
 
 .selectize-control.multi .selectize-input.has-items {
@@ -333,7 +332,7 @@
 }
 
 .selectize-dropdown .optgroup-header {
-    color: #0f1117;
+    color: #11131c;
     background: #fff;
     cursor: default
 }
@@ -488,15 +487,10 @@
 }
 
 .selectize-control.single .selectize-input {
-    background-color: var(--mdb-body-bg);
+    background-color: var(--mdb-form-control-bg);
     color: var(--mdb-surface-color) !important;
     background-repeat: repeat-x
 }
-
-/* .selectize-control.single .selectize-input,
-.selectize-dropdown.single {
-    border: var(--mdb-border-width) solid var(--mdb-border-color)
-} */
 
 .selectize-dropdown .optgroup-header {
     padding-top: 7px;
@@ -562,7 +556,7 @@
     position: absolute;
     right: 8px;
     top: 50%;
-    color: #0f1117;
+    color: #11131c;
     opacity: .4;
     margin-top: -12px;
     line-height: 20px;

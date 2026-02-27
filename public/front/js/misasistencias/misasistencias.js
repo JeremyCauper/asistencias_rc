@@ -7,7 +7,7 @@ $(document).ready(function () {
 
     fObservador('.content-wrapper', () => {
         if (!esCelular()) {
-            tablaMisAsistencias.columns.adjust().draw();
+            lista_mis_asistencias.columns.adjust().draw();
         }
 
         incidencia_estados.forEach((e, i) => {

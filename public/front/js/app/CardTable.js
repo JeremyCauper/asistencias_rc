@@ -15,7 +15,7 @@ class CardTable {
             ajax: options.ajax || null,
             columns: options.columns || [],
             cardTemplate: options.cardTemplate || null,
-            cardWrapper: options.cardWrapper || '<div class="card rounded-7 my-2"><div class="card-body p-3">:content</div></div>',
+            cardWrapper: options.cardWrapper || '<div class="card rounded-7" style="margin: .5rem .1rem;"><div class="card-body p-3">:content</div></div>',
             perPage: options.perPage || 12,
             scrollY: options.scrollY || null,
             searchable: options.searchable !== false,
@@ -61,7 +61,7 @@ class CardTable {
 
         // Crear contenedor de cards
         this.cardsContainer = document.createElement('div');
-        this.cardsContainer.className = 'cardtable-wrapper px-3';
+        this.cardsContainer.className = 'cardtable-wrapper';
 
         if (this.options.scrollY) {
             this.cardsContainer.style.minHeight = this.options.scrollY;

@@ -8,8 +8,8 @@
     --mdtp-on-surface-variant: #454c4f;
     --mdtp-outline: #747a7e;
     --mdtp-overlay: rgba(0, 0, 0, 0.5);
-    --mdtp-elevation: 0px 0px 12px 0px rgba(0, 0, 0);
-    --mdtp-radius: 28px;
+    --mdtp-elevation: 0 10px 25px rgba(0, 0, 0, 0.4);
+    --mdtp-radius: .75rem;
     --mdtp-transition: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -67,7 +67,8 @@
     background: var(--mdtp-overlay);
     z-index: 9998;
     opacity: 0;
-    transition: opacity 0.3s var(--mdtp-transition);
+    transition: opacity .1s var(--mdtp-transition);
+    backdrop-filter: blur(3px);
 }
 
 .mdtp-overlay.active {
@@ -89,7 +90,7 @@
     left: 50%;
     transform: translate(-50%, -50%) scale(0.9);
     opacity: 0;
-    transition: all 0.3s var(--mdtp-transition);
+    transition: all .1s var(--mdtp-transition);
 }
 
 .mdtp-picker.active {
@@ -565,7 +566,7 @@
 
 .mdtp-btn {
     padding: 10px 24px;
-    border-radius: 20px;
+    border-radius: .75rem;
     border: 2px solid var(--mdtp-primary);
     font-size: 14px;
     font-weight: 500;

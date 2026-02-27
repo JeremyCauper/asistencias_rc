@@ -15,21 +15,14 @@ $(document).ready(function () {
 
     fObservador('.content-wrapper', () => {
         if (!esCelular()) {
-            tablaAsistencias.columns.adjust().draw();
+            lista_asistencias.columns.adjust().draw();
         }
 
         incidencia_estados.forEach((e, i) => {
             if (e.chart) e.chart.resize();
         });
     });
-
-    $('.botones-accion').append(
-        $('<button>', {
-            class: 'btn btn-primary px-3 me-2',
-            "data-mdb-ripple-init": ''
-        }).html('<i class="fas fa-rotate"></i>').on('click', updateTable)
-    );
-
+    
     // eventos
     var $inputFecha = $('#filtro_fecha');
     var debounceTimer = null;

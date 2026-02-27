@@ -1,0 +1,190 @@
+:root,
+[data-mdb-theme=light] {
+    --root-body-bg: #eef6ff;
+    --root-logo-navbar: url(../../images/app/LogoRC_WNormal.webp) no-repeat center center;
+    --root-logo-rci-bg: url(../../images/app/login_light.webp) no-repeat center center;
+    --root-font-size-span: small;
+    --root-logo-width-navbar: 12rem;
+    --root-logo-height-navbar: 48px;
+}
+
+[data-mdb-theme=dark] {
+    --root-body-bg: #0f1117;
+    --root-logo-navbar: url(../../images/app/LogoRC_WBlanco.webp) no-repeat center center;
+    --root-logo-rci-bg: url(../../images/app/login_dark.webp) no-repeat center center;
+}
+
+body {
+    background-color: var(--root-body-bg)
+}
+
+.navbar {
+    background-color: var(--root-body-bg);
+    box-shadow: none;
+}
+
+.navbar-brand .logo_rci {
+    background: var(--root-logo-navbar);
+    background-size: contain;
+    width: var(--root-logo-width-navbar);
+    height: var(--root-logo-height-navbar);
+    display: block;
+}
+
+@media screen and (max-width: 665px) {
+    :root {
+        --root-font-size-span: small;
+        --root-logo-navbar: url(../../images/app/LogoRC.webp) no-repeat center center;
+        --root-logo-width-navbar: 2.75rem;
+        --root-logo-height-navbar: 2.75rem;
+    }
+}
+
+.navbar .container-fluid div.navbar-brand span {
+    font-size: var(--root-font-size-span);
+}
+
+.title-login {
+    position: relative;
+    color: #6c757d;
+    background: var(--root-logo-rci-bg);
+    background-size: contain;
+    width: 100%;
+    height: 160px;
+    display: block;
+}
+
+/* .title-login::before,
+.title-login::after {
+    content: "";
+    height: 2px;
+    position: absolute;
+    top: 40%;
+    width: 19%;
+}
+
+.title-login::before {
+    background: linear-gradient(to left, #6c757d 0%, #fff 100%);
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    left: 0;
+}
+
+.title-login::after {
+    background: linear-gradient(to right, #6c757d 0%, #fff 100%);
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    right: 0;
+} */
+
+
+
+.hidden {
+    display: none;
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0);
+    }
+
+    60% {
+        transform: scale(1.02);
+    }
+
+    80% {
+        transform: scale(0.98);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes bounceOut {
+    0% {
+        transform: scale(1);
+    }
+
+    20% {
+        transform: scale(1.02);
+    }
+
+    100% {
+        transform: scale(0);
+    }
+}
+
+.show {
+    animation: bounceIn 0.5s forwards;
+}
+
+.hide {
+    animation: bounceOut 0.5s forwards;
+}
+
+.form-icon {
+    position: relative;
+}
+
+.form-icon input {
+    padding-left: 2.25rem !important;
+    height: 39px;
+}
+
+.form-icon::after,
+.form-icon::before {
+    font-family: "Font Awesome 6 Free";
+    position: absolute;
+    top: 50%;
+    color: inherit;
+    display: block;
+    font-size: 1rem;
+    margin-top: -.5rem;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+}
+
+.form-icon.icon-usuario::after {
+    content: "\f2bd";
+    left: .75rem;
+}
+
+.form-icon.icon-usuario_ruc::after {
+    content: "\f1ad";
+    left: .75rem;
+}
+
+.form-icon.icon-contrasena::after {
+    content: "\f084";
+    left: .75rem;
+}
+
+.form-icon.icon-contrasena input {
+    padding-right: 2.25rem !important;
+}
+
+.form-icon .icon-pass {
+    position: absolute;
+    top: 50%;
+    right: .6rem;
+    margin-top: -.7rem;
+    line-height: 1;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    -webkit-font-smoothing: antialiased;
+}
+
+.form-icon .icon-pass i {
+    font-size: .8rem;
+    top: 1px;
+}
+
+.form-icon .icon-pass:hover {
+    background-color: rgb(var(--mdb-surface-color-rgb), .15);
+}

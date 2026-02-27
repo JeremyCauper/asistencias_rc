@@ -5,8 +5,6 @@ $(document).ready(function () {
         { control: ['#estado'], requested: true },
     ]);
 
-    formatSelect('modal_tipo_personal');
-
     $('.modal').on('hidden.bs.modal', function () {
         $('#modal_tipo_personalLabel').html('REGISTRAR TIPO PERSONAL');
         $('#id').val('');

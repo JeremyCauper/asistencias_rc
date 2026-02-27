@@ -1,0 +1,92 @@
+:root,
+[data-mdb-theme=light] {
+    --bg-trail: #ffffff;
+    --bg-handler: #e7e7e7;
+    --color-before: #e4a11b;
+    --transition: all .2s ease;
+    --root-border-check-color: rgb(79, 79, 79, .25);
+}
+
+[data-mdb-theme=dark] {
+    --bg-trail: #0f1117;
+    --bg-handler: #2e3034;
+    --color-before: #ffffff;
+    --root-border-check-color: rgb(255, 255, 255, .35);
+}
+
+/* Hide the input */
+#check[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
+}
+
+.check-trail {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 3rem;
+    height: 1.76rem;
+    padding: .14rem .16rem .12rem .16rem;
+    background: var(--bg-trail);
+    border-radius: 2rem;
+    transition: var(--transition);
+    cursor: pointer;
+    border: var(--mdb-border-width) solid var(--mdb-border-color);
+}
+
+.check-trail .toltip-theme {
+    position: absolute;
+    display: none;
+    top: 220%;
+    font-size: .85rem !important;
+    transform: translate(-50%, -50%);
+    border: 1px solid var(--root-border-check-color);
+    background-color: var(--bg-trail);
+    color: var(--mdb-surface-color);
+    z-index: 100;
+}
+
+.check-trail .toltip-theme i {
+    color: var(--mdb-surface-color);
+    font-size: .6rem;
+    margin: 0 .2rem;
+}
+
+.check-trail:hover .toltip-theme {
+    display: flex;
+    align-items: center;
+}
+
+.check-handler {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1.3rem;
+    height: 1.3rem;
+    position: relative;
+    background: var(--bg-handler);
+    border-radius: 50%;
+    margin-left: 4%;
+    transition: var(--transition);
+
+    &::before {
+        content: "\f186";
+        position: absolute;
+        font-family: "Font Awesome 6 Free";
+        transition: var(--transition);
+        font-size: .72rem;
+        color: var(--color-before);
+    }
+}
+
+#check[type="checkbox"]:checked+.check-trail {
+
+    .check-handler {
+        margin-left: 45%;
+
+        &::before {
+            content: "\f185";
+        }
+    }
+}
