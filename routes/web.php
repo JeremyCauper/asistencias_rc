@@ -216,3 +216,21 @@ Route::get('/picker', function () {
 Route::get('/principal', function () {
     return view('principal');
 });
+
+Route::get('/logs', function () {
+    $user = request()->getUser();
+    $password = request()->getPassword();
+
+    // Cambia 'admin' y 'password123' por las credenciales que prefieras
+    if ($user !== 'sistema' || $password !== '193746') {
+        return response('No autorizado.', 401, ['WWW-Authenticate' => 'Basic']);
+    }
+
+    $file = storage_path('logs/laravel.log');
+    if (file_exists($file)) {
+        return response()->file($file, [
+            'Content-Type' => 'text/plain'
+        ]);
+    }
+    return response('Archivo log no encontrado.', 404);
+});
