@@ -339,6 +339,9 @@ class EditorJustificacion {
                 );
             }
 
+            console.log(fileToUpload);
+
+
             boxAlert.loading("Subiendo archivo...");
 
             const form = new FormData();
