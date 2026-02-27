@@ -321,8 +321,9 @@ class EditorJustificacion {
             if (tipo === "image") {
                 const converted = await this.convertToWebP(file);
 
-                console.log(converted);
-                
+                console.log("IS BLOB:", converted instanceof Blob);
+                console.log("SIZE:", converted?.size);
+                console.log("TYPE:", converted?.type);
 
                 // ✅ Validar que la conversión fue exitosa
                 if (!converted || converted.size === 0) {
@@ -342,8 +343,8 @@ class EditorJustificacion {
                 );
             }
 
-            console.log(fileToUpload);
-            
+            console.log(JSON.stringify(fileToUpload));
+
 
             boxAlert.loading("Subiendo archivo...");
 
