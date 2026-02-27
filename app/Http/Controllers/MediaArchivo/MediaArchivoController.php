@@ -14,7 +14,11 @@ class MediaArchivoController extends Controller
 {
     public function uploadMedia(Request $request, $carpeta)
     {
-        Log::info('[MediaArchivoController@uploadMedia] ' . json_encode($request->file('file')));
+        Log::info([
+            'upload_max_filesize' => ini_get('upload_max_filesize'),
+            'post_max_size' => ini_get('post_max_size'),
+        ]);
+
         try {
             if (!$request->hasFile('file')) {
                 return ApiResponse::error('No se ha subido ningún archivo.');
