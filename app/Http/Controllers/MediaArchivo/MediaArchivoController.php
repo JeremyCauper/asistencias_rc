@@ -14,7 +14,7 @@ class MediaArchivoController extends Controller
 {
     public function uploadMedia(Request $request, $carpeta)
     {
-        Log::info('[MediaArchivoController@uploadMedia] ' . $request->all());
+        Log::info('[MediaArchivoController@uploadMedia] ' . json_encode($request->all()));
         return response()->json($request->all());
         try {
             if (!$request->hasFile('file')) {
