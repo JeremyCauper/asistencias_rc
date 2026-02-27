@@ -321,6 +321,9 @@ class EditorJustificacion {
             if (tipo === "image") {
                 const converted = await this.convertToWebP(file);
 
+                console.log(converted);
+                
+
                 // ✅ Validar que la conversión fue exitosa
                 if (!converted || converted.size === 0) {
                     throw new Error("No se pudo convertir la imagen. Inténtalo nuevamente.");
