@@ -27,7 +27,7 @@
     <!-- Tabla -->
     <div class="card">
         <div class="card-body">
-            <h6 class="fw-bold">📅 Mis asistencias diarias</h6>
+            <h6 class="fw-bold">Mis Asistencias Diarias</h6>
             <div class="row mb-2">
                 <div class="col-md-4 my-1">
                     <small class="form-label mb-0" for="fecha">Fecha</small>
@@ -80,7 +80,7 @@
     <!-- Modal de Justificación -->
     <div class="modal fade" id="modalJustificarDerivado" tabindex="-1" aria-labelledby="modalJustificarDerivadoLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable modal-fullscreen-md-down">
             <form id="formJustificarDerivado" class="modal-content">
 
                 <div class="modal-header bg-primary text-white">
@@ -129,7 +129,7 @@
 
     <!-- Modal de Justificación -->
     <div class="modal fade" id="modalJustificar" tabindex="-1" aria-labelledby="modalJustificarLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable modal-fullscreen-md-down">
             <form id="formJustificar" class="modal-content">
 
                 <div class="modal-header bg-primary text-white">
@@ -179,7 +179,7 @@
     <!-- Modal Ver Justificación -->
     <div class="modal fade" id="modalVerJustificacion" tabindex="-1" aria-labelledby="modalVerJustificacionLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable modal-fullscreen-md-down">
             <div class="modal-content border-0 shadow-lg">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="modalVerJustificacionLabel">

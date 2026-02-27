@@ -79,7 +79,7 @@ function evaluarExpiracion(fechaExpiracion, tipo, urlPdf) {
     let color = informacion.color || 'secondary';
 
     return esCelular() ? `
-        <div class="d-flex align-items-center rounded-4 p-1 w-100" style="font-size: .65rem;background-color: rgb(var(--bg-informacion-fechas-${color}) / 15%);color: rgb(var(--bg-informacion-fechas-${color}));border: 1px solid rgb(var(--bg-informacion-fechas-${color}));" type="button" ${abrirPdf}>
+        <div class="d-flex align-items-center rounded-4 p-2 w-100" style="font-size: .65rem;background-color: rgb(var(--bg-informacion-fechas-${color}) / 15%);color: rgb(var(--bg-informacion-fechas-${color}));border: 1px solid rgb(var(--bg-informacion-fechas-${color}));" type="button" ${abrirPdf}>
             <div class="text-start">
                 <p class="mb-1 fw-bold" style="font-size: .65rem;"><i class="${iconos.icon} me-2" style="font-size: .75rem;"></i>${iconos.titulo}</p>
                 <p class="mb-0 text-nowrap" style="font-size: .7rem;">${fechaExpiracionFormateada}</p>
@@ -98,7 +98,7 @@ const ver_tarjeta_propiedad = (urlPdf, movil = false) => {
         <div class="text-center rounded-bottom-4 p-3" ${abrirPdf}>
             ${urlPdf ? `<i class="fas fa-eye me-2"></i>Ver Tarjeta de Propiedad` : 'Sin Registro de Tarjeta'}
         </div>` : `<span class="badge rounded-pill" ${abrirPdf}>
-            ${urlPdf ? `<i class="fas fa-eye me-2"></i>Ver Tarjeta de Propiedad` : 'Sin Registro de Tarjeta'}
+            ${urlPdf ? `<i class="fas fa-eye me-2"></i>Ver` : 'Sin Registro de Tarjeta'}
         </span>`;
 };
 

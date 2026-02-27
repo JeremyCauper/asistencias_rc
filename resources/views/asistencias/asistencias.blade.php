@@ -36,7 +36,7 @@
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center">
-                <h6 class="fw-bold">Panel de Asistencias Diarias</h6>
+                <h6 class="fw-bold">Asistencias Diarias</h6>
                 <span id="feriado-text"></span>
             </div>
             <div class="row mb-2">
@@ -195,7 +195,7 @@
     <button class="d-none" data-mdb-modal-init data-mdb-target="#modalJustificacion"></button>
     <div class="modal fade" id="modalJustificacion" tabindex="-1" aria-labelledby="modalJustificacionLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable modal-fullscreen-md-down">
             <div class="modal-content" id="form-justificacion">
                 <div class="modal-header bg-primary text-white">
                     <h6 class="modal-title" id="modalJustificacionLabel">
@@ -245,7 +245,7 @@
 
     <!-- Modal de Justificación -->
     <div class="modal fade" id="modalJustificar" tabindex="-1" aria-labelledby="modalJustificarLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable modal-fullscreen-md-down">
             <form id="formJustificar" class="modal-content">
 
                 <div class="modal-header bg-primary text-white">

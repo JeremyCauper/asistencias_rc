@@ -318,7 +318,7 @@ class Controller extends BaseController
                     data-mdb-dropdown-initialized="true">
                     <i class="fas fa-' . ($sinAcciones ? 'ban' : 'bars') . '" style="font-size: 1.125em;' . ($sinAcciones ? 'visibility: hidden;' : '') . '"></i>
                 </button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu rounded-7">
                     ' . $tittle . $button . '
                 </div>
             </div>';

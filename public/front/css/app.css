@@ -8,7 +8,7 @@
 
     --root-active-multiselect-bg: #ffffff;
     --root-dt-processing-bg: #ffffff75;
-    --root-dt-scrollHead-bg: var(--color-blue-300);
+    --root-dt-scrollHead-bg: var(--color-blue-200);
     --root-dt-shorting-after-bg: var(--color-slate-800);
 }
 
@@ -740,7 +740,6 @@ label.custom-control {
     right: .5rem;
     font-size: .8125rem;
     margin-top: -.40625rem;
-    color: rgb(255 255 255);
     display: inline-block;
     line-height: 1;
     -webkit-font-smoothing: antialiased;
@@ -1387,7 +1386,7 @@ tr .active-acciones {
     --mdb-informacion-color: var(--color-slate-0);
     --mdb-informacion-border: 1px solid rgb(241 245 249 / 1);
     --mdb-bg-scroll: 203 213 225;
-    --bg-modal-body: var(--color-slate-100);
+    --bg-modal-body: var(--color-blue-50);
 }
 
 [data-mdb-theme=dark] {

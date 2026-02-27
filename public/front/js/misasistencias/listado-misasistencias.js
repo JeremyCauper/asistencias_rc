@@ -91,7 +91,7 @@ if (esCelular()) {
         },
         scrollY: '600px',
         perPage: 40,
-        searchPlaceholder: 'Buscar por nombre...',
+        searchPlaceholder: 'Buscar...',
         order: ['fecha', 'desc'],
         drawCallback: function () {
             if (typeof mdb !== 'undefined') {

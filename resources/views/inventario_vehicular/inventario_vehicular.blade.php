@@ -57,7 +57,7 @@
         </div>
     </div>
 
-    <div id="vista-movil" style="display: none;">
+    <div id="vista-movil" class="mt-2" style="display: none;">
         <div class="d-flex justify-content-between align-items-center">
             <h6 class="fw-bold mb-0">Inventario Vehicular</h6>
             <div class="acciones"></div>
@@ -70,7 +70,7 @@
 
     <div class="modal fade" id="modal_inventario_vehicular_asignar" tabindex="-1"
         aria-labelledby="modal_inventario_vehicularLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-fullscreen-md-down modal-lg">
             <div class="modal-content">
                 <div class="modal-header  bg-primary text-white">
                     <h6 class="modal-title" id="modal_inventario_vehicularLabel">ASIGNAR VEHICULO</h6>
@@ -78,7 +78,7 @@
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-2 border border-secondary rounded-4 p-3">
+                    <div class="mb-2 rounded-7 p-3" style="background-color: var(--bg-surface-3);">
                         <span hidden aria-item="id"></span>
                         <div class="d-flex align-items-center pb-1">
                             <div class="align-content-center d-grid rounded-6 text-bg-dark"

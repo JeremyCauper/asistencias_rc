@@ -15,9 +15,24 @@ let dataSet = (json) => {
     return json;
 }
 
+let btn_acciones = $('<div>');
+btn_acciones.append(
+    $('<button>', {
+        class: 'btn btn-primary me-1',
+        "data-mdb-ripple-init": '',
+        "data-mdb-modal-init": '',
+        "data-mdb-target": '#modalPersonal',
+    }).html('<i class="fas fa-plus me-2"></i>Personal'),
+    $('<button>', {
+        class: 'btn btn-primary px-2',
+        "data-mdb-ripple-init": '',
+        "role": 'button'
+    }).html('<i class="fas fa-rotate-right" style="min-width: 1.25rem;"></i>').on('click', updateTable),
+);
+
 if (esCelular()) {
-    $('#vista-movil').show();
-    lista_personal = new CardTable('vista-movil', {
+    $('#vista-movil').show().find('.acciones').append(btn_acciones);
+    lista_personal = new CardTable('lista_personal', {
         ajax: {
             url: getUrlListar(),
             dataSrc: dataSet,
@@ -70,8 +85,8 @@ if (esCelular()) {
         cardTemplate: (data, index) => {
             return `
                 <div class="d-flex align-items-center justify-content-between pb-1">
-                    <div class="fw-medium mb-0" style="overflow: hidden;font-size: 3vw;">
-                        <span class="badge badge-dark">${data.user_id}</span>
+                    <div class="align-items-center d-flex fw-medium gap-1 mb-0" style="overflow: hidden;font-size: 3vw;">
+                        <span class="badge badge-primary">${data.user_id}</span>
                         <span>${data.apellido}, ${data.nombre}</span>
                     </div>
                     <div class="btn-acciones-movil">${data.acciones}</div>
@@ -97,7 +112,7 @@ if (esCelular()) {
         },
         scrollY: '600px',
         perPage: 50,
-        searchPlaceholder: 'Buscar',
+        searchPlaceholder: 'Buscar por nombre',
         order: ['apellido', 'asc'],
         drawCallback: function () {
             if (typeof mdb !== 'undefined') {
@@ -109,7 +124,7 @@ if (esCelular()) {
     });
 } else {
     $('#vista-escritorio').show();
-    lista_personal = new DataTable('#lista_personal', {
+    lista_personal = new DataTable('#tb_personal', {
         lengthChange: false,
         paging: false,
         scrollX: true,
@@ -189,6 +204,7 @@ if (esCelular()) {
         processing: true
     });
     mostrar_acciones(lista_personal);
+    $('.botones-accion').append(btn_acciones);
 }
 
 function updateTable() {

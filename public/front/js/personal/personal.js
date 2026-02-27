@@ -56,21 +56,6 @@ $(document).ready(function () {
         }
     });
 
-    // Agregar botón de recargar
-    $('.botones-accion').append(
-        $('<button>', {
-            class: 'btn btn-primary me-1',
-            "data-mdb-ripple-init": '',
-            "data-mdb-modal-init": '',
-            "data-mdb-target": '#modalPersonal',
-        }).html('<i class="fas fa-plus me-2"></i>Personal'),
-        $('<button>', {
-            class: 'btn btn-primary px-2',
-            "data-mdb-ripple-init": '',
-            "role": 'button'
-        }).html('<i class="fas fa-rotate-right" style="min-width: 1.25rem;"></i>').on('click', updateTable),
-    );
-
     $('.modal').on('hidden.bs.modal', function () {
         $('#tplunes1').click();
         $('#tpmartes1').click();

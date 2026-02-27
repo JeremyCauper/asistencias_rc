@@ -89,34 +89,38 @@
     </section>
 
     <!-- 🔹 Tabla -->
-    <div class="card">
+    <div class="card" id="vista-escritorio" style="display: none;">
         <div class="card-body">
             <h6 class="fw-bold mb-0">Listado de Personal</h6>
             <button hidden data-mdb-modal-init data-mdb-target="#modalPersonal"></button>
 
-            <div id="vista-escritorio" style="display: none;">
-                <table id="lista_personal" class="table align-center mb-0 table-hover text-nowrap w-100" >
-                    <thead>
-                        <tr class="text-center">
-                            <th>UserID</th>
-                            <th>Empresa</th>
-                            <th>Area</th>
-                            <th>Personal</th>
-                            <th>Contraseña</th>
-                            <th>Tipo</th>
-                            <th>Estado Sync</th>
-                            <th>Estado</th>
-                            <th>Registrado</th>
-                            <th>Actualizado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
+            <table id="tb_personal" class="table align-center mb-0 table-hover text-nowrap w-100" >
+                <thead>
+                    <tr class="text-center">
+                        <th>UserID</th>
+                        <th>Empresa</th>
+                        <th>Area</th>
+                        <th>Personal</th>
+                        <th>Contraseña</th>
+                        <th>Tipo</th>
+                        <th>Estado Sync</th>
+                        <th>Estado</th>
+                        <th>Registrado</th>
+                        <th>Actualizado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
     </div>
 
-    <div id="vista-movil" style="display: none;"></div>
+    <div id="vista-movil" class="mt-2" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold mb-0">Listado de Personal</h6>
+            <div class="acciones"></div>
+        </div>
+        <div id="lista_personal"></div>
+    </div>
 
     <script
         src="{{ secure_asset('front/js/personal/listado-personal.js') }}?v={{ config('app.version') }}"></script>
@@ -124,7 +128,7 @@
 
     <!-- 🔹 Modal -->
     <div class="modal fade" id="modalPersonal" tabindex="-1" aria-labelledby="modalPersonalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog">
+        <div class="modal-dialog modal-fullscreen-md-down">
             <form id="formPersonal" class="modal-content">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="modalPersonalLabel">Registrar Personal</h5>

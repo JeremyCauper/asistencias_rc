@@ -209,8 +209,8 @@
     --mdb-divider-color: var(--color-slate-50);
     --mdb-divider-blurry-color: hsl(0, 0%, 40%);
     --mdb-highlight-bg-color: #eeeeee;
-    --root-scroll-bg: var(--color-slate-400);
-    --root-scroll-bg-hover: var(--color-slate-300);
+    --root-scroll-bg: var(--color-gray-300);
+    --root-scroll-bg-hover: var(--color-gray-400);
     --mdb-picker-header-bg: #3b71ca;
     --mdb-timepicker-clock-face-bg: var(--mdb-secondary-bg);
     --mdb-sidenav-backdrop-opacity: 0.1;
