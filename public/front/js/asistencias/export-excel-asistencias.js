@@ -289,7 +289,6 @@ async function exportar_Asistencias(tiempo) {
                     }
                 } else {
                     let val = cell.value ? cell.value.toString().split('\n') : "";
-                    console.log(val[0].length);
 
                     let estado = nuevoTipoAsistencia.find(s => s[[1, 2].includes(val[0].length) ? 'simbolo' : 'descripcion'] == val[0]);
                     if (estado) {
