@@ -4143,7 +4143,7 @@ fieldset:disabled .btn {
     --mdb-dropdown-font-size: 0.875rem;
     --mdb-dropdown-color: var(--mdb-surface-color);
     --mdb-dropdown-bg:  var(--mdb-form-control-bg);
-    --mdb-dropdown-border-radius: 0.5rem;
+    --mdb-dropdown-border-radius: .75rem;
     --mdb-dropdown-border-width: var(--mdb-border-width);
     --mdb-dropdown-inner-border-radius: calc(0.5rem - var(--mdb-border-width));
     --mdb-dropdown-divider-bg: var(--mdb-divider-color);

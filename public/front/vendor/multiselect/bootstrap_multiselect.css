@@ -17,6 +17,10 @@
     display: none
 }
 
+.multiselect-native-select .dropdown .multiselect:active {
+    background-color: var(--root-active-multiselect-bg);
+}
+
 .multiselect {
     width: 100%;
     text-align: left;

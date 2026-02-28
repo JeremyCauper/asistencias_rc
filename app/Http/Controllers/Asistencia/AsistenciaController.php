@@ -59,6 +59,7 @@ class AsistenciaController extends Controller
 
             $isAdmin = in_array(Auth::user()->rol_system, [2, 4, 7]);
             $isJefatura = in_array(Auth::user()->rol_system, [5]);
+            $isEncargado = in_array(Auth::user()->rol_system, [6]);
             $isSystem = Auth::user()->sistema == 1;
 
             $wherePersonal = ['estatus' => 1];
@@ -151,7 +152,7 @@ class AsistenciaController extends Controller
 
                     // Acciones dinámicas
                     $acciones = [];
-                    if ($asistencia_id) {
+                    if ($asistencia_id && ($isAdmin || $isSystem || $isJefatura || $isEncargado)) {
                         $esPendiente = $tipo_asistencia == 0;
                         $sePuedeJustificar = in_array($tipo_asistencia, [1, 4]);
                         $esDerivacion = in_array($tipo_asistencia, [0, 1]);
@@ -166,7 +167,7 @@ class AsistenciaController extends Controller
                         }
 
                         // Derivar asistencia solo si es tipo asistencia 0: pendiente o 1: falta, antes de las 10:00 y es para la fecha actual
-                        if ($esDerivacion && $sinJustificar && $this->horaActual < $this->limiteDerivado($fecha) && $hoy) {
+                        if ($esDerivacion && $sinJustificar && $this->horaActual < $this->limiteDerivado($fecha) && ($isAdmin || $isSystem || $isJefatura || $isEncargado) && $hoy) {
                             $acciones[] = [
                                 'funcion' => "marcarDerivado($asistencia_id)",
                                 'texto' => '<i class="fas fa-random me-2 text-info"></i> Derivar'
@@ -174,6 +175,7 @@ class AsistenciaController extends Controller
                         }
 
                         if (
+                            $mesActual &&
                             $sePuedeJustificar &&
                             (
                                 ($sinJustificar && $this->horaActual > $this->limitePuntual($fecha, $p->rol_system)) ||
