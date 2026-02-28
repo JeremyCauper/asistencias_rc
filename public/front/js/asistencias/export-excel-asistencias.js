@@ -121,7 +121,7 @@ $(document).ready(function () {
         let resultado = [];
 
         if (modo === 'mensual') {
-            const mes = $fechaExport.val();
+            const mes = fecha_export_mensual.val();
             if (mes) resultado = [mes];
         } else if (modo === 'rango' && rangoSeleccionado) {
             resultado = rangoSeleccionado;
