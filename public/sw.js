@@ -1,7 +1,7 @@
 // =======================================================
 // CONFIGURACIÓN
 // =======================================================
-const VERSION = "6.6.1";
+const VERSION = "3.4.11";
 const CACHE_STATIC_NAME = "pwa-static-v" + VERSION;
 const CACHE_INMUTABLE_NAME = "pwa-inmutable-v1";
 const CACHE_DYNAMIC_NAME = "pwa-dynamic-v1";
@@ -72,8 +72,8 @@ const PRECACHE_INMUTABLE_FILES = [
     { file: "vendor/full-calendar/full-calendar.min.js" },
     { file: "vendor/inputmask/jquery.inputmask.bundle.min.js" },
     { file: "vendor/mdtp/mdtp.min.js" },
-    { file: "front/vendor/pdfjs/pdf-js/pdf.min.js"},
-    { file: "front/vendor/pdfjs/pdf-js/pdf.worker.min.js"},
+    { file: "front/vendor/pdfjs/pdf-js/pdf.min.js" },
+    { file: "front/vendor/pdfjs/pdf-js/pdf.worker.min.js" },
 ];
 
 // =======================================================

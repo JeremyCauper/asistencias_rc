@@ -261,7 +261,7 @@ body * .hover-layout:hover {
     background-size: contain !important;
     width: 1.75rem;
     height: 1.75rem;
-    background: url(../../front/images/app/icons/icon.webp?v=6.6.1) no-repeat center center;
+    background: url(../../front/images/app/icons/icon.webp?v=3.4.11) no-repeat center center;
 }
 
 .layout-container .sidebar .sidebar__header .sidebar-close i::before {
@@ -632,7 +632,7 @@ body * .hover-layout:hover {
     }
 
     .layout-container .navbar .navbar-brand .logo_rci {
-        background: url(../../front/images/app/icons/icon.webp?v=6.6.1) no-repeat center center;
+        background: url(../../front/images/app/icons/icon.webp?v=3.4.11) no-repeat center center;
         width: 40px;
         height: 40px;
     }
